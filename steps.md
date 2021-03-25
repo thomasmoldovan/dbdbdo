@@ -47,8 +47,8 @@ git init
 git add .  
 git commit -m"Initial commit"
 
-### [ ] Add upstream repository
-### [ ] Push
+### [x] Add upstream repository
+### [x] Push
 
 ### [ ] Setup hosting and renew domain
 ### [ ] Add git hooks
@@ -56,4 +56,8 @@ git commit -m"Initial commit"
 * [x] Add javascript and css libraries
 * [x] Add general header
 * [x] Add general debug info bar
-* [ ] Add 
+* [ ] Create login forms
+* [ ] Add select2 plugin
+* [x] Session messages
+* [x] Language control
+* [ ] Add select2 plugin

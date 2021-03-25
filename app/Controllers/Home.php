@@ -6,8 +6,13 @@ class Home extends BaseController
 {
 	public function index()
 	{
-		// $auth = $this->auth = service('authentication');
+        session()->setFlashdata('message', lang("Pass.userNotFound"));
 		return view('header', ["auth" => [], "projectList" => []]);
-		// return view('welcome_message');
+	}
+
+	public function register()
+	{
+        // session()->setFlashdata('error', lang("Pass.activationSuccess"));
+		return view('header', ["auth" => [], "projectList" => []]);
 	}
 }
