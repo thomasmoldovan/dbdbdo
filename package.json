@@ -1,0 +1,18 @@
+{
+    "name": "dbdbdo",
+    "version": "1.0.0",
+    "description": "A backend tool with a GUI",
+    "main": "dbdbdo.js",
+    "author": "Thomas Moldovan <thomas.moldovan@gmail.com>",
+    "license": "MIT",
+    "private": true,
+    "dependencies": {
+        "@fortawesome/fontawesome-free": "^5.13.1",
+        "bootstrap": "^4.3.1",
+        "bootstrap4-toggle": "^3.6.1",
+        "codemirror": "^5.55.0",
+        "jquery": "^3.3.1",
+        "popper.js": "^1.15.0",
+        "toastr": "^2.1.4"
+    }
+}
