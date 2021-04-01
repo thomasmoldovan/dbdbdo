@@ -4,9 +4,11 @@
 	"description": "Database first code generator",
 	"homepage": "https://dbdbdo.com",
 	"license": "MIT",
+	"minimum-stability": "beta",
 	"require": {
 		"php": "^7.3||^8.0",
-		"codeigniter4/framework": "^4"
+		"codeigniter4/framework": "^4",
+		"myth/auth": "^1.0@beta"
 	},
 	"require-dev": {
 		"fakerphp/faker": "^1.9",
