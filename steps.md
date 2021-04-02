@@ -81,6 +81,5 @@ https://github.com/thomasmoldovan/dbdbdo.git
     * [x] Confirm
     * [x] Change Password
     * [x] Profile Page
-* [ ] Add select2 plugin
 * [x] Session messages
 * [x] Language control

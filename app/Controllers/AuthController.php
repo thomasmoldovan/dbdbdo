@@ -4,7 +4,7 @@ use Config\Email;
 use CodeIgniter\Controller;
 use Myth\Auth\Entities\User;
 
-class AuthController extends Controller
+class AuthController extends BaseController
 {
 	protected $auth;
 	/**
@@ -51,7 +51,8 @@ class AuthController extends Controller
         // Set a return URL if none is specified
         $_SESSION['redirect_url'] = session('redirect_url') ?? previous_url() ?? '/';
 
-		return view($this->config->views['login'], ['config' => $this->config]);
+		// return view($this->config->views['login'], ['config' => $this->config]);
+		return $this->display_main("header", "login");
 	}
 
 	/**
@@ -133,7 +134,19 @@ class AuthController extends Controller
 			return redirect()->back()->withInput()->with('error', lang('Auth.registerDisabled'));
 		}
 
-		return view($this->config->views['register'], ['config' => $this->config]);
+		// return view($this->config->views['register'], ['config' => $this->config]);
+		return $this->display_main("header", "register");
+	}
+
+	public function display_main($header = "header", $content = "login", $data = []) {
+		helper("auth");
+		return view($header, [
+			"auth" => $this->auth, 
+			"config" => $this->config,
+			"user" => user(),
+			"page" => config('Pages')->pages[$content]["view"],
+			"data" => $data
+		]);
 	}
 
 	/**

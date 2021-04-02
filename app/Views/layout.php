@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-    <meta charset="utf-8">
+<meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="">
     <meta name="Passor" content="">
@@ -21,28 +21,13 @@
     <link href="/css/all.min.css" rel="stylesheet"></link>
 
     <script src="/js/common.js"></script>
+    
 </head>
 
-<style {csp-style-src}>
-    html, body {
-        color: rgba(33, 37, 41, 1);
-        /* font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji"; */
-        font-size: 16px;
-
-        -webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale;
-        text-rendering: optimizeLegibility;
-    }
-
-    input:-webkit-autofill::first-line {
-        font-family: 'Helvetica Neue', 'Arial', Arial, sans-serif !important;
-        font-size: 16px !important;
-    }
-</style>
-
 <body>
-    <?
-    echo view('App\navigation');
-    echo view('App\debugbar');
-    if (!empty($page)) echo view('App\\'.$page); ?>
+
+<main role="main" class="container">
+</main>
+
 </body>
+</html>
