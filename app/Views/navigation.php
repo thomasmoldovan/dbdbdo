@@ -2,7 +2,9 @@
     <a class="navbar-brand" href="/index.html">DbDbDo<small><?= $auth->check() ? ".online" : ".website"; ?></small></a>
 
     <? if (!$auth->check()) { ?>
-        <a class="" href="todo">To Do (public permission)</a>
+        <a class="" href="/todo">To Do</a>
+    <? } else { ?>
+        <a class="" href="/projects">Projects</a>
     <? } ?>
 
     <!-- IF user IS LOGGED in and a PROJECT is SELECTED -->

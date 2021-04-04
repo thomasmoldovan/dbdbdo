@@ -67,9 +67,10 @@ https://github.com/thomasmoldovan/dbdbdo.git
     * [x] Register
     * [x] Login
     * [x] Forgot password
-    * [x] Github Login
+    * [ ] Github Login
     * [x] Confirm
-    * [x] Change Password
-    * [x] Profile Page
+    * [x] Reset Password
+    * [ ] Profile Page
 * [x] Session messages
 * [x] Language control
+* [ ] Webpage zoom

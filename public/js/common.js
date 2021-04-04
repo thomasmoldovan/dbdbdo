@@ -1,7 +1,7 @@
 toastr.options = {
     "closeButton": true,
     "debug": false,
-    "newestOnTop": false,
+    "newestOnTop": true,
     "progressBar": true,
     "positionClass": "toast-top-center",
     "preventDuplicates": false,
@@ -14,7 +14,7 @@ toastr.options = {
     "hideEasing": "linear",
     "showMethod": "fadeIn",
     "hideMethod": "fadeOut"
-}
+  }
 
 var escape = document.createElement('textarea');
 

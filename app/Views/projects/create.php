@@ -1,7 +1,7 @@
+<? echo view("projects/menu"); ?>
 <style>
     .CodeMirror { border: solid 1px #AAAAAA !important; }
 </style>
-
 <div class="container-fluid mx-auto">
     <div class="col-sm-6 offset-sm-3 pt-5">
         <div class="card">
@@ -43,61 +43,9 @@
 <script src="/codemirror/sql.js"></script>
 <link href="/codemirror/codemirror.css" rel="stylesheet">
 
-<div id="toDoListCode2" class="hidden invisible hide"
-data-code="Q1JFQVRFIFRBQkxFIGBidWNrZXRgICgKICBgaWRgIGludCgxMSkgdW5zaWduZWQgTk9UIE5VTEwgQVVUT19JTkNSRU1FTlQsCiAgYGZEYXRlYCBkYXRldGltZSBERUZBVUxUIE5VTEwsCiAgYGZUaW1lYCBkYXRldGltZSBERUZBVUxUIE5VTEwsCiAgYGZJbWFnZWAgdmFyY2hhcigxNTApIENIQVJBQ1RFUiBTRVQgbGF0aW4xIERFRkFVTFQgTlVMTCwKICBgZkxpbmtgIHZhcmNoYXIoMTUwKSBDSEFSQUNURVIgU0VUIGxhdGluMSBERUZBVUxUIE5VTEwsCiAgYGZDaGVja2JveGAgdGlueWludCgxKSBERUZBVUxUIE5VTEwsCiAgYGZSYWRpb2AgdGlueWludCgxKSBERUZBVUxUIE5VTEwsCiAgYGZGaWxlYCB2YXJjaGFyKDE1MCkgQ0hBUkFDVEVSIFNFVCBsYXRpbjEgREVGQVVMVCBOVUxMLAogIGBmSW5wdXRgIHZhcmNoYXIoMTUwKSBDSEFSQUNURVIgU0VUIGxhdGluMSBERUZBVUxUIE5VTEwsCiAgYGZOdW1iZXJgIGludCgxMSkgREVGQVVMVCBOVUxMLAogIFBSSU1BUlkgS0VZIChgaWRgKQopIEVOR0lORT1NeUlTQU0gREVGQVVMVCBDSEFSU0VUPXV0ZjMyOwoKQ1JFQVRFIFRBQkxFIGBjZW50ZXJfdGFibGVgICgKICBgY2VudGVyX3RhYmxlX2lkYCBpbnQoMTEpIE5PVCBOVUxMIEFVVE9fSU5DUkVNRU5ULAogIGBydF9pZGAgaW50KDExKSBERUZBVUxUIE5VTEwsCiAgYGN0X2YxYCB2YXJjaGFyKDEwKSBERUZBVUxUIE5VTEwsCiAgYGN0X2YyYCB2YXJjaGFyKDEwKSBERUZBVUxUIE5VTEwsCiAgUFJJTUFSWSBLRVkgKGBjZW50ZXJfdGFibGVfaWRgKQopIEVOR0lORT1Jbm5vREIgQVVUT19JTkNSRU1FTlQ9NCBERUZBVUxUIENIQVJTRVQ9dXRmOG1iNDsKCkNSRUFURSBUQUJMRSBgY29sb3JzYCAoCiAgYGlkYCBpbnQoMTEpIHVuc2lnbmVkIE5PVCBOVUxMIEFVVE9fSU5DUkVNRU5ULAogIGBuYW1lYCB2YXJjaGFyKDIwKSBERUZBVUxUIE5VTEwsCiAgYHZhbHVlYCB2YXJjaGFyKDEwKSBERUZBVUxUIE5VTEwsCiAgUFJJTUFSWSBLRVkgKGBpZGApCikgRU5HSU5FPUlubm9EQiBBVVRPX0lOQ1JFTUVOVD0yMSBERUZBVUxUIENIQVJTRVQ9bGF0aW4xOwoKQ1JFQVRFIFRBQkxFIGBlbXBsb3llZXNgICgKICBgZW1wbG95ZWVOdW1iZXJgIGludCgxMSkgTk9UIE5VTEwsCiAgYGxhc3ROYW1lYCB2YXJjaGFyKDUwKSBOT1QgTlVMTCwKICBgZmlyc3ROYW1lYCB2YXJjaGFyKDUwKSBOT1QgTlVMTCwKICBgZXh0ZW5zaW9uYCB2YXJjaGFyKDEwKSBOT1QgTlVMTCwKICBgZW1haWxgIHZhcmNoYXIoMTAwKSBOT1QgTlVMTCwKICBgb2ZmaWNlQ29kZWAgdmFyY2hhcigxMCkgTk9UIE5VTEwsCiAgYHJlcG9ydHNUb2AgaW50KDExKSBERUZBVUxUIE5VTEwsCiAgYGpvYlRpdGxlYCB2YXJjaGFyKDUwKSBOT1QgTlVMTCwKICBQUklNQVJZIEtFWSAoYGVtcGxveWVlTnVtYmVyYCksCiAgS0VZIGByZXBvcnRzVG9gIChgcmVwb3J0c1RvYCksCiAgS0VZIGBvZmZpY2VDb2RlYCAoYG9mZmljZUNvZGVgKQopIEVOR0lORT1Jbm5vREIgREVGQVVMVCBDSEFSU0VUPWxhdGluMTsKCkRST1AgVEFCTEUgSUYgRVhJU1RTIGBncm91cHNgOwoKQ1JFQVRFIFRBQkxFIGBncm91cHNgICgKICBgaWRgIGludCgxMSkgdW5zaWduZWQgTk9UIE5VTEwgQVVUT19JTkNSRU1FTlQsCiAgYG5hbWVgIHZhcmNoYXIoMzApIERFRkFVTFQgTlVMTCwKICBgY29sb3JfaWRgIGludCgxMSkgdW5zaWduZWQgREVGQVVMVCBOVUxMLAogIFBSSU1BUlkgS0VZIChgaWRgKQopIEVOR0lORT1Jbm5vREIgQVVUT19JTkNSRU1FTlQ9MTMgREVGQVVMVCBDSEFSU0VUPWxhdGluMTs="></div>
-<div id="toDoListCode" class="hidden invisible hide"
-data-code="CREATE TABLE `bucket` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `fDate` datetime DEFAULT NULL,
-  `fTime` datetime DEFAULT NULL,
-  `fImage` varchar(150) CHARACTER SET latin1 DEFAULT NULL,
-  `fLink` varchar(150) CHARACTER SET latin1 DEFAULT NULL,
-  `fCheckbox` tinyint(1) DEFAULT NULL,
-  `fRadio` tinyint(1) DEFAULT NULL,
-  `fFile` varchar(150) CHARACTER SET latin1 DEFAULT NULL,
-  `fInput` varchar(150) CHARACTER SET latin1 DEFAULT NULL,
-  `fNumber` int(11) DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf32;
-
-CREATE TABLE `center_table` (
-  `center_table_id` int(11) NOT NULL AUTO_INCREMENT,
-  `rt_id` int(11) DEFAULT NULL,
-  `ct_f1` varchar(10) DEFAULT NULL,
-  `ct_f2` varchar(10) DEFAULT NULL,
-  PRIMARY KEY (`center_table_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4;
-
-CREATE TABLE `colors` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `name` varchar(20) DEFAULT NULL,
-  `value` varchar(10) DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=latin1;
-
-CREATE TABLE `employees` (
-  `employeeNumber` int(11) NOT NULL,
-  `lastName` varchar(50) NOT NULL,
-  `firstName` varchar(50) NOT NULL,
-  `extension` varchar(10) NOT NULL,
-  `email` varchar(100) NOT NULL,
-  `officeCode` varchar(10) NOT NULL,
-  `reportsTo` int(11) DEFAULT NULL,
-  `jobTitle` varchar(50) NOT NULL,
-  PRIMARY KEY (`employeeNumber`),
-  KEY `reportsTo` (`reportsTo`),
-  KEY `officeCode` (`officeCode`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
-DROP TABLE IF EXISTS `groups`;
-
-CREATE TABLE `groups` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `name` varchar(30) DEFAULT NULL,
-  `color_id` int(11) unsigned DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=latin1;">
-</div>
+<div id="toDoListCode" class="hidden invisible hide" data-code="Q1JFQVRFIFRBQkxFIGBidWNrZXRgICgKICBgaWRgIGludCgxMSkgdW5zaWduZWQgTk9UIE5VTEwgQVVUT19JTkNSRU1FTlQsCiAgYGZEYXRlYCBkYXRldGltZSBERUZBVUxUIE5VTEwsCiAgYGZUaW1lYCBkYXRldGltZSBERUZBVUxUIE5VTEwsCiAgYGZJbWFnZWAgdmFyY2hhcigxNTApIENIQVJBQ1RFUiBTRVQgbGF0aW4xIERFRkFVTFQgTlVMTCwKICBgZkxpbmtgIHZhcmNoYXIoMTUwKSBDSEFSQUNURVIgU0VUIGxhdGluMSBERUZBVUxUIE5VTEwsCiAgYGZDaGVja2JveGAgdGlueWludCgxKSBERUZBVUxUIE5VTEwsCiAgYGZSYWRpb2AgdGlueWludCgxKSBERUZBVUxUIE5VTEwsCiAgYGZGaWxlYCB2YXJjaGFyKDE1MCkgQ0hBUkFDVEVSIFNFVCBsYXRpbjEgREVGQVVMVCBOVUxMLAogIGBmSW5wdXRgIHZhcmNoYXIoMTUwKSBDSEFSQUNURVIgU0VUIGxhdGluMSBERUZBVUxUIE5VTEwsCiAgYGZOdW1iZXJgIGludCgxMSkgREVGQVVMVCBOVUxMLAogIFBSSU1BUlkgS0VZIChgaWRgKQopIEVOR0lORT1NeUlTQU0gREVGQVVMVCBDSEFSU0VUPXV0ZjMyOwoKQ1JFQVRFIFRBQkxFIGBjZW50ZXJfdGFibGVgICgKICBgY2VudGVyX3RhYmxlX2lkYCBpbnQoMTEpIE5PVCBOVUxMIEFVVE9fSU5DUkVNRU5ULAogIGBydF9pZGAgaW50KDExKSBERUZBVUxUIE5VTEwsCiAgYGN0X2YxYCB2YXJjaGFyKDEwKSBERUZBVUxUIE5VTEwsCiAgYGN0X2YyYCB2YXJjaGFyKDEwKSBERUZBVUxUIE5VTEwsCiAgUFJJTUFSWSBLRVkgKGBjZW50ZXJfdGFibGVfaWRgKQopIEVOR0lORT1Jbm5vREIgQVVUT19JTkNSRU1FTlQ9NCBERUZBVUxUIENIQVJTRVQ9dXRmOG1iNDsKCkNSRUFURSBUQUJMRSBgY29sb3JzYCAoCiAgYGlkYCBpbnQoMTEpIHVuc2lnbmVkIE5PVCBOVUxMIEFVVE9fSU5DUkVNRU5ULAogIGBuYW1lYCB2YXJjaGFyKDIwKSBERUZBVUxUIE5VTEwsCiAgYHZhbHVlYCB2YXJjaGFyKDEwKSBERUZBVUxUIE5VTEwsCiAgUFJJTUFSWSBLRVkgKGBpZGApCikgRU5HSU5FPUlubm9EQiBBVVRPX0lOQ1JFTUVOVD0yMSBERUZBVUxUIENIQVJTRVQ9bGF0aW4xOwoKQ1JFQVRFIFRBQkxFIGBlbXBsb3llZXNgICgKICBgZW1wbG95ZWVOdW1iZXJgIGludCgxMSkgTk9UIE5VTEwsCiAgYGxhc3ROYW1lYCB2YXJjaGFyKDUwKSBOT1QgTlVMTCwKICBgZmlyc3ROYW1lYCB2YXJjaGFyKDUwKSBOT1QgTlVMTCwKICBgZXh0ZW5zaW9uYCB2YXJjaGFyKDEwKSBOT1QgTlVMTCwKICBgZW1haWxgIHZhcmNoYXIoMTAwKSBOT1QgTlVMTCwKICBgb2ZmaWNlQ29kZWAgdmFyY2hhcigxMCkgTk9UIE5VTEwsCiAgYHJlcG9ydHNUb2AgaW50KDExKSBERUZBVUxUIE5VTEwsCiAgYGpvYlRpdGxlYCB2YXJjaGFyKDUwKSBOT1QgTlVMTCwKICBQUklNQVJZIEtFWSAoYGVtcGxveWVlTnVtYmVyYCksCiAgS0VZIGByZXBvcnRzVG9gIChgcmVwb3J0c1RvYCksCiAgS0VZIGBvZmZpY2VDb2RlYCAoYG9mZmljZUNvZGVgKQopIEVOR0lORT1Jbm5vREIgREVGQVVMVCBDSEFSU0VUPWxhdGluMTsKCkRST1AgVEFCTEUgSUYgRVhJU1RTIGBncm91cHNgOwoKQ1JFQVRFIFRBQkxFIGBncm91cHNgICgKICBgaWRgIGludCgxMSkgdW5zaWduZWQgTk9UIE5VTEwgQVVUT19JTkNSRU1FTlQsCiAgYG5hbWVgIHZhcmNoYXIoMzApIERFRkFVTFQgTlVMTCwKICBgY29sb3JfaWRgIGludCgxMSkgdW5zaWduZWQgREVGQVVMVCBOVUxMLAogIFBSSU1BUlkgS0VZIChgaWRgKQopIEVOR0lORT1Jbm5vREIgQVVUT19JTkNSRU1FTlQ9MTMgREVGQVVMVCBDSEFSU0VUPWxhdGluMTs="></div>
+<div id="example2" class="hidden invisible hide" data-code=""></div>
+<div id="example3" class="hidden invisible hide" data-code=""></div>
 
 <script>
 
@@ -107,6 +55,7 @@ CREATE TABLE `groups` (
         console.log(randomColor());
         $("#projectName").val(randomColor());
 
+        // Proceed button was pressed
         $("#processDatabaseSchema").click(function (e) { 
             e.preventDefault();
             if ($("#projectName").val() == "") {
@@ -131,8 +80,8 @@ CREATE TABLE `groups` (
 
         $("#loadToDoList").click(function (e) { 
             e.preventDefault();
-            // console.log(window.atob($("#toDoListCode2").data("code")));
-            editor.getDoc().setValue(window.atob($("#toDoListCode2").data("code")));
+            // console.log(window.atob($("#toDoListCode").data("code")));
+            editor.getDoc().setValue(window.atob($("#toDoListCode").data("code")));
         });
 
         function processDatabaseSchema() {
@@ -154,14 +103,20 @@ CREATE TABLE `groups` (
                 },
                 dataType: "json",
                 success: function (response) {
-                    
+                    if (response.status == "error") {
+                        toastr.error(response.message, response.code);
+                    }
+                    console.log("Success");
+                    console.log(response);
                 },
                 error: function (response) {
-                    toastr.error("Error: " + response.responseText, "Error importing schema");
+                    toastr.error("Error: " + response.message, "Error importing schema");
                     hideLoadingScreen();
                 },
                 complete: function (response) {
-                    window.location = "http://localhost:8080/projects/" + response.responseJSON.project_hash;
+                    console.log("Complete");
+                    console.log(response);
+                    //window.location = "http://localhost:8080/projects/" + response.responseJSON.project_hash;
                 },
             });
         }

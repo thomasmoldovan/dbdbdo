@@ -1,3 +1,4 @@
+<? echo view("projects/menu"); ?>
 <div class="h-100 p-5">
     <div class="row h-100">
         <? $i = 0; while ($i <= 5) {
@@ -23,6 +24,6 @@
                     </div>
                 </div>
             </div>
-        <?  }  ?>
+        <? } ?>
     </div>
 </div>
