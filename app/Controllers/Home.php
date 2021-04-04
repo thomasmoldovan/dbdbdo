@@ -54,4 +54,15 @@ class Home extends BaseController{
 			"data" => $data
 		]);
 	}
+
+	public function tried(\Exception $ex) {
+		$response["status"] = "error";
+		$response["code"] = 3481;
+		$response["message"] = $ex->getMessage() ?? null;
+		if (ENVIRONMENT === "Development") {
+			$response["line"] = $ex->getLine() ?? null;
+			$response["file"] = $ex->getFile() ?? null;
+		}
+		return $this->response->setJSON($response);
+	}
 }

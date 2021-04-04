@@ -2,11 +2,18 @@
 
 namespace App\Controllers;
 
-class Projects extends Home{
+class Projects extends Home {
+
+	protected $current_project;
 
 	public function index()	{
 		if ($this->auth->check()) {
-			return $this->display_main("header", "projects");
+			$projects = new \App\Models\ProjectModel();
+			$project_list = $projects->getProjectsForUser($this->user->id);
+			$data = [
+				"project_list" => $project_list
+			];
+			return $this->display_main("header", "projects", $data);
 		}
 		return redirect()->to("/");
 	}
@@ -22,12 +29,11 @@ class Projects extends Home{
 	public function importSchema($data = null, $name = null) {
 		$name = $this->request->getPost("name");
 		$data = $this->request->getPost("data");
-		$processAllTables = $this->request->getPost("processAllTables");
 
 		if (empty($name) || empty($data)) {
 			return $this->response->setJSON(array(
 				"status" => "error",
-				"message" => "Something went wrong with the import"
+				"message" => "Something values were empty"
 			));
 		}
 
@@ -37,19 +43,26 @@ class Projects extends Home{
 		try {
 			$importerConn = \Config\Database::connect("schemaImporter");
 		} catch (\Exception $ex) {
-			$response["status"] = "error";
-			$response["code"] = 3481;
-			$response["message"] = $ex->getMessage() ?? null;
-			if (ENVIRONMENT === "Development") {
-				$response["line"] = $ex->getLine() ?? null;
-				$response["file"] = $ex->getFile() ?? null;
-			}
-			return $this->response->setJSON($response);
+			return $this->tried($ex);
 		}
 
 		$userId = $this->user->id;
 		$projectName = $name;
 		$project_hash = "_".substr(uniqid(), -6);
+
+		// Add the project
+		try {
+			$this->current_project = $projects->insert([
+				"id" => null,
+				"user_id" => $userId,
+				"project_name" => $projectName,
+				"project_hash" => $project_hash,
+				"database" => $project_hash]
+			);
+		} catch (\Exception $ex) {
+			$project_hash = null;
+			return $this->tried($ex);
+		}
 
 		// Create database
 		$result = null;
@@ -57,13 +70,7 @@ class Projects extends Home{
 		try {
 			$result = $importerConn->query($sql);
 		} catch (\Exception $ex)  {
-			$response["status"] = "error";
-			$response["code"] = 3481;
-			$response["message"] = $ex->getMessage() ?? null;
-			if (ENVIRONMENT === "Development") {
-				$response["line"] = $ex->getLine() ?? null;
-				$response["file"] = $ex->getFile() ?? null;
-			}
+			return $this->tried($ex);
 			return $this->response->setJSON($response);
 		}
 
@@ -87,17 +94,26 @@ class Projects extends Home{
 
 			// If it has a semicolon at the end, it's the end of the query
 			if (substr(trim($tempcommand), -1, 1) == ';') {
-				// Ignore line if DROP statement present
-				$wtf = stripos($tempcommand, "drop");
-				if (stripos($tempcommand, "drop") !== false) {
+
+				// TODO: Turn these import filters into a loop
+				// $restricted_importer_keywords = ["drop", "database", "show", "privilege"];
+				// foreach ($restricted_importer_keywords as $keyword) {
+				// 	if (stripos($tempcommand, $keyword) !== false) {
+				// 		$tempcommand = '';
+				// 		$line = strtok($separator);
+				// 		continue;
+				// 	}
+				// }
+
+				// Ignore line if DATABASE statement present
+				$wtf1 = stripos($tempcommand, "drop");
+				if (stripos($tempcommand, "database") != false) {
 					$tempcommand = '';
 					$line = strtok($separator);
 					continue;
 				}
 
-				// TODO: also USE DATABASE, but use in the first part, and can be user ie.
-
-				// Ignore line if CREATE DATABASE statement present
+				// Ignore line if DATABASE statement present
 				$wtf2 = stripos($tempcommand, "database");
 				if (stripos($tempcommand, "database") != false) {
 					$tempcommand = '';
@@ -105,6 +121,7 @@ class Projects extends Home{
 					continue;
 				}
 
+				// Ignore line if DATABASE statement present
 				$wtf3 = stripos($tempcommand, "show");
 				if (stripos($tempcommand, "show") != false) {
 					$tempcommand = '';
@@ -112,6 +129,7 @@ class Projects extends Home{
 					continue;
 				}
 
+				// Ignore line if DATABASE statement present
 				$wtf4 = stripos($tempcommand, "privilege");
 				if (stripos($tempcommand, "privilege") != false) {
 					$tempcommand = '';
@@ -125,23 +143,21 @@ class Projects extends Home{
 					try {
 						// No INSERTS
 						$result = $importerConn->query($tempcommand);
-					} catch (\Exception $e)  {
-						if ($e->getCode() == 1142) {
+					} catch (\Exception $ex)  {
+						if ($ex->getCode() == 1142) {
 							return $this->response->setJSON(array(
 								"status" => "error",
+								"code" => $ex->getCode(),
 								"message" => "You do not have permissions to run that command"
 							));
-						} else if ($e->getCode() == 1064) {
+						} else if ($ex->getCode() == 1064) {
 							return $this->response->setJSON(array(
 								"status" => "error",
+								"code" => $ex->getCode(),
 								"message" => "You have an error in your SQL script",
-								"response" => $e->getMessage()
 							));
 						} else {
-							return $this->response->setJSON(array(
-								"status" => "error",
-								"message" => $e->getMessage()
-							));
+							return $this->tried($ex);
 						}
 					}
 				}
@@ -160,13 +176,6 @@ class Projects extends Home{
 		}
 
 		if (!is_null($result) && $nrTables > 0) {
-			$resultId = $projects->insert([
-				"id" => null,
-				"user_id" => $userId,
-				"project_name" => $projectName,
-				"project_hash" => $project_hash,
-				"database" => $project_hash]
-			);
 			return $this->response->setJSON([
 				"project_hash" => $project_hash
 			]);
@@ -176,5 +185,29 @@ class Projects extends Home{
 				"message" => "Something went wrong executing the SQL script"
 			));
 		}
+	}
+
+	public function clearStuff() {
+		if (is_null($this->user->id)) return false;
+		$rootConn = \Config\Database::connect("default");
+
+		// DROP all the user databases
+		$dbs = $rootConn->query("SELECT GROUP_CONCAT(CONCAT('`', project_hash, '`')) AS projects FROM projects;")->getResultArray()[0]["projects"];
+
+		// TODO: Delete files also
+
+		// $result = $rootConn->query("TRUNCATE user_tables");
+		// $result = $rootConn->query("TRUNCATE user_modules");
+		// $result = $rootConn->query("TRUNCATE projects");
+		// $result = $rootConn->query("TRUNCATE tables_modules");
+		// $result = $rootConn->query("TRUNCATE properties");
+		// $result = $rootConn->query("TRUNCATE links");
+		if (!empty($dbs)) {
+			$result = $rootConn->query("TRUNCATE projects");
+			$result = $rootConn->query("DROP DATABASE ".$dbs.";");
+		}		
+		
+		$this->session->set("notification", ["success" => "All your projects have been wiped out"]);
+		return redirect()->to('/projects');
 	}
 }

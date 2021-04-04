@@ -32,6 +32,7 @@
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
         text-rendering: optimizeLegibility;
+        transition: all 0.3s ease-out ease-in;
     }
 
     input:-webkit-autofill::first-line {
