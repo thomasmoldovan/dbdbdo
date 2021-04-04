@@ -28,7 +28,7 @@
         color: rgba(33, 37, 41, 1);
         /* font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji"; */
         font-size: 16px;
-
+        background: gainsboro;
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
         text-rendering: optimizeLegibility;
@@ -43,6 +43,10 @@
 <body>
     <?
     echo view('App\navigation');
-    echo view('App\debugbar');
+    // echo view('App\debugbar');
+
+    // echo in_groups(["Publisher"]) ? "TRUE" : "FALSE";
+    // echo has_permission("Everything") ? "TRUE" : "FALSE";
+
     if (!empty($page)) echo view('App\\'.$page); ?>
 </body>

@@ -1,9 +1,6 @@
-<?= $this->extend($config->viewLayout) ?>
-<?= $this->section('main') ?>
-
-<div class="container">
-    <div class="row">
-        <div class="col-sm-6 offset-sm-3">
+<div class="container h-100">
+    <div class="row align-items-center h-100">
+        <div class="col-6 mx-auto mt-5">
 
             <div class="card">
                 <h2 class="card-header"><?=lang('Auth.forgotPassword')?></h2>
@@ -36,5 +33,3 @@
         </div>
     </div>
 </div>
-
-<?= $this->endSection() ?>

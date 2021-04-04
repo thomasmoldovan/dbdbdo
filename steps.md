@@ -40,24 +40,14 @@ v14.16.0
 `composer create-project codeigniter4/appstarter give-it-a-name`  
 `composer update`
 
-### [ ] Setup and benchmark server (optional)
-
-1st let's `setup the enviroment`, so `rename env` to `.env`, and edit to suite your setup
-
-<h3 style="font-weight: bold; color: red; display: inline;">(!) </h3>I will be using apache ab.exe benchmarking tool, so please make sure you have it added to your PATH for simplicity reasons (ex. C:\xampp\apache\bin)
-
-<h3 style="display: block;"></h3>
-
-**Tests to run**
-
-[ ] A. Running "./php spark serve"  
-[ ] B. Running "./public/php -S localhost:8080"  
-[ ] C. Running on Ubuntu 18.04 in VMWare on local Windows 10  
-[ ] D. Running on Ubuntu 18.04 remote on domain
-
-[ ] E. Tests for routing
-
 ### [ ] Setup database users, roles, and run migrations
+[ ] Create MySql users  
+[x] Roles in DB  
+[x] Run first migrations  
+
+### RUN
+cd public  
+php -S localhost:8080
 
 ### [x] Init GIT and create first commit
 git init  

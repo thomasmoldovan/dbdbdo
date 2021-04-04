@@ -10,6 +10,7 @@ class Home extends BaseController{
 	protected $config;
 	protected $user;
 	protected $pages;
+	protected $authorize;
 
 	/**
 	 * @var \CodeIgniter\Session\Session
@@ -18,13 +19,14 @@ class Home extends BaseController{
 
 	public function __construct()
 	{
-		// Most services in this controller require
+		// Most services in this controller requires
 		// the session to be started - so fire it up!
 		helper('auth');
+		$this->authorize = service('authorization');
+		$this->session = service('session');
 		$this->auth = service('authentication');
 		$this->config = config('Auth');
 		$this->pages = config('Pages');
-		$this->session = service('session');		
 		$this->user = user();
 	}
 
@@ -36,10 +38,10 @@ class Home extends BaseController{
 			if ($redirectURL !== '/') {
 				return $this->display_main("header", $redirectURL);
 			} else {
-				return $this->display_main("header", "projects");
+				return $this->display_main("header", "website");
 			}
 		} else {
-			return $this->display_main("header", "login");
+			return $this->display_main("header", "website");
 		}
 	}
 
@@ -51,11 +53,5 @@ class Home extends BaseController{
 			"page" => $this->pages->pages[$content]["view"],
 			"data" => $data
 		]);
-	}
-
-	public function register() {
-		$test="register";
-        session()->setFlashdata('error', lang("Auth.activationSuccess"));
-		return $this->display_main("header", "Auth\register");
 	}
 }

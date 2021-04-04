@@ -40,6 +40,13 @@ class AuthController extends BaseController
 	{
 		// No need to show a login form if the user
 		// is already logged in.
+		$exception = null;
+		try {
+			$this->auth->check();
+		} catch (Exception $e) {
+			$exception = $e;
+		}
+
 		if ($this->auth->check())
 		{
 			$redirectURL = session('redirect_url') ?? '/';
@@ -224,7 +231,8 @@ class AuthController extends BaseController
 			return redirect()->route('login')->with('error', lang('Auth.forgotDisabled'));
 		}
 
-		return view($this->config->views['forgot'], ['config' => $this->config]);
+		// return view($this->config->views['forgot'], ['config' => $this->config]);
+		return $this->display_main('header', 'forgot');
 	}
 
 	/**
@@ -274,10 +282,11 @@ class AuthController extends BaseController
 
 		$token = $this->request->getGet('token');
 
-		return view($this->config->views['reset'], [
-			'config' => $this->config,
-			'token'  => $token,
-		]);
+		// return view($this->config->views['reset'], [
+		// 	'config' => $this->config,
+		// 	'token'  => $token,
+		// ]);
+		return $this->display_main('header', 'reset');
 	}
 
 	/**
