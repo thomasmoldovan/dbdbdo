@@ -2,13 +2,59 @@
 
 namespace App\Controllers;
 
+use App\Models\SchemaModel;
+use App\Models\ProjectModel;
+use App\Models\UserTableModel;
+
 class Projects extends Home {
 
 	protected $current_project;
 
-	public function index()	{
+	private $mapping = array(
+        "table_name" => "TABLE_NAME",
+        "column_name" => "COLUMN_NAME",
+        "type" => "COLUMN_TYPE",
+        "pk" => "COLUMN_KEY",
+        "default" => "COLUMN_DEFAULT",
+        "null" => "IS_NULLABLE",
+        "ai" => "EXTRA",
+        "permissions" => "PRIVILEGES",
+        "comment" => "COLUMN_COMMENT",
+        "checksum" => 0
+    );
+
+	public function index($hash = null, $action = null)	{
 		if ($this->auth->check()) {
 			$projects = new \App\Models\ProjectModel();
+
+			// If hash belongs to logged used
+			if (!is_null($hash) && !is_null($action)) {
+				$this->current_project = $projects->find(["id" => $this->user->id, "project_hash" => $hash])[0];
+				if (empty($this->current_project)) return false;
+
+				$checkProjectBelongsToUser = $projects->checkProjectBelongsToUser($this->current_project->project_hash, $this->user->id);
+				if ($checkProjectBelongsToUser) {
+					$this->session->set("notification", ["success" => "Project succesfully loaded"]);
+					// return redirect()->to("/");
+					$data["project"] = $checkProjectBelongsToUser;
+
+					$schema = new SchemaModel();
+					$data["tables"] = $schema->getTables($this->current_project->project_hash);
+
+					$userTables = $schema->getTablesInfo($this->user->id, $this->current_project->id);
+					$data["tablesProcessed"] = array_unique(array_column($userTables, "table_name"));
+				// $userModules = $this->getModulesInfo();
+
+					return $this->display_main("header", "project", $data);
+				} else {
+					$this->session->set("notification", ["error" => "Tough luck"]);
+					//logout();
+					return redirect()->to("/");
+				}
+			}
+			// Then call the action function and view
+			// Else delog the user
+
 			$project_list = $projects->getProjectsForUser($this->user->id);
 			$data = [
 				"project_list" => $project_list
@@ -48,7 +94,7 @@ class Projects extends Home {
 
 		$userId = $this->user->id;
 		$projectName = $name;
-		$project_hash = "_".substr(uniqid(), -6);
+		$project_hash = substr(uniqid(), -6);
 
 		// Add the project
 		try {
@@ -66,7 +112,7 @@ class Projects extends Home {
 
 		// Create database
 		$result = null;
-		$sql = "CREATE DATABASE `".$project_hash."`;";
+		$sql = "CREATE DATABASE `_".$project_hash."`;";
 		try {
 			$result = $importerConn->query($sql);
 		} catch (\Exception $ex)  {
@@ -76,7 +122,7 @@ class Projects extends Home {
 
 		// Script import
 		$result = null;
-		$importerConn->setDatabase($project_hash);
+		$importerConn->setDatabase("_".$project_hash);
 		$importerConn->query("SET FOREIGN_KEY_CHECKS = 0;");
 		$importerConn->query("SET SQL_MODE = '';");
 
@@ -210,4 +256,63 @@ class Projects extends Home {
 		$this->session->set("notification", ["success" => "All your projects have been wiped out"]);
 		return redirect()->to('/projects');
 	}
+
+	public function getTableColumns($tableName = null, $project_hash = null) {
+		// AJAX calls have priority
+		if ($this->request->isAjax()) {
+			$tableName = $this->request->getPost("tableName");
+			$project_hash = $this->request->getPost("project_hash");
+		}
+		if (is_null($tableName) || empty($tableName)) { return false; }
+		if (is_null($project_hash)) { return false; }
+
+		// Check to see if projectId belongs to current logged user
+		$projects = new ProjectModel();
+		$this->current_project = $projects->checkProjectBelongsToUser($project_hash, $this->user->id);
+
+		if (!isset($this->current_project)) return false;
+		if (empty($this->current_project)) return false;		
+		if (!strlen($this->current_project->project_hash) == 6) return false;
+
+		// Read the info about the table so we can use it our way
+        $schema = new SchemaModel();
+        $columns = $schema->getColumns($this->current_project->project_hash, $tableName, $this->mapping);
+
+		// Data will be saved in table user_tables
+        $saved = $this->saveTableInfo($tableName, $columns);
+
+        if ($this->request->isAjax()) {
+            return $this->response->setJSON(array(
+                "tableName" => $tableName,
+                "columns" => $saved
+            ));
+        }
+    }
+
+	public function saveTableInfo($tableName, $columns) {
+        $columns = array_map(function($column) {
+            $newColumn = [];
+            foreach (array_keys($this->mapping) as $value) {
+                switch ($value) {
+                    case "pk": { $newColumn[$value] = $column[$this->mapping[$value]] === "PRI" ? 1 : 0; break; }
+                    case "null": { $newColumn[$value] = $column[$this->mapping[$value]] === "YES" ? 1 : 0; break; }
+                    case "ai": { $newColumn[$value] = $column[$this->mapping[$value]] === "auto_increment" ? 1 : 0; break; }
+                    default: { $newColumn[$value] = $column[$this->mapping[$value]]; break; }
+				}
+				$newColumn["user_id"] = $this->user->id;
+				$newColumn["project_id"] = $this->current_project->id;
+            }
+
+            return array_merge(array('id' => null), $newColumn, array("checksum" => sha1(json_encode($newColumn))));
+        }, $columns);
+
+        $userTable = new UserTableModel();
+        $userTable->where(array("table_name" => $tableName))->delete();
+
+        foreach ($columns as $column) {
+            $result[] = $userTable->insert((Object)$column);
+		}
+
+        return $result;
+    }
 }

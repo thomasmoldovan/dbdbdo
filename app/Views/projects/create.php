@@ -91,6 +91,12 @@
             var replaced = thetext.replace(/(?:\/\*(?:[\s\S]*?)\*\/)|(?:[\s;]+\/\/(?:.*)$)/gm, '');
             replaced = replaced.replace(/^\s*[;]/gm, '');
             replaced = replaced.replace(/^\s*[\r\n]/gm, '');
+            
+            if (replaced.trim() == "") {
+                toastr.info("Enter one or more import statements, or choose one of the examples", "No data");
+                return false;
+            }
+
             editor.setValue(replaced);
 
             $.ajax({
@@ -108,6 +114,7 @@
                     }
                     console.log("Success");
                     console.log(response);
+                    toastr.success("Redirecting...", "Project was succesfully created");
                 },
                 error: function (response) {
                     toastr.error("Error: " + response.message, "Error importing schema");
@@ -116,7 +123,7 @@
                 complete: function (response) {
                     console.log("Complete");
                     console.log(response);
-                    //window.location = "http://localhost:8080/projects/" + response.responseJSON.project_hash;
+                    window.location = "http://localhost:8080/projects/" + response.responseJSON.project_hash;
                 },
             });
         }

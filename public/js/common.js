@@ -14,7 +14,7 @@ toastr.options = {
     "hideEasing": "linear",
     "showMethod": "fadeIn",
     "hideMethod": "fadeOut"
-  }
+}
 
 var escape = document.createElement('textarea');
 

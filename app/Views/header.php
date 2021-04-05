@@ -51,3 +51,14 @@
 
     if (!empty($page)) echo view('App\\'.$page); ?>
 </body>
+<script>
+    $(document).ready(function () {
+        // Show notifications that came trough $_SESSION
+        var sess = <?= json_encode(isset($_SESSION["notification"]) ? $_SESSION["notification"] : ""); ?>;
+        if (sess) {
+            Object.keys(sess).forEach(function(value, index) {
+                toastr[value](sess[value]);
+            });
+        }
+    });
+</script>

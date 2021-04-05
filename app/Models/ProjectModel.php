@@ -34,10 +34,10 @@ class ProjectModel extends Model
         return $result;
     }
 
-    public function checkProjectBelongsToUser($project_id, $user_id) {
+    public function checkProjectBelongsToUser($project_hash, $user_id) {
         // Both must match to get the project_hash, for security reasons
-        $result = $this->select("project_hash, project_name")->where([
-                            "id" => $project_id,
+        $result = $this->select("id, project_hash, project_name")->where([
+                            "project_hash" => $project_hash,
                             "user_id" => $user_id
                         ])->first();
         return $result;
