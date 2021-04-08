@@ -24,20 +24,47 @@
 </head>
 
 <style {csp-style-src}>
-    html, body {
-        color: rgba(33, 37, 41, 1);
-        /* font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji"; */
-        font-size: 16px;
-        background: gainsboro;
-        -webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale;
-        text-rendering: optimizeLegibility;
-        transition: all 0.3s ease-out ease-in;
-    }
+    body { background: #aaaaaa; }
+    html { background: #aaaaaa; }
+    main { background: #aaaaaa; }
 
-    input:-webkit-autofill::first-line {
-        font-family: 'Helvetica Neue', 'Arial', Arial, sans-serif !important;
-        font-size: 16px !important;
+    .hide { display: none; }
+    .bold { font-weight: bold; }
+
+    .background-light { background: #1d1a18; }
+    .height-limit-40 { height: 40px; }
+    .status-danger { border: 2px solid #990; }
+    .status-success { border: 2px solid #090; }
+    .status-error { border: 2px solid #900; }
+
+    .no-outline { outline: none !important; box-shadow: none !important; }
+
+    i { color: white; }
+    .nav-link { color: white !important; }
+    .nav-item { color: white; }
+    .nav-link:hover { color: #ffaf36 !important; text-decoration: underline; }
+
+    .loading-container {
+        position: fixed;
+        top:0px;
+        left:0px;
+        right:0px;
+        bottom: 0px;
+        z-index:10000;
+        display: flex;
+        justify-content: center!important;
+        align-items: center!important;
+    }
+    .loading-container div {
+        background-color: #000;
+        padding: 15px;
+        border-radius: 5px;
+        color:#fff0f0;
+        opacity: .8;
+    }
+    .loading-overlay {
+        background-color: #000;
+        opacity: .5;
     }
 </style>
 
@@ -48,13 +75,23 @@
 
     // echo in_groups(["Publisher"]) ? "TRUE" : "FALSE";
     // echo has_permission("Everything") ? "TRUE" : "FALSE";
-
-    if (!empty($page)) echo view('App\\'.$page); ?>
+    ?>
+    <div id="loading-main" style="display: none;" tabindex="-1">
+        <div class="col-12 loading-container text-white text-center">
+            <div><i id="generic-spinner" class="fa fa-cog fa-spin mr-2"></i> 
+                <span>Processing</span>
+            </div>
+        </div>
+        <div class="loading-container loading-overlay">
+        </div>
+    </div>
+        <? if (!empty($page)) echo view('App\\'.$page); ?>
 </body>
 <script>
     $(document).ready(function () {
         // Show notifications that came trough $_SESSION
         var sess = <?= json_encode(isset($_SESSION["notification"]) ? $_SESSION["notification"] : ""); ?>;
+        <? unset($_SESSION["notification"]); ?>;
         if (sess) {
             Object.keys(sess).forEach(function(value, index) {
                 toastr[value](sess[value]);

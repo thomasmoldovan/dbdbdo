@@ -15,6 +15,7 @@ class SchemaModel extends Model {
 	// NOTE: This will also include the VIEWS
     public function getTables($database = null) {
 		if (is_null($database)) return false;
+		if ($database[0] != "_") $database = "_".$database;
 		$infosch = \Config\Database::connect("informationSchema");
 		$result = $infosch->query("SELECT * FROM tables WHERE table_schema = '{$database}' ORDER BY table_name");
 		return $result->getResultArray();
@@ -23,6 +24,7 @@ class SchemaModel extends Model {
 	// Get all the columns for a table
     public function getColumns($database = null, $table = null, $info = "*") {
 		if (is_null($database) || is_null($table)) return false;
+		if ($database[0] != "_") $database = "_".$database;
 		$infosch = \Config\Database::connect("informationSchema");
 		if (is_array($info)) $info = implode(", ", $info);
 		$result = $infosch->query("SELECT {$info} FROM columns WHERE table_name = '{$table}' AND table_schema = '{$database}'");
@@ -50,6 +52,7 @@ class SchemaModel extends Model {
 	// Executes a custom uery
 	public function executeQuery($database = null, $query = null, $returnType = "array") {
 		if (is_null($database) || is_null($query)) return false;
+		if ($database[0] != "_") $database = "_".$database;
 		$dbConn = \Config\Database::connect($database);
 		$result = $dbConn->query($query);
 		if ($returnType == "array") {

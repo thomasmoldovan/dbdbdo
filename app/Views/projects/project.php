@@ -1,62 +1,6 @@
 <div class="col-12 pt-1">
     <h3><?= $data["project"]->project_name; ?> - <?= $data["project"]->project_hash; ?></h3>
 </div>
-<style>
-    #manage-table>tbody>tr>td {
-        padding-top: 0px;
-        padding-bottom: 0px;
-    }
-
-    .background-light {
-        background: #1d1a18;
-    }
-
-    table {
-        margin: 0rem !important;
-    }
-
-    .height-limit-40 {
-        height: 40px !important;
-    }
-
-    .form-control-sm {
-        height: calc(1.0em + 1.0rem + 2px);
-        padding: .15rem .5rem;
-        font-size: .800rem;
-        line-height: 2;
-        border-radius: 0rem;
-    }
-
-    .fa,
-    .far,
-    .fas {
-        font-family: "Font Awesome 5 Free";
-    }
-
-    .fa-2x {
-        font-size: 2.2em;
-    }
-
-    option {
-        font-weight: bolder !important;
-    }
-
-    .status-danger {
-        border: 2px solid #990;
-    }
-
-    .status-success {
-        border: 2px solid #090;
-    }
-
-    .status-error {
-        border: 2px solid #900;
-    }
-    .tableContainer {
-        /* font-family: Arial;
-        font-size: 16px; */
-    }
-</style>
 <div class="mt-2">
     <ul class="nav flex-column">
         <? foreach ($data["tables"] as $key => $table) {
@@ -75,7 +19,7 @@
                                 } else {
                                     echo '<button class="action btn btn-sm btn-success m-1 no-outline" data-id="'.$table["TABLE_NAME"].'" data-json="'.$base64.'"><i class="fas fa-eye"></i></button>';
                                 } ?>
-                                <div class="align-self-center">
+                                <div class="pl-3 align-self-center">
                                     <div class="bold text-white"><?= $table["TABLE_NAME"] ?></div>
                                 </div>
                             </div>
@@ -126,7 +70,7 @@
                             </thead>
                             <tbody>
                                 <? if (in_array($table["TABLE_NAME"],  $data["tablesProcessed"])) {
-                                    foreach ($userTables as $currentTable) {
+                                    foreach ($data["userTables"] as $currentTable) {
                                         $id = $currentTable["id"];
                                         $tableName = $currentTable["table_name"];
                                         $columnName = $currentTable["column_name"];

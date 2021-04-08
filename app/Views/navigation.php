@@ -1,10 +1,14 @@
 <nav class="underbar navbar navbar-expand-sm navbar-dark bg-dark pr-2">
-    <a class="navbar-brand" href="/index.html">DbDbDo<small><?= $auth->check() ? ".online" : ".website"; ?></small></a>
+    <a class="navbar-brand" href="/">DbDbDo<small><?= $auth->check() ? ".online" : ".website"; ?></small></a>
 
     <? if (!$auth->check()) { ?>
-        <a class="" href="/todo">To Do</a>
+        <a class="bold pr-3 mt-1" href="/status">Status</a>
     <? } else { ?>
-        <a class="" href="/projects">Projects</a>
+        <? if (has_permission("Todo")) { ?>
+            <a class="bold pr-3 mt-1" href="/todo">To Do</a>
+        <? } ?>
+        <a class="bold pr-3 mt-1" href="/projects">Projects</a>
+        <a class="bold pr-3 mt-1" href="/contact">Contact</a>
     <? } ?>
 
     <!-- IF user IS LOGGED in and a PROJECT is SELECTED -->

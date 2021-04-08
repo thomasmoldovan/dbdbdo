@@ -73,4 +73,17 @@ https://github.com/thomasmoldovan/dbdbdo.git
     * [ ] Profile Page
 * [x] Session messages
 * [x] Language control
-* [ ] Webpage zoom
+* [x] Projects
+    * [x] Create Project
+    * [x] List Projects
+        * [ ] Delete Project
+        * [ ] Duplicate Project
+    * [x] View Project
+        * [x] Read Columns
+        * [ ] Create Module
+        * [ ] Project Settings
+    * [x] Clear Projects
+* [ ] Project
+    * [x] Reset table
+    * [ ] Select all and stuff
+* [x] Admin todo demo

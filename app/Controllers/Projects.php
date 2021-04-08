@@ -23,42 +23,44 @@ class Projects extends Home {
         "checksum" => 0
     );
 
-	public function index($hash = null, $action = null)	{
+	public function index($hash = null)	{
+		$notifications = [];
 		if ($this->auth->check()) {
 			$projects = new \App\Models\ProjectModel();
 
-			// If hash belongs to logged used
-			if (!is_null($hash) && !is_null($action)) {
-				$this->current_project = $projects->find(["id" => $this->user->id, "project_hash" => $hash])[0];
+			// If hash belongs to logged user
+			if (!is_null($hash)) {
+				$project = $projects->getWhere(["user_id" => $this->user->id, "project_hash" => $hash])->getResultArray();
+				if (!empty($project)) {
+					$this->current_project = $project[0];
+				} else {
+					// No project with user_id and project_hash found
+					$this->session->set("notification", ["error" => "Project not found ".__FILE__." ".__LINE__." ".__FUNCTION__.""]);
+					$this->auth->logout();
+					return redirect()->to("/");
+				}
 				if (empty($this->current_project)) return false;
 
-				$checkProjectBelongsToUser = $projects->checkProjectBelongsToUser($this->current_project->project_hash, $this->user->id);
+				$checkProjectBelongsToUser = $projects->checkProjectBelongsToUser($this->current_project["project_hash"], $this->user->id);
 				if ($checkProjectBelongsToUser) {
-					$this->session->set("notification", ["success" => "Project succesfully loaded"]);
-					// return redirect()->to("/");
-					$data["project"] = $checkProjectBelongsToUser;
 
+					// Project List View
 					$schema = new SchemaModel();
-					$data["tables"] = $schema->getTables($this->current_project->project_hash);
-
-					$userTables = $schema->getTablesInfo($this->user->id, $this->current_project->id);
-					$data["tablesProcessed"] = array_unique(array_column($userTables, "table_name"));
-				// $userModules = $this->getModulesInfo();
-
+					$data["project"] = $checkProjectBelongsToUser;
+					$data["tables"] = $schema->getTables($this->current_project["project_hash"]);
+					$data["userTables"] = $schema->getTablesInfo($this->user->id, $this->current_project["id"]);
+					$data["tablesProcessed"] = array_unique(array_column($data["userTables"], "table_name"));
 					return $this->display_main("header", "project", $data);
 				} else {
 					$this->session->set("notification", ["error" => "Tough luck"]);
-					//logout();
+					$this->auth->logout();
 					return redirect()->to("/");
 				}
 			}
-			// Then call the action function and view
-			// Else delog the user
 
+			// Return to projects page
 			$project_list = $projects->getProjectsForUser($this->user->id);
-			$data = [
-				"project_list" => $project_list
-			];
+			$data = ["project_list" => $project_list];
 			return $this->display_main("header", "projects", $data);
 		}
 		return redirect()->to("/");
@@ -242,7 +244,7 @@ class Projects extends Home {
 
 		// TODO: Delete files also
 
-		// $result = $rootConn->query("TRUNCATE user_tables");
+		$result = $rootConn->query("TRUNCATE user_tables");
 		// $result = $rootConn->query("TRUNCATE user_modules");
 		// $result = $rootConn->query("TRUNCATE projects");
 		// $result = $rootConn->query("TRUNCATE tables_modules");
@@ -255,6 +257,43 @@ class Projects extends Home {
 		
 		$this->session->set("notification", ["success" => "All your projects have been wiped out"]);
 		return redirect()->to('/projects');
+	}
+
+	// Resets the information gathered about a table
+	public function resetTable() {
+        $rootConn = \Config\Database::connect("default");
+
+        if ($this->request->isAjax()) {
+            $tablesInfo = new UserTableModel();
+
+            $moduleName = $this->request->getPost("table_name");
+            $result = $tablesInfo->getWhere(["table_name" => $moduleName])->getResultArray();
+
+			if (count($result) == 0) 
+				return $this->response->setJSON(array(
+					"status" => "error",
+					"message" => "Nothing to reset"
+				));
+
+            // Get all the columns IDs we need to delete
+            $searchIn = [];
+            foreach ($result as $key => $value) {
+                $searchIn[] = $value["id"];
+            }
+            $searchIn = implode(", ", $searchIn);
+
+            // Delete everything that exists regarding this table
+            $result = [];
+			$result[] = $rootConn->query("DELETE FROM user_tables WHERE id IN ({$searchIn})");
+            // $result[] = $rootConn->query("DELETE FROM properties WHERE user_table_id IN ({$searchIn})");
+            // $result[] = $rootConn->query("DELETE FROM tables_modules WHERE user_table_id IN ({$searchIn})");
+            // $result[] = $rootConn->query("DELETE FROM links WHERE user_table_id_primary IN ({$searchIn})");
+        }
+
+        return $this->response->setJSON(array(
+			"status" => "success",
+			"message" => "Table reset succesfull"
+		));
 	}
 
 	public function getTableColumns($tableName = null, $project_hash = null) {
@@ -271,7 +310,7 @@ class Projects extends Home {
 		$this->current_project = $projects->checkProjectBelongsToUser($project_hash, $this->user->id);
 
 		if (!isset($this->current_project)) return false;
-		if (empty($this->current_project)) return false;		
+		if (empty($this->current_project)) return false;
 		if (!strlen($this->current_project->project_hash) == 6) return false;
 
 		// Read the info about the table so we can use it our way

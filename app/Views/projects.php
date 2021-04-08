@@ -3,9 +3,9 @@
     .projectCard { transition: background-color 0.2s ease; min-width: 290px; max-width: 345px; }
     .card-normal { background: #ecf0f1; }
     .card-hover { background: #5ABDFF; cursor: pointer; }
-    .toast { width: 400px !important; }
+    .toast { width: 500px !important; }
 </style>
-<div class="h-100 pr-3 pl-3 pb-3">
+<div class="h-100 pb-3">
     <div class="d-flex flex-wrap">
         <? foreach($data["project_list"] as $project) { ?>
             <div class="projectCard mb-3 ml-3 mr-3 p-3 card-normal" data-id="<?= $project->project_hash; ?>">
@@ -46,7 +46,7 @@ $(document).ready(function () {
         }
     );
     $(".projectCard").click(function () {
-        window.location = "http://localhost:8080/projects/" + $(this).data("id") + "/view";
+        window.location = "http://localhost:8080/projects/" + $(this).data("id");
     });
 });
 </script>

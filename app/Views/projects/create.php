@@ -11,8 +11,8 @@
                 <div class="pb-3">
                     <input type="text" name="projectName" id="projectName" class="col-6 pl-1 form-control" value="">
                     <div class="small error text-danger invisible" name="projectNameError" id="projectNameError"></div>
-                    <div class="pt-3">
-                        <input type="checkbox" name="processAllTables" id="processAllTables" value="1" checked="checked">
+                    <div class="pt-3 hide">
+                        <input type="checkbox" name="processAllTables" id="processAllTables" value="0" checked="">
                         <label for="processAllTables">Process tables after import</label>
                     </div>
                 </div>
@@ -53,7 +53,7 @@
 
         console.log(sessionStorage.getItem("projectId"));
         console.log(randomColor());
-        $("#projectName").val(randomColor());
+        // $("#projectName").val(randomColor());
 
         // Proceed button was pressed
         $("#processDatabaseSchema").click(function (e) { 
