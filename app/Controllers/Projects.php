@@ -9,6 +9,7 @@ use App\Models\UserTableModel;
 class Projects extends Home {
 
 	protected $current_project;
+	protected $notifications = [];
 
 	private $mapping = array(
         "table_name" => "TABLE_NAME",
@@ -24,7 +25,11 @@ class Projects extends Home {
     );
 
 	public function index($hash = null)	{
-		$notifications = [];
+		// Should be moved in Home
+		if (isset($_SESSION["notification"]) && is_array($_SESSION["notification"])) {
+			$this->notifications = $_SESSION["notification"];
+		}
+
 		if ($this->auth->check()) {
 			$projects = new \App\Models\ProjectModel();
 
@@ -35,8 +40,9 @@ class Projects extends Home {
 					$this->current_project = $project[0];
 				} else {
 					// No project with user_id and project_hash found
-					$this->session->set("notification", ["error" => "Project not found ".__FILE__." ".__LINE__." ".__FUNCTION__.""]);
-					$this->auth->logout();
+					// $this->auth->logout();
+					$this->notifications[] = ["error" => "Project not found ".__FILE__." ".__LINE__." ".__FUNCTION__.""];
+					$this->session->set("notification", $this->notifications);
 					return redirect()->to("/");
 				}
 				if (empty($this->current_project)) return false;
@@ -52,7 +58,8 @@ class Projects extends Home {
 					$data["tablesProcessed"] = array_unique(array_column($data["userTables"], "table_name"));
 					return $this->display_main("header", "project", $data);
 				} else {
-					$this->session->set("notification", ["error" => "Tough luck"]);
+					$this->notifications[] = ["error" => "Tough luck"];
+					$this->session->set("notification", $this->notifications);
 					$this->auth->logout();
 					return redirect()->to("/");
 				}
@@ -61,15 +68,20 @@ class Projects extends Home {
 			// Return to projects page
 			$project_list = $projects->getProjectsForUser($this->user->id);
 			$data = ["project_list" => $project_list];
+			$this->session->set("notification", $this->notifications);
 			return $this->display_main("header", "projects", $data);
 		}
 		return redirect()->to("/");
 	}
 
 	public function create() {
+		$this->notifications[] = ["info", "Hello from create :)"];
 		if ($this->auth->check()) {
+			$this->session->set("notification", $this->notifications);
 			return $this->display_main("header", "create");
 		}
+		$this->notifications[] = ["info", "Hello from create 2 :)"];
+		$this->session->set("notification", $this->notifications);
 		return redirect()->to("/");
 	}
 
@@ -119,7 +131,6 @@ class Projects extends Home {
 			$result = $importerConn->query($sql);
 		} catch (\Exception $ex)  {
 			return $this->tried($ex);
-			return $this->response->setJSON($response);
 		}
 
 		// Script import
@@ -240,22 +251,46 @@ class Projects extends Home {
 		$rootConn = \Config\Database::connect("default");
 
 		// DROP all the user databases
-		$dbs = $rootConn->query("SELECT GROUP_CONCAT(CONCAT('`', project_hash, '`')) AS projects FROM projects;")->getResultArray()[0]["projects"];
+		$dbs = $rootConn->query("SELECT project_hash FROM projects;")->getResult();
+		if (empty($dbs)) {
+			$this->notifications[] = ["info", "No projects to delete"];
+		}
+
+		$drop_db_query = "";
+		if (is_array($dbs)) {			
+			foreach ($dbs as $db) {
+				$drop_db_query = "DROP DATABASE _".$db->project_hash.";";
+				try {
+					$dbs = $rootConn->query($drop_db_query);
+				} catch (\Exception $ex) {
+					$this->notifications[] = ["error", __FILE__." - Line:".__LINE__." - ".__FUNCTION__, $ex->getCode().":".$ex->getMessage()];
+				}
+			}
+		}
+
+		// Try delete all at once
+		// try {
+		// 	if (empty($drop_db_query)) {
+		// 		$this->notifications[] = ["info", "No projects to delete"];
+		// 		return true;
+		// 	}
+		// 	$dbs = $rootConn->query($drop_db_query);
+		// } catch (\Exception $ex) {
+		// 	$this->notifications[] = ["error", __FILE__." - Line:".__LINE__." - ".__FUNCTION__, $ex->getCode().":".$ex->getMessage()];
+		// 	return false;
+		// }
 
 		// TODO: Delete files also
 
 		$result = $rootConn->query("TRUNCATE user_tables");
 		// $result = $rootConn->query("TRUNCATE user_modules");
-		// $result = $rootConn->query("TRUNCATE projects");
+		$result = $rootConn->query("TRUNCATE projects");
 		// $result = $rootConn->query("TRUNCATE tables_modules");
 		// $result = $rootConn->query("TRUNCATE properties");
-		// $result = $rootConn->query("TRUNCATE links");
-		if (!empty($dbs)) {
-			$result = $rootConn->query("TRUNCATE projects");
-			$result = $rootConn->query("DROP DATABASE ".$dbs.";");
-		}		
+		// $result = $rootConn->query("TRUNCATE links");		
 		
-		$this->session->set("notification", ["success" => "All your projects have been wiped out"]);
+		// Should turn after before every controller exit
+		$this->session->set("notification", $this->notifications);
 		return redirect()->to('/projects');
 	}
 

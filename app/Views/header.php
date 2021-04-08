@@ -37,6 +37,10 @@
     .status-success { border: 2px solid #090; }
     .status-error { border: 2px solid #900; }
 
+    .projectCard { transition: background-color 0.2s ease; min-width: 290px; max-width: 345px; }
+    .card-normal { background: #ecf0f1; }
+    .card-hover { background: #5ABDFF; cursor: pointer; }
+
     .no-outline { outline: none !important; box-shadow: none !important; }
 
     i { color: white; }
@@ -89,12 +93,15 @@
 </body>
 <script>
     $(document).ready(function () {
-        // Show notifications that came trough $_SESSION
-        var sess = <?= json_encode(isset($_SESSION["notification"]) ? $_SESSION["notification"] : ""); ?>;
-        <? unset($_SESSION["notification"]); ?>;
+        // Show notifications that came through $_SESSION
+        notifications = <?= json_encode(isset($_SESSION["notification"]) ? $_SESSION["notification"] : ""); ?>;
+        if (notifications.length > 0) {
+            sess = notifications;
+        }
         if (sess) {
-            Object.keys(sess).forEach(function(value, index) {
-                toastr[value](sess[value]);
+            <? unset($_SESSION["notification"]); ?>
+            $.each(sess, function(index, value) {
+                toastr[value[0]](value[1]);
             });
         }
     });

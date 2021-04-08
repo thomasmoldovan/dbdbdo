@@ -1,10 +1,4 @@
 <? echo view("projects/menu"); ?>
-<style>
-    .projectCard { transition: background-color 0.2s ease; min-width: 290px; max-width: 345px; }
-    .card-normal { background: #ecf0f1; }
-    .card-hover { background: #5ABDFF; cursor: pointer; }
-    .toast { width: 500px !important; }
-</style>
 <div class="h-100 pb-3">
     <div class="d-flex flex-wrap">
         <? foreach($data["project_list"] as $project) { ?>

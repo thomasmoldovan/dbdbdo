@@ -20,7 +20,6 @@
                     <div class="col-6">
                         <h6 class="card-title">Paste your SQL schema code below:</h6>
                         <div class="small bold text-danger"><b>Attention:</b></div>
-                        <div class="small">- all tables are dropped before every import</div>
                         <div class="small">- comments will be removed before script execution</div>
                         <div class="small">- only CREATE TABLE statements will be executed</div>
                         <div class="small pb-3">- no changes to tables structure can be made after this step</div>
