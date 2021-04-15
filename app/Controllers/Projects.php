@@ -5,11 +5,12 @@ namespace App\Controllers;
 use App\Models\SchemaModel;
 use App\Models\ProjectModel;
 use App\Models\UserTableModel;
+use App\Models\UserModuleModel;
+use App\Models\TableModuleModel;
 
 class Projects extends Home {
 
 	protected $current_project;
-	protected $notifications = [];
 
 	private $mapping = array(
         "table_name" => "TABLE_NAME",
@@ -26,16 +27,18 @@ class Projects extends Home {
 
 	public function index($hash = null)	{
 		// Should be moved in Home
-		if (isset($_SESSION["notification"]) && is_array($_SESSION["notification"])) {
-			$this->notifications = $_SESSION["notification"];
-		}
+
 
 		if ($this->auth->check()) {
 			$projects = new \App\Models\ProjectModel();
 
-			// If hash belongs to logged user
+			// Check if we have a hash in the URL
 			if (!is_null($hash)) {
+				/******** PROJECT VIEW ********/
+
+				// If hash belongs to logged user, we should have a project
 				$project = $projects->getWhere(["user_id" => $this->user->id, "project_hash" => $hash])->getResultArray();
+
 				if (!empty($project)) {
 					$this->current_project = $project[0];
 				} else {
@@ -49,16 +52,17 @@ class Projects extends Home {
 
 				$checkProjectBelongsToUser = $projects->checkProjectBelongsToUser($this->current_project["project_hash"], $this->user->id);
 				if ($checkProjectBelongsToUser) {
-
 					// Project List View
 					$schema = new SchemaModel();
 					$data["project"] = $checkProjectBelongsToUser;
 					$data["tables"] = $schema->getTables($this->current_project["project_hash"]);
 					$data["userTables"] = $schema->getTablesInfo($this->user->id, $this->current_project["id"]);
 					$data["tablesProcessed"] = array_unique(array_column($data["userTables"], "table_name"));
+
+					$this->session->set("notification", $this->notifications);
 					return $this->display_main("header", "project", $data);
 				} else {
-					$this->notifications[] = ["error" => "Tough luck"];
+					$this->notifications[] = ["error" => "Don't do that"];
 					$this->session->set("notification", $this->notifications);
 					$this->auth->logout();
 					return redirect()->to("/");
@@ -83,6 +87,83 @@ class Projects extends Home {
 		$this->notifications[] = ["info", "Hello from create 2 :)"];
 		$this->session->set("notification", $this->notifications);
 		return redirect()->to("/");
+	}
+
+	public function modules($project_hash = null) {
+		$schema = new SchemaModel();
+		$projects = new ProjectModel();
+		$modules = new UserModuleModel();
+		if (!is_null($project_hash)) {
+			$this->current_project = $projects->getWhere(["user_id" => $this->user->id, "project_hash" => $project_hash])->getResultArray()[0];
+		}
+
+		$this->notifications[] = ["info", "Hello from modules :)"];
+		if ($this->auth->check()) {
+
+			$moduleList = $modules->getModuleColumns();
+
+			// Get's the settings for the link IF it has one
+			foreach ($moduleList as $key => $value) {
+				if ((int)$value["link_id"] > 0 && (int)$value["display"] > 0) {
+					$moduleList[$key]["settings"] = $userTable->getTableInfoSettings($value["display"]);
+				} else {
+					$moduleList[$key]["settings"] = null;
+				}
+			}
+
+			$moduleNames = array_unique(array_column($moduleList, "module_name"));
+			$moduleData = [];
+
+			// PREPARE DATA SO WE CAN USE IT IN A VIEW LIKE THE ONE IN THE TABLES VIEW
+			foreach ($moduleList as $item) {
+				// If this module is not in the array, we create that entry as an empty array
+				if (empty($moduleData[$item["module_name"]])) {
+					$moduleData[$item["module_name"]] = [];
+				}
+				// Now we push data to that array
+				$moduleData[$item["module_name"]][] = $item;
+			}
+
+			// In case of failure or somehow we got here and we do not have a project hash
+			// Unload the project and return to project dashboard
+			// NOTE: If project hash is not a valid color then something is wrong
+
+			// if (isset($projectSelected->project_hash) && strlen(trim($projectSelected->project_hash)) != 6) {
+			if (isset($this->current_project["project_hash"]) && strlen(trim($this->current_project["project_hash"])) == 6) {
+				$tables = $schema->getTables($this->current_project["project_hash"]);
+			} else {
+				return redirect()->to('/projects');
+			}
+
+			$userModules = $this->getModulesInfo();
+
+			$data["userModules"] = $userModules;
+			$data["moduleList"] = $moduleList;
+
+			$data["modules"] = $moduleData;
+
+			$this->session->set("notification", $this->notifications);
+			return $this->display_main("header", "modules", $data);
+		}
+		$this->notifications[] = ["info", "Hello from modules 2 :)"];
+		$this->session->set("notification", $this->notifications);
+		return redirect()->to("/");
+	}
+
+	public function getModulesInfo() {
+		$rootConn = \Config\Database::connect("default");
+		$result = $rootConn->query("SELECT  user_tables.project_id,
+											projects.project_name,
+											COUNT(DISTINCT tables_modules.user_module_id) AS modules_in_project
+									FROM user_modules user_modules
+										CROSS JOIN users users
+										CROSS JOIN
+										(user_tables user_tables
+										INNER JOIN tables_modules tables_modules
+											ON (user_tables.id = tables_modules.user_table_id))
+										INNER JOIN projects projects
+											ON (projects.project_hash = ".(int)$this->current_project["project_hash"].")");
+		return $result->getResultArray();
 	}
 
 	// Creates a DB with the provided schema
@@ -388,5 +469,64 @@ class Projects extends Home {
 		}
 
         return $result;
+    }
+
+	public function linkTableToModule() {
+        $userModules = new UserModuleModel();
+        $tablesModules = new TableModuleModel();
+
+        // TODO: Review this function
+        $post = $this->request->getPost();
+        if (empty($post["module_name"])) die("No Module Name");
+
+        $moduleData = array(
+            "module_name" => $post["module_name"],
+            "module_title" => ucwords($post["module_name"]),
+            "module_type" => $post["module_name"],
+            "module_route" => $post["module_name"]
+        );
+
+		// Check for user and projects also
+		$check = $userModules->getWhere(array("module_name" => $post["module_name"]))->getResultArray();
+        if (count($check) > 0) {
+            $temp = $userModules->update($check[0]["id"], $moduleData);
+            $userModuleId = $check[0]["id"];
+        } else {
+            $userModuleId = $userModules->insert($moduleData);
+        }
+
+        if (empty($userModuleId)) die("WTF just happened ?");
+
+        $selectedColumns = $post["selectedColumns"];
+
+        // Here is where the link between tables and modules is made
+        if (count($selectedColumns)) {
+            foreach ($selectedColumns as $userTableId) {
+                $data[] = array(
+                    "user_table_id" => $userTableId,
+                    "user_module_id" => $userModuleId
+                );
+            }
+        }
+
+        if ($this->request->isAjax()) {
+            // TODO: Module should not be deleted when creating a new one
+            // In the feature, you should be able to use the same table more than once
+            $tablesModules->where(array("user_module_id" => $userModuleId))->delete();
+            foreach ($data as $value) {
+                $result = $tablesModules->insert($value);
+
+                $setIds = isset($post["setIds"]) && $post["setIds"] === "true" ? 1 : 0;
+                $setNames = isset($post["setNames"]) && $post["setNames"] === "true" ? 1 : 0;
+                $setClasses = isset($post["setClasses"]) && $post["setClasses"] === "true" ? 1 : 0;
+                $setLabels = isset($post["setLabels"]) && $post["setLabels"] === "true" ? 1 : 0;
+
+                $link = $tablesModules->saveTablesModulesLink($value["user_table_id"], $setIds, $setNames, $setClasses, $setLabels);
+            }
+
+            return $this->response->setJSON(["module" => $post["module_name"]]);
+        } else {
+            var_dump($result);
+        }
     }
 }

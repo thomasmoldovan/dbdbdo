@@ -1,6 +1,4 @@
-<div class="col-12 pt-1">
-    <h3><?= $data["project"]->project_name; ?> - <?= $data["project"]->project_hash; ?></h3>
-</div>
+<? echo view("projects/menu"); ?>
 <div class="mt-2">
     <ul class="nav flex-column">
         <? foreach ($data["tables"] as $key => $table) {
@@ -75,7 +73,6 @@
                                         $tableName = $currentTable["table_name"];
                                         $columnName = $currentTable["column_name"];
 
-                                        $currentTable["pk"] = $currentTable["pk"] == 1 ? "<i class='fa fa-check text-success'></i>" : "<i class='fa fa-ban text-muted'></i>";
                                         $currentTable["default"] = empty($currentTable["default"]) ? "<i class='fa fa-ban text-muted'></i>" : $currentTable["default"];
                                         $currentTable["null"] = $currentTable["null"] == 1 ? "<i class='fa fa-check text-success'></i>" : "<i class='fa fa-ban text-muted'></i>";
                                         $currentTable["ai"] = $currentTable["ai"] == 1 ? "<i class='fa fa-check text-success'></i>" : "<i class='fa fa-ban text-muted'></i>";
@@ -85,11 +82,11 @@
                                     <td class="pl-2" style="width: 32px;"><input class="<?= $tableName ?>Columns"
                                             type="checkbox" data-id="<?= $id ?>" data-table="<?= $tableName ?>"
                                             data-column="<?= $columnName ?>"
-                                            <?= $currentTable["pk"] == "YES" ? "checked disabled" : "" ?>></td>
+                                            <?= $currentTable["pk"] == 1 ? "checked disabled" : "" ?>></td>
                                     <td><?= $currentTable["id"] ?></td>
                                     <td><?= $currentTable["column_name"] ?></td>
                                     <td><?= $currentTable["type"] ?></td>
-                                    <td><?= $currentTable["pk"] ?></td>
+                                    <td><?= $currentTable["pk"] == 1 ? "<i class='fa fa-check text-success'></i>" : "<i class='fa fa-ban text-muted'></i>" ?></td>
                                     <td><?= $currentTable["default"] ?></td>
                                     <td><?= $currentTable["null"] ?></td>
                                     <td><?= $currentTable["ai"] ?></td>
@@ -103,21 +100,8 @@
                                     <th colspan="12">
                                         <div class="col-12 row flex">
                                             <div class="p-0"><button name="<?= $table["TABLE_NAME"] ?>" type="button"
-                                                    class="addToModules btn btn-sm btn-primary w-100">Create
-                                                    Module</button></div>
+                                                    class="addToModules btn btn-sm btn-primary w-100">Create Module</button></div>
                                             <div class="pl-5 d-flex justify-align-center">
-                                                <div class="pl-4 btn btn-dark btn-sm">
-                                                    <input type="checkbox" class="setIds pl-1 form-check-input"
-                                                        data-table="<?= $table["TABLE_NAME"] ?>"
-                                                        id="setIds<?= $table["TABLE_NAME"] ?>" name="setIds" checked>
-                                                    <label class="form-check-label" for="setIds"> Set ids</label>
-                                                </div>
-                                                <div class="pl-4 btn btn-dark btn-sm">
-                                                    <input type="checkbox" class="setNames pl-1 form-check-input"
-                                                        data-table="<?= $table["TABLE_NAME"] ?>"
-                                                        id="setNames<?= $table["TABLE_NAME"] ?>" name="setNames" checked>
-                                                    <label class="form-check-label" for="setNames"> Set names</label>
-                                                </div>
                                                 <div class="pl-4 btn btn-dark btn-sm">
                                                     <input type="checkbox" class="setLabels pl-1 form-check-input"
                                                         data-table="<?= $table["TABLE_NAME"] ?>"
@@ -148,7 +132,10 @@
             tableName = $(this).data("table");
             tableRows = $("#" + tableName + "Details tbody tr");
             $.each(tableRows, function (index, row) {
-                $(row).find("input").prop("checked", checked);
+                currentRow = $(row).find("input");
+                if (currentRow.prop("disabled") == false) {
+                    currentRow.prop("checked", checked);
+                }
             });
         });
 
@@ -164,11 +151,11 @@
                 dataType: "json",
                 success: function (response) {
                     toastr.success(response.message);
-                    console.log();
                     location = window.location;
                 },
                 error: function (response) {
                     toastr.error(response.responseJSON.message, response.responseJSON.type);
+                    $(document).trigger("hideLoadingScreen");
                 }
             });
         });
@@ -198,9 +185,10 @@
             }
 
             $(document).trigger("showLoadingScreen");
+            // module/create
             $.ajax({
                 type: "post",
-                url: "/usertables/linkTablesToModules",
+                url: "/projects/linkTableToModule",
                 data: {
                     "module_name": tableName,
                     "selectedColumns": selectedColumns,
@@ -273,7 +261,7 @@
                 $(element).children().removeClass().addClass("fas fa-eye");
                 $(element).removeClass("btn-primary btn-warning btn-danger btn-success");
                 $(element).addClass("btn-success");
-                //location = window.location;
+                location = window.location;
             },
             error: function (response) {
                 console.log(response);

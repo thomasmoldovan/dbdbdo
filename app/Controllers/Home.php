@@ -3,10 +3,9 @@
 namespace App\Controllers;
 
 class Home extends BaseController{
+	public $notifications;
+	
 	protected $auth;
-	/**
-	 * @var Auth
-	 */
 	protected $config;
 	protected $user;
 	protected $pages;
@@ -22,12 +21,21 @@ class Home extends BaseController{
 		// Most services in this controller requires
 		// the session to be started - so fire it up!
 		helper('auth');
-		$this->authorize = service('authorization');
 		$this->session = service('session');
+		$this->authorize = service('authorization');
 		$this->auth = service('authentication');
 		$this->config = config('Auth');
 		$this->pages = config('Pages');
 		$this->user = user();
+
+		if (isset($_SESSION["notification"]) && is_array($_SESSION["notification"])) {
+			$this->notifications = $_SESSION["notification"];
+		}
+	}
+
+	public function showHome() {
+		return $this->response->setStatusCode(200)
+							  ->setBody(true);
 	}
 
 	public function index()	{

@@ -46,7 +46,7 @@
     <div class="text-white pr-2">
         <div class="dropdown">
             <? if ($auth->check()) { ?>
-                <?= isset($_SESSION["projectId"]) ? $_SESSION["projectId"] : "??????" ?>
+                <?= isset($data["project"]->project_hash) ? $data["project"]->project_name." - ".$data["project"]->project_hash : ""; ?>
                 <button class="btn btn-sm btn-secondary no-outline <?= $auth->check() ? "dropdown-toggle" : ""; ?>" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     <?= "Welcome ".$user->username; ?>
                 </button>

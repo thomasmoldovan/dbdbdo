@@ -1,5 +1,4 @@
-<? echo view("projects/menu"); ?>
-<div class="h-100 pb-3">
+<div class="h-100 pb-3 pt-3">
     <div class="d-flex flex-wrap">
         <? foreach($data["project_list"] as $project) { ?>
             <div class="projectCard mb-3 ml-3 mr-3 p-3 card-normal" data-id="<?= $project->project_hash; ?>">
