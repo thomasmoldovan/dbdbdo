@@ -99,9 +99,28 @@
                                 <tr class="push-right">
                                     <th colspan="12">
                                         <div class="col-12 row flex">
-                                            <div class="p-0"><button name="<?= $table["TABLE_NAME"] ?>" type="button"
-                                                    class="addToModules btn btn-sm btn-primary w-100">Create Module</button></div>
+                                            <div class="p-0">
+                                                <button name="<?= $table["TABLE_NAME"] ?>" type="button" class="addToModules btn btn-sm btn-primary w-100">Create Module</button>
+                                            </div>
                                             <div class="pl-5 d-flex justify-align-center">
+                                                <div class="pl-4 btn btn-dark btn-sm">
+                                                    <input type="checkbox" class="setIds pl-1 form-check-input"
+                                                        data-table="<?= $table["TABLE_NAME"] ?>"
+                                                        id="setIds<?= $table["TABLE_NAME"] ?>" name="setIds" checked>
+                                                    <label class="form-check-label" for="setIds"> Set ids</label>
+                                                </div>
+                                                <div class="pl-4 btn btn-dark btn-sm">
+                                                    <input type="checkbox" class="setNames pl-1 form-check-input"
+                                                        data-table="<?= $table["TABLE_NAME"] ?>"
+                                                        id="setNames<?= $table["TABLE_NAME"] ?>" name="setNames" checked>
+                                                    <label class="form-check-label" for="setNames"> Set names</label>
+                                                </div>
+                                                <div class="pl-4 btn btn-dark btn-sm">
+                                                    <input type="checkbox" class="setClasses pl-1 form-check-input"
+                                                        data-table="<?= $table["TABLE_NAME"] ?>"
+                                                        id="setClasses<?= $table["TABLE_NAME"] ?>" name="setClasses" checked>
+                                                    <label class="form-check-label" for="setClasses"> Set classes</label>
+                                                </div>
                                                 <div class="pl-4 btn btn-dark btn-sm">
                                                     <input type="checkbox" class="setLabels pl-1 form-check-input"
                                                         data-table="<?= $table["TABLE_NAME"] ?>"
@@ -253,7 +272,7 @@
             url: "<?= base_url() ?>/projects/getTableColumns",
             data: {
                 "tableName": currentTable,
-                "project_hash": "<?= $data["project"]->project_hash; ?>"
+                "project_hash": "<?= $data["project"]["project_hash"]; ?>"
             },
             dataType: "json",
             success: function (response) {

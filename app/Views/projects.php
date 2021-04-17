@@ -1,3 +1,4 @@
+<? echo view("projects/menu"); ?>
 <div class="h-100 pb-3 pt-3">
     <div class="d-flex flex-wrap">
         <? foreach($data["project_list"] as $project) { ?>

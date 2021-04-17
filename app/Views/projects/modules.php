@@ -1,3 +1,4 @@
+<? echo view("projects/menu"); ?>
 <style>
     #manage-table>tbody>tr>td {
         padding-top: 0px;
@@ -197,8 +198,8 @@
                            data-onstyle="primary" data-offstyle="primary"
                            data-width="100px" />
 
-                    <label for='toggleStaticDynamic' class='w-100 mb-0 bold pr-3'>Remote display</label>
-                    <input id='toggleStaticDynamic' name='toggleStaticDynamic' class='form-control form-control-sm hide' type='checkbox' data-toggle='toggle' data-size='sm' 
+                    <label for='toggleRremoteDisplay' class='w-100 mb-0 bold pr-3'>Remote display</label>
+                    <input id='toggleRremoteDisplay' name='toggleRremoteDisplay' class='form-control form-control-sm hide' type='checkbox' data-toggle='toggle' data-size='sm' 
                            data-on="Static" data-off="Dynamic"
                            data-onstyle="primary" data-offstyle="primary"
                            data-width="100px" />
@@ -299,7 +300,7 @@
 
     function updatePropertiesList() {
         $(".properties").remove();
-        $(".propContainer").empty();
+        $("#propContainer").empty();
         for (var fields in propArray) {
             var props = [];
             for (var prop in propArray[fields]) {
@@ -311,6 +312,7 @@
             }
             $("#result").empty().append('<input ' + props.join(" ") + '>');
         }
+        $("#propContainer").removeClass("hide");
 
         $(".deleteProp").click(function (e) {
             e.preventDefault();
@@ -342,7 +344,7 @@
 
             $.ajax({
                 type: "post",
-                url: "modules/ajaxLoadProperties",
+                url: "/modules/ajaxLoadProperties",
                 data:  {
                     "columnId": $(this).data("id")
                 },

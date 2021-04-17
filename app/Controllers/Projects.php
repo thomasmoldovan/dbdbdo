@@ -50,11 +50,10 @@ class Projects extends Home {
 				}
 				if (empty($this->current_project)) return false;
 
-				$checkProjectBelongsToUser = $projects->checkProjectBelongsToUser($this->current_project["project_hash"], $this->user->id);
-				if ($checkProjectBelongsToUser) {
+				if ($this->current_project) {
 					// Project List View
 					$schema = new SchemaModel();
-					$data["project"] = $checkProjectBelongsToUser;
+					$data["project"] = $this->current_project;
 					$data["tables"] = $schema->getTables($this->current_project["project_hash"]);
 					$data["userTables"] = $schema->getTablesInfo($this->user->id, $this->current_project["id"]);
 					$data["tablesProcessed"] = array_unique(array_column($data["userTables"], "table_name"));
@@ -69,12 +68,14 @@ class Projects extends Home {
 				}
 			}
 
-			// Return to projects page
+			// No hash - Return to projects page
 			$project_list = $projects->getProjectsForUser($this->user->id);
 			$data = ["project_list" => $project_list];
 			$this->session->set("notification", $this->notifications);
 			return $this->display_main("header", "projects", $data);
 		}
+
+		// Not logged - Redirect to root
 		return redirect()->to("/");
 	}
 
@@ -94,8 +95,17 @@ class Projects extends Home {
 		$projects = new ProjectModel();
 		$modules = new UserModuleModel();
 		if (!is_null($project_hash)) {
-			$this->current_project = $projects->getWhere(["user_id" => $this->user->id, "project_hash" => $project_hash])->getResultArray()[0];
+			$this->current_project = $projects->getWhere(["user_id" => $this->user->id, "project_hash" => $project_hash])->getResultArray();
 		}
+
+		if (empty($this->current_project)) {
+			// $this->auth->logout();
+			$this->notifications[] = ["error" => "Project not found ".__FILE__." ".__LINE__." ".__FUNCTION__.""];
+			$this->session->set("notification", $this->notifications);
+			return redirect()->to("/");
+		}
+
+		$this->current_project = $this->current_project[0];
 
 		$this->notifications[] = ["info", "Hello from modules :)"];
 		if ($this->auth->check()) {
@@ -124,11 +134,6 @@ class Projects extends Home {
 				$moduleData[$item["module_name"]][] = $item;
 			}
 
-			// In case of failure or somehow we got here and we do not have a project hash
-			// Unload the project and return to project dashboard
-			// NOTE: If project hash is not a valid color then something is wrong
-
-			// if (isset($projectSelected->project_hash) && strlen(trim($projectSelected->project_hash)) != 6) {
 			if (isset($this->current_project["project_hash"]) && strlen(trim($this->current_project["project_hash"])) == 6) {
 				$tables = $schema->getTables($this->current_project["project_hash"]);
 			} else {
@@ -137,6 +142,7 @@ class Projects extends Home {
 
 			$userModules = $this->getModulesInfo();
 
+			$data["project"] = $this->current_project;
 			$data["userModules"] = $userModules;
 			$data["moduleList"] = $moduleList;
 
@@ -364,11 +370,11 @@ class Projects extends Home {
 		// TODO: Delete files also
 
 		$result = $rootConn->query("TRUNCATE user_tables");
-		// $result = $rootConn->query("TRUNCATE user_modules");
+		$result = $rootConn->query("TRUNCATE user_modules");
 		$result = $rootConn->query("TRUNCATE projects");
-		// $result = $rootConn->query("TRUNCATE tables_modules");
-		// $result = $rootConn->query("TRUNCATE properties");
-		// $result = $rootConn->query("TRUNCATE links");		
+		$result = $rootConn->query("TRUNCATE tables_modules");
+		$result = $rootConn->query("TRUNCATE properties");
+		$result = $rootConn->query("TRUNCATE links");		
 		
 		// Should turn after before every controller exit
 		$this->session->set("notification", $this->notifications);

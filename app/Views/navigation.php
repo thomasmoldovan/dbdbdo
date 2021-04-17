@@ -52,7 +52,7 @@
                 </button>
                 <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                     <a class="dropdown-item" href="profile">Profile Settings</a>
-                    <a class="dropdown-item" id="clearData" href="projects/clearStuff">Clear Data</a>
+                    <a class="dropdown-item" id="clearData" href="/projects/clearStuff">Clear Data</a>
                     <a class="dropdown-item" href="/logout">Logout</a>
                 </div>
             <? } else { ?>
