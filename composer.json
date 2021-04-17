@@ -1,14 +1,15 @@
 {
 	"name": "thomasmoldovan/dbdbdo",
 	"type": "project",
-	"description": "Database first code generator",
-	"homepage": "https://dbdbdo.com",
+	"description": "Database first, crud and forms, code generator",
+	"homepage": "https://www.dbdbdo.com",
 	"license": "MIT",
 	"minimum-stability": "beta",
 	"require": {
 		"php": "^7.3||^8.0",
 		"codeigniter4/framework": "^4",
-		"myth/auth": "^1.0@beta"
+		"myth/auth": "^1.0@beta",
+		"gajus/dindent": "2.0.*"
 	},
 	"require-dev": {
 		"fakerphp/faker": "^1.9",

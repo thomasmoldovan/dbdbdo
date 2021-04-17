@@ -380,8 +380,9 @@
             if (module_name == "") return false;
             $.ajax({
                 type: "post",
-                url: "writer",
+                url: "/writer",
                 data: {
+                    "project_hash": "<?= $data["project"]["project_hash"]; ?>",
                     "module_name": module_name
                 },
                 dataType: "json",

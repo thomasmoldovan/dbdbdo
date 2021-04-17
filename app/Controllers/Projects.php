@@ -91,6 +91,11 @@ class Projects extends Home {
 	}
 
 	public function modules($project_hash = null) {
+		if (!$this->auth->check()) {
+			$this->notifications[] = ["info", "Not authenticated"];
+			$this->session->set("notification", $this->notifications);
+			return redirect()->to("/");
+		}
 		$schema = new SchemaModel();
 		$projects = new ProjectModel();
 		$modules = new UserModuleModel();

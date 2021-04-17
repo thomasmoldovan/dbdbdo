@@ -50,6 +50,7 @@ Vagrantfile
 #-------------------------
 # These should change depending on the enviroment
 app/config/*
+app/templates/*
 
 #-------------------------
 # Temporary Files
