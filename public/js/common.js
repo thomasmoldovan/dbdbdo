@@ -1,20 +1,24 @@
-toastr.options = {
-    "closeButton": false,
-    "debug": false,
-    "newestOnTop": true,
-    "progressBar": true,
-    "positionClass": "toast-top-center",
-    "preventDuplicates": false,
-    "onclick": null,
-    "showDuration": "300",
-    "hideDuration": "1000",
-    "timeOut": "5000",
-    "extendedTimeOut": "3000",
-    "showEasing": "swing",
-    "hideEasing": "linear",
-    "showMethod": "fadeIn",
-    "hideMethod": "fadeOut"
-}
+
+$(document).ready(function () {
+    $('*[data-save]').off('change').on('change', autosaveChange);
+    toastr.options = {
+        "closeButton": false,
+        "debug": false,
+        "newestOnTop": true,
+        "progressBar": true,
+        "positionClass": "toast-top-center",
+        "preventDuplicates": false,
+        "onclick": null,
+        "showDuration": "300",
+        "hideDuration": "1000",
+        "timeOut": "5000",
+        "extendedTimeOut": "3000",
+        "showEasing": "swing",
+        "hideEasing": "linear",
+        "showMethod": "fadeIn",
+        "hideMethod": "fadeOut"
+    }
+});
 
 var escape = document.createElement('textarea');
 
@@ -90,7 +94,6 @@ function setElementStatus(element, status) {
     element.addClass('status-' + status);
 }
 
-$('*[data-save]').off('change').on('change', autosaveChange);
 function autosaveChange() {
     var element = $(this);
     console.log(this);
@@ -98,7 +101,7 @@ function autosaveChange() {
     setElementStatus(element, 'danger');
     var url = element.data('hurl');
     if (!url) {
-        url = "/autosave";
+        url = "/projects/autosave";
     }
     var param = element.data('save');
     var type = element.attr("type");

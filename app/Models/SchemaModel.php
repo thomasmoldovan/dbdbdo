@@ -63,10 +63,10 @@ class SchemaModel extends Model {
 	}
 
 	// Executes a custom uery
-	public function executeQuery2($projectHash = null, $query = null, $returnType = "array") {
+	public function executeQuery2($database = null, $query = null, $returnType = "array") {
 		if (is_null($database) || is_null($query)) return false;
 		// $dbConn = \Config\Database::connect("userWorker");
-		$this->setDatabase($projectHash);
+		$this->setDatabase($database);
 		$result = $this->query($query);
 
 		if ($returnType == "array") {

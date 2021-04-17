@@ -113,6 +113,7 @@
                                         </td>
                                         <td>
                                             <input type="text" 
+                                                   data-save="<?= handledata(array('user_tables' => 'display_label', 'id' => $component['user_table_id'])) ?>"
                                                    class="col-10 form-control form-control-sm" 
                                                    value="<?= $component['display_label'] ?>">
                                         </td>
@@ -131,7 +132,7 @@
                                             </button>
                                         </td>
                                         <td>
-                                            <select data-save=""
+                                            <select data-save="<?= handledata(array('user_tables' => 'display_as', 'id' => $component['user_table_id'])) ?>"
                                                     id="selectFormat" class="form-control form-control-sm" name="format"
                                                     <?= $component['link_type'] == 2 ? "disabled" : "" ?>>
 
@@ -158,7 +159,7 @@
                                         </td>
                                         <td>
                                             <input <?= $component["column_enabled"] == "1" ? "checked" : "" ?> name='disabled' value="isDisabled" class='form-control form-control-sm' type='checkbox' data-toggle='toggle' data-size='sm'
-                                                    data-save=""
+                                                    data-save="<?= handledata(array('user_tables' => 'enabled', 'id' => $component['user_table_id'])) ?>"
                                                     class="btn btn-success btn-sm"
                                                     />
                                         </td>
@@ -291,7 +292,7 @@
     </div>
 </div>
 
-<script src="<?=base_url()?>js/common.js"></script>
+<script src="/js/common.js"></script>
 
 <script>
     var opened = "";

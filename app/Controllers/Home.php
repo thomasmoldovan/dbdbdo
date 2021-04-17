@@ -20,6 +20,7 @@ class Home extends BaseController{
 	{
 		// Most services in this controller requires
 		// the session to be started - so fire it up!
+		helper('html');
 		helper('auth');
 		$this->session = service('session');
 		$this->authorize = service('authorization');
