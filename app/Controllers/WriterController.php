@@ -239,7 +239,7 @@ class WriterController extends Home {
         }
 
         $modalFilename = $data["uc_model_name"]."Model";
-        if (!write_file("../app/Models/".$modalFilename.".php", $file)) {
+        if (!write_file("../public/preview/app/Models/".$modalFilename.".php", $file)) {
             $result["success"] = false;
         } else {
             $result["success"] = true;
@@ -248,21 +248,21 @@ class WriterController extends Home {
         $indenter = new \Gajus\Dindent\Indenter();
         $file2 = $indenter->indent($file2);
         $viewFilename = $data["uc_model_name"]."View";
-        if (!write_file("../app/Views/".$viewFilename.".php", $file2)) {
+        if (!write_file("../public/preview/app/Views/".$viewFilename.".php", $file2)) {
             $result["success"] = false;
         } else {
             $result["success"] = true;
         }
 
         $controllerFilename = $data["uc_model_name"]."Controller";
-        if (!write_file("../app/Controllers/".$controllerFilename.".php", $file3)) {
+        if (!write_file("../public/preview/app/Controllers/".$controllerFilename.".php", $file3)) {
             $result["success"] = false;
         } else {
             $result["success"] = true;
         }
 
-        if (!file_exists('../app/Config/Generated')) {
-            mkdir('../app/Config/Generated', 0777, true);
+        if (!file_exists('../public/preview/app/Config/Generated')) {
+            mkdir('../public/preview/app/Config/Generated', 0777, true);
             // TODO: On general jQuery event, if toastr key is present, display toastr in front end
             $result["toastr"] = "Directory Generated created";
         }
@@ -271,14 +271,14 @@ class WriterController extends Home {
         // ROUTES
         $addToRoutes = true;
         if (true || $addToRoutes) {
-            if (!write_file("../app/Config/Generated/".$routesFilename.".php", $file4)) {
+            if (!write_file("../public/preview/app/Config/Generated/".$routesFilename.".php", $file4)) {
                 $result["success"] = false;
             } else {
                 $result["success"] = true;
             }
         } else {
-            if (file_exists("../app/Config/Generated/".$routesFilename.".php")) {
-                unlink("../app/Config/Generated/".$routesFilename.".php");
+            if (file_exists("../public/preview/app/Config/Generated/".$routesFilename.".php")) {
+                unlink("../public/preview/app/Config/Generated/".$routesFilename.".php");
             }
         }
 

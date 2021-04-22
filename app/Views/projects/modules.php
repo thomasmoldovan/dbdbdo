@@ -60,6 +60,9 @@
                         </div>
 
                         <div class="btn-group ml-auto">
+                            <div class="d-flex align-self-center pr-2">
+                                <input id="moduleLock" class="float-right" type="checkbox" checked="" data-toggle="toggle" data-size="xs" data-on="Locked" data-off="Unlocked" data-onstyle="primary" data-offstyle="danger">
+                            </div>
                             <button data-module_name="<?= $module[0]['module_name'] ?>" class="settingsModal btn btn-primary btn-sm btn-block m-1">
                                 Settings
                             </button>
@@ -403,7 +406,7 @@
         $(".fileViewer").click(function (e) {
             e.preventDefault();
             var module_name = $(e.currentTarget).data("module_name");
-            window.open(module_name, '_blank');
+            window.open('preview/' + module_name, '_blank');
         });
 
         $("#saveProperties").click(function (e) {

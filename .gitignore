@@ -127,3 +127,4 @@ nb-configuration.xml
 
 node_modules
 *.log
+public/preview

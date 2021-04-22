@@ -1,4 +1,3 @@
-
 ## For now
 [x] Reset all (restart)
 ## General
@@ -7,7 +6,9 @@
     * [ ] Use multiple type of databases
     * [ ] Have global logging
 * [ ] Global Settings
-* [ ] 
+* [ ] Column Settings
+    * [ ] Show on menu
+    * [ ] Lock
 * [ ] 
 * [ ] 
 

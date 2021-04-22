@@ -73,13 +73,12 @@
 </style>
 
 <body>
-    <?
-    echo view('App\navigation');
-    // echo view('App\debugbar');
+    <? echo view('App\navigation'); ?>
+    <? //echo view('App\debugbar'); ?>
 
-    // echo in_groups(["Publisher"]) ? "TRUE" : "FALSE";
-    // echo has_permission("Everything") ? "TRUE" : "FALSE";
-    ?>
+    <? // echo in_groups(["Publisher"]) ? "TRUE" : "FALSE"; ?>
+    <? // echo has_permission("Everything") ? "TRUE" : "FALSE"; ?>
+
     <div id="loading-main" style="display: none;" tabindex="-1">
         <div class="col-12 loading-container text-white text-center">
             <div><i id="generic-spinner" class="fa fa-cog fa-spin mr-2"></i> 
@@ -89,7 +88,7 @@
         <div class="loading-container loading-overlay">
         </div>
     </div>
-        <? if (!empty($page)) echo view('App\\'.$page); ?>
+    <? if (!empty($page)) echo view('App\\'.$page); ?>
 </body>
 <script>
     $(document).ready(function () {

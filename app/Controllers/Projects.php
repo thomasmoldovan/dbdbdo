@@ -112,8 +112,9 @@ class Projects extends Home {
 
 		$this->current_project = $this->current_project[0];
 
-		$this->notifications[] = ["info", "Hello from modules :)"];
+		$this->notifications[] = ["success", "Project ".$this->current_project["project_hash"]." loaded"];
 		if ($this->auth->check()) {
+			$this->session->set("project_hash", $this->current_project["project_hash"]);
 
 			$moduleList = $modules->getModuleColumns();
 

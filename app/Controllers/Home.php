@@ -10,10 +10,6 @@ class Home extends BaseController{
 	protected $user;
 	protected $pages;
 	protected $authorize;
-
-	/**
-	 * @var \CodeIgniter\Session\Session
-	 */
 	protected $session;
 
 	public function __construct()

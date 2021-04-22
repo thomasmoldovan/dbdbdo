@@ -16,22 +16,18 @@
                         <label for="processAllTables">Process tables after import</label>
                     </div>
                 </div>
-                <div class="row">
-                    <div class="col-6">
-                        <h6 class="card-title">Paste your SQL schema code below:</h6>
-                        <div class="small bold text-danger"><b>Attention:</b></div>
-                        <div class="small">- comments will be removed before script execution</div>
-                        <div class="small">- only CREATE TABLE statements will be executed</div>
-                        <div class="small pb-3">- no changes to tables structure can be made after this step</div>
-                    </div>
-                    <div class="col-6">
-                        <h6 class="card-title">Or choose from one of the examples:</h6>
-                        <button type="button" class="btn btn-primary m-3 mt-0" id="loadToDoList" name="loadToDoList">To Do List</button>
-                    </div>
+                <div class="">
+                    <label class="">Paste your SQL schema code below or choose from one of the examples:</label>
+                    <div class="d-row">
+                        <button type="button" class="btn btn-primary mb-3" id="loadToDoList" name="loadToDoList">To Do List</button>
+                        <button type="button" class="btn btn-primary mb-3" id="loadToDoList" name="loadFAQs">FAQs</button>
+                        <button type="button" class="btn btn-primary mb-3" id="loadToDoList" name="loadSimpleForum">Simple Forum</button>
+                        <button type="button" class="btn btn-primary mb-3" id="loadToDoList" name="loadMySqlExample">MySql Example</button>
+                    </div>                        
                 </div>
                 
                 <textarea name="databaseSchema" id="databaseSchema" class="w-100" rows="10" value=""></textarea>
-                <button type="button" class="btn btn-primary m-3 mt-0" id="processDatabaseSchema" name="processDatabaseSchema">Proceed</button>
+                <button type="button" class="btn btn-primary mt-3" id="processDatabaseSchema" name="processDatabaseSchema">Proceed</button>
                 <div class="small error text-danger invisible">Project name cannot be empty</div>
             </div>
         </div>
