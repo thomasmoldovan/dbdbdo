@@ -10,6 +10,8 @@ use CodeIgniter\Controller;
 
 class WriterController extends Home {
 
+    protected $export_type = "internal";
+
     public function writeFromTemplate() {
         $modulesModel = new UserModuleModel();
         // $table_info = new UserTableModel();
@@ -56,21 +58,23 @@ class WriterController extends Home {
                 $data["primary_key"] = $data["primary_key"] ? $data["primary_key"] : $module_column["column_name"]; // ???
             }
 
-            // If we have a link, then we remove that value from allowed fields and replace with a join
-            if ((int) $module_column["link_id"] >= 1 && $module_column["enabled"] == "1") {
-                $links[] = $module_column;
+            if ($module_column["column_enabled"] !== "1") {}
+            else {
+                // If we have a link, then we remove that value from allowed fields and replace with a join
+                if ((int) $module_column["link_id"] >= 1) {
+                    $links[] = $module_column;
 
-                // We replace the data with the primary one
-                $data["linked_fields"][] = $module_column["display"]." AS `".$module_column["column_name"]."`";
-            } else {
-                $a = strlen($module_column["table_name"]);
-                $data["linked_fields"][] = $module_column["table_name"].".".$module_column["column_name"];
-            }
+                    // We replace the data with the primary one
+                    $data["linked_fields"][] = $module_column["display"]." AS `".$module_column["column_name"]."`";
+                } else {
+                    $data["linked_fields"][] = $module_column["table_name"].".".$module_column["column_name"];
+                }
 
-            if ($module_column["column_enabled"] == "1") {
-                $data["allowed_fields"][] = $module_column["column_name"];
-                $data["field_labels"][] = $module_column["display_label"];
-            }
+                if ($module_column["column_enabled"] == "1") {
+                    $data["allowed_fields"][] = $module_column["column_name"];
+                    $data["field_labels"][] = $module_column["display_label"];
+                }
+            }            
         }
 
         $data["joined_tables"] = "";
@@ -204,10 +208,12 @@ class WriterController extends Home {
         $prepareFields = implode(PHP_EOL, $prepareFields); // THIS
         $formInput .= "</form>";
 
-        $file  = file_get_contents("../App/Templates/ci_4_model.raw");
-        $file2 = file_get_contents("../App/Templates/ci_4_view.raw");
-        $file3 = file_get_contents("../App/Templates/ci_4_controller.raw");
-        $file4 = file_get_contents("../App/Templates/ci_4_route.raw");
+
+
+        $file  = file_get_contents("../App/Templates/{$this->export_type}/CodeIgniter4/ci_4_model.raw");
+        $file2 = file_get_contents("../App/Templates/{$this->export_type}/CodeIgniter4/ci_4_view.raw");
+        $file3 = file_get_contents("../App/Templates/{$this->export_type}/CodeIgniter4/ci_4_controller.raw");
+        $file4 = file_get_contents("../App/Templates/{$this->export_type}/CodeIgniter4/ci_4_route.raw");
 
         // Constructing the joined columns, the ones that are set in display
         $linked_fields =  implode(", ", $data["linked_fields"]);
@@ -238,8 +244,9 @@ class WriterController extends Home {
             $file4 = str_replace("{{".$key."}}", is_array($value) ? '"'.(string)$array.'"' : $value, $file4);
         }
 
+        $export_prepath = $this->export_type == "internal" ? "/" : "public/preview/";
         $modalFilename = $data["uc_model_name"]."Model";
-        if (!write_file("../public/preview/app/Models/".$modalFilename.".php", $file)) {
+        if (!write_file("../{$export_prepath}App/Models/".$modalFilename.".php", $file)) {
             $result["success"] = false;
         } else {
             $result["success"] = true;
@@ -248,21 +255,21 @@ class WriterController extends Home {
         $indenter = new \Gajus\Dindent\Indenter();
         $file2 = $indenter->indent($file2);
         $viewFilename = $data["uc_model_name"]."View";
-        if (!write_file("../public/preview/app/Views/".$viewFilename.".php", $file2)) {
+        if (!write_file("../{$export_prepath}App/Views/".$viewFilename.".php", $file2)) {
             $result["success"] = false;
         } else {
             $result["success"] = true;
         }
 
         $controllerFilename = $data["uc_model_name"]."Controller";
-        if (!write_file("../public/preview/app/Controllers/".$controllerFilename.".php", $file3)) {
+        if (!write_file("../{$export_prepath}App/Controllers/".$controllerFilename.".php", $file3)) {
             $result["success"] = false;
         } else {
             $result["success"] = true;
         }
 
-        if (!file_exists('../public/preview/app/Config/Generated')) {
-            mkdir('../public/preview/app/Config/Generated', 0777, true);
+        if (!file_exists("../{$export_prepath}App/Config/Generated")) {
+            mkdir("../{$export_prepath}App/Config/Generated", 0777, true);
             // TODO: On general jQuery event, if toastr key is present, display toastr in front end
             $result["toastr"] = "Directory Generated created";
         }
@@ -271,14 +278,14 @@ class WriterController extends Home {
         // ROUTES
         $addToRoutes = true;
         if (true || $addToRoutes) {
-            if (!write_file("../public/preview/app/Config/Generated/".$routesFilename.".php", $file4)) {
+            if (!write_file("../{$export_prepath}App/Config/Generated/".$routesFilename.".php", $file4)) {
                 $result["success"] = false;
             } else {
                 $result["success"] = true;
             }
         } else {
-            if (file_exists("../public/preview/app/Config/Generated/".$routesFilename.".php")) {
-                unlink("../public/preview/app/Config/Generated/".$routesFilename.".php");
+            if (file_exists("../{$export_prepath}App/Config/Generated/".$routesFilename.".php")) {
+                unlink("../{$export_prepath}App/Config/Generated/".$routesFilename.".php");
             }
         }
 

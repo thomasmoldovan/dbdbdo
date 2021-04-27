@@ -46,14 +46,14 @@ class UserModuleModel extends Model
                             user_tables.type,
                             user_tables.display_label AS display_label,
                             user_tables.display_as AS display_as,
-                            user_tables.enabled AS column_enabled,
-                            links.id AS link_id,
                             CONCAT(`primary`.table_name, ".'"."'.", `primary`.column_name) AS 'primary',
                             CONCAT(`foreign`.table_name, ".'"."'.", `foreign`.column_name) AS 'foreign',
                             CONCAT(`display`.table_name, ".'"."'.", `display`.column_name) AS 'display',
-                            links.link_type,
-                            links.enabled,
+                            links.id AS link_id,
+                            links.link_type AS link_type,
+                            links.enabled AS link_enabled,
                             tables_modules.user_module_id,
+                            tables_modules.enabled AS column_enabled,
                             user_modules.module_name
                     FROM (((tables_modules tables_modules
                             INNER JOIN user_modules user_modules ON (tables_modules.user_module_id = user_modules.id))

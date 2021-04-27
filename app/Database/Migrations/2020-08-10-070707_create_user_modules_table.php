@@ -8,7 +8,7 @@ class CreateUserModulesTable extends Migration
         $this->forge->addField([
             'id'              => ['type' => 'int', 'constraint' => 11, 'unsigned' => true, 'auto_increment' => true],
             'module_name'     => ['type' => 'varchar', 'constraint' => 50],
-            'module_title'  => ['type' => 'varchar', 'constraint' => 30],
+            'module_title'    => ['type' => 'varchar', 'constraint' => 30],
             'module_type'     => ['type' => 'varchar', 'constraint' => 50],
             'module_route'    => ['type' => 'varchar', 'constraint' => 50],
             'module_icon'     => ['type' => 'varchar', 'constraint' => 30],

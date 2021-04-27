@@ -162,7 +162,7 @@
                                         </td>
                                         <td>
                                             <input <?= $component["column_enabled"] == "1" ? "checked" : "" ?> name='disabled' value="isDisabled" class='form-control form-control-sm' type='checkbox' data-toggle='toggle' data-size='sm'
-                                                    data-save="<?= handledata(array('user_tables' => 'enabled', 'id' => $component['user_table_id'])) ?>"
+                                                    data-save="<?= handledata(array('tables_modules' => 'enabled', 'id' => $component['user_table_id'])) ?>"
                                                     class="btn btn-success btn-sm"
                                                     />
                                         </td>
@@ -215,20 +215,54 @@
                             <option value="">Node API</option>
                         </select>
                     </div>
-                    <div class="col-12 pb-3 pl-1">
-                        <div class="col-4">
-                            <input type="checkbox" id="exportModel" class="form-check-input">
-                            <label for="exportModel" class="form-check-label" >Model</label>
+                    <div class="d-flex">
+                        <div class="col-6 pb-3 pl-1">
+                            <div class="">
+                                <input type="checkbox" id="exportModel" class="form-check-input">
+                                <label for="exportModel" class="form-check-label" >Entity</label>
+                            </div>
+                            <div class="">
+                                <input type="checkbox" id="exportModel" class="form-check-input">
+                                <label for="exportModel" class="form-check-label" >Migration</label>
+                            </div>
+                            <div class="">
+                                <input type="checkbox" id="exportModel" class="form-check-input">
+                                <label for="exportModel" class="form-check-label" >Model</label>
+                            </div>
+                            <div class="">
+                                <input type="checkbox" id="exportView" class="form-check-input">
+                                <label for="exportView" class="form-check-label" >View</label>
+                            </div>
+                            <div class="">
+                                <input type="checkbox" id="exportController" class="form-check-input">
+                                <label for="exportController" class="form-check-label" >Validation</label>
+                            </div>
                         </div>
-                        <div class="col-4">
-                            <input type="checkbox" id="exportView" class="form-check-input">
-                            <label for="exportView" class="form-check-label" >View</label>
-                        </div>
-                        <div class="col-4">
-                            <input type="checkbox" id="exportController" class="form-check-input">
-                            <label for="exportController" class="form-check-label" >Controller</label>
+
+                        <div class="col-6 pb-3 pl-1">
+                            <div class="">
+                                <input type="checkbox" id="exportModel" class="form-check-input">
+                                <label for="exportModel" class="form-check-label" >Show on menu</label>
+                            </div>
+                            <div class="">
+                                <input type="checkbox" id="exportModel" class="form-check-input">
+                                <label for="exportModel" class="form-check-label" >Add routes</label>
+                            </div>
+                            <div class="">
+                                <input type="checkbox" id="exportModel" class="form-check-input">
+                                <label for="exportModel" class="form-check-label" >Use authentication</label>
+                            </div>
+                            <div class="">
+                                <input type="checkbox" id="exportView" class="form-check-input">
+                                <label for="exportView" class="form-check-label" >Use jQuery</label>
+                            </div>
+                            <div class="">
+                                <input type="checkbox" id="exportController" class="form-check-input">
+                                <label for="exportController" class="form-check-label" >Controller</label>
+                            </div>
                         </div>
                     </div>
+                    
                     <div class="modal-footer text-center">
                         <button type="submit" name="submit" class="btn btn-success" value="Submit">Yes</button>
                         <button type="submit" class="btn btn-danger" data-dismiss="modal">Cancel</button>

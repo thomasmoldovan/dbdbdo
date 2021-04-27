@@ -10,7 +10,7 @@ class TableModuleModel extends Model
     protected $returnType = 'array';
     protected $useSoftDeletes = false;
 
-    protected $allowedFields = ['id', 'user_table_id', 'user_module_id'];
+    protected $allowedFields = ['id', 'user_table_id', 'user_module_id', 'enabled'];
 
     protected $useTimestamps = false;
     protected $createdField  = 'created_at';
@@ -26,7 +26,7 @@ class TableModuleModel extends Model
         $propertiesModel = new PropertiesModel();
         $userTables = new UserTableModel();
 
-        if (empty($userTableId))
+
 
         $column = null;
         $table = $userTables->getWhere(array("id" => $userTableId))->getResultArray()[0];

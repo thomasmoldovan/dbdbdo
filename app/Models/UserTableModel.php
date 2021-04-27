@@ -10,7 +10,7 @@ class UserTableModel extends Model
     protected $returnType = 'array';
     protected $useSoftDeletes = false;
 
-    protected $allowedFields = ['id', 'user_id', 'project_id', 'table_name', 'column_name', 'display_label', 'display_as', 'type', 'pk', 'default', 'null', 'ai', 'enabled', 'permissions', 'comment', 'checksum'];
+    protected $allowedFields = ['id', 'user_id', 'project_id', 'table_name', 'column_name', 'display_label', 'display_as', 'type', 'pk', 'default', 'null', 'ai', 'permissions', 'comment', 'checksum'];
 
     protected $useTimestamps = false;
     protected $createdField  = 'created_at';

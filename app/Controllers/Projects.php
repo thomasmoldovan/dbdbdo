@@ -21,8 +21,7 @@ class Projects extends Home {
         "null" => "IS_NULLABLE",
         "ai" => "EXTRA",
         "permissions" => "PRIVILEGES",
-        "comment" => "COLUMN_COMMENT",
-        "checksum" => 0
+        "comment" => "COLUMN_COMMENT"
     );
 
 	public function index($hash = null)	{
@@ -92,10 +91,11 @@ class Projects extends Home {
 
 	public function modules($project_hash = null) {
 		if (!$this->auth->check()) {
-			$this->notifications[] = ["info", "Not authenticated"];
+			$this->notifications[] = ["info", "Your session has expired"];
 			$this->session->set("notification", $this->notifications);
 			return redirect()->to("/");
 		}
+
 		$schema = new SchemaModel();
 		$projects = new ProjectModel();
 		$modules = new UserModuleModel();
@@ -445,6 +445,16 @@ class Projects extends Home {
         $schema = new SchemaModel();
         $columns = $schema->getColumns($this->current_project->project_hash, $tableName, $this->mapping);
 
+		// We add some new properties to each column
+		foreach ($columns as &$column) {
+			$checksum = base64_encode(json_encode($columns));
+			// All columns enabled by default
+			$column["enabled"] = 1; 
+
+			// We add a checksum to each column, so we can detect if a columns data has changed and display this in the UI
+			$column["checksum"] = $checksum; 
+		}
+
 		// Data will be saved in table user_tables
         $saved = $this->saveTableInfo($tableName, $columns);
 
@@ -489,7 +499,10 @@ class Projects extends Home {
 
         // TODO: Review this function
         $post = $this->request->getPost();
-        if (empty($post["module_name"])) die("No Module Name");
+        if (empty($post["module_name"])) {
+			$this->notifications[] = ["warning", "No module name provided so we'll use the table name"];
+			$this->session->set("notifications", $this->notifications);
+		}
 
         $moduleData = array(
             "module_name" => $post["module_name"],

@@ -109,7 +109,7 @@
                     }
                     console.log("Success");
                     console.log(response);
-                    toastr.success("Redirecting...", "Project was succesfully created");
+                    toastr.success("Redirecting...", "Project was succesffully created");
                 },
                 error: function (response) {
                     toastr.error("Error: " + response.message, "Error importing schema");

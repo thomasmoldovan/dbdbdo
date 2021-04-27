@@ -2,15 +2,15 @@
 
 use CodeIgniter\Model;
 
-class ColorsModel extends Model
+class BucketModel extends Model
 {
-    protected $table      = 'colors';
+    protected $table      = 'bucket';
     protected $primaryKey = 'id';
 
     protected $returnType = 'array';
     protected $useSoftDeletes = false;
 
-    protected $allowedFields = ["id","name","value"];
+    protected $allowedFields = ["id","fCheckbox","fRadio"];
 
     protected $useTimestamps = false;
     protected $createdField  = 'created_at';
@@ -26,13 +26,13 @@ class ColorsModel extends Model
     }
 
     public function getFieldLabels() {
-        return ["id","name","value"];
+        return ["id","fCheckbox","fRadio"];
     }
 
-    public function getColorsList() {
+    public function getBucketList() {
         $query = "SELECT 
-                    colors.id, colors.name, colors.value
-                FROM colors 
+                    bucket.id, bucket.fCheckbox, bucket.fRadio
+                FROM bucket 
                     ";
 
         $result = $this->query($query)->getResultArray();
