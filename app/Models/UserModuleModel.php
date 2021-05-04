@@ -54,7 +54,8 @@ class UserModuleModel extends Model
                             links.enabled AS link_enabled,
                             tables_modules.user_module_id,
                             tables_modules.enabled AS column_enabled,
-                            user_modules.module_name
+                            user_modules.module_name,
+                            user_modules.locked
                     FROM (((tables_modules tables_modules
                             INNER JOIN user_modules user_modules ON (tables_modules.user_module_id = user_modules.id))
                             INNER JOIN user_tables user_tables ON (user_tables.id = tables_modules.user_table_id))

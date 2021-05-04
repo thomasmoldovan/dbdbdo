@@ -39,15 +39,16 @@ class Projects extends Home {
 				$project = $projects->getWhere(["user_id" => $this->user->id, "project_hash" => $hash])->getResultArray();
 
 				if (!empty($project)) {
+					// Project found
 					$this->current_project = $project[0];
 				} else {
 					// No project with user_id and project_hash found
 					// $this->auth->logout();
-					$this->notifications[] = ["error" => "Project not found ".__FILE__." ".__LINE__." ".__FUNCTION__.""];
+					if (ENVIRONMENT === "Development") $extra_info = __FILE__." ".(__LINE__ + 1)." ".__FUNCTION__;
+					$this->notifications[] = ["error", "Project not found ".(isset($extra_info) ? $extra_info : "").""];
 					$this->session->set("notification", $this->notifications);
 					return redirect()->to("/");
 				}
-				if (empty($this->current_project)) return false;
 
 				if ($this->current_project) {
 					// Project List View
@@ -60,7 +61,7 @@ class Projects extends Home {
 					$this->session->set("notification", $this->notifications);
 					return $this->display_main("header", "project", $data);
 				} else {
-					$this->notifications[] = ["error" => "Don't do that"];
+					$this->notifications[] = ["error", "Don't do that"];
 					$this->session->set("notification", $this->notifications);
 					$this->auth->logout();
 					return redirect()->to("/");
@@ -357,33 +358,22 @@ class Projects extends Home {
 					$dbs = $rootConn->query($drop_db_query);
 				} catch (\Exception $ex) {
 					$this->notifications[] = ["error", __FILE__." - Line:".__LINE__." - ".__FUNCTION__, $ex->getCode().":".$ex->getMessage()];
+					$this->session->set("notification", $this->notifications);
 				}
 			}
 		}
-
-		// Try delete all at once
-		// try {
-		// 	if (empty($drop_db_query)) {
-		// 		$this->notifications[] = ["info", "No projects to delete"];
-		// 		return true;
-		// 	}
-		// 	$dbs = $rootConn->query($drop_db_query);
-		// } catch (\Exception $ex) {
-		// 	$this->notifications[] = ["error", __FILE__." - Line:".__LINE__." - ".__FUNCTION__, $ex->getCode().":".$ex->getMessage()];
-		// 	return false;
-		// }
-
-		// TODO: Delete files also
 
 		$result = $rootConn->query("TRUNCATE user_tables");
 		$result = $rootConn->query("TRUNCATE user_modules");
 		$result = $rootConn->query("TRUNCATE projects");
 		$result = $rootConn->query("TRUNCATE tables_modules");
 		$result = $rootConn->query("TRUNCATE properties");
-		$result = $rootConn->query("TRUNCATE links");		
+		$result = $rootConn->query("TRUNCATE links");
+
+		// TODO: Delete files also
 		
-		// Should turn after before every controller exit
-		$this->session->set("notification", $this->notifications);
+		$this->session->set("notification", $this->notifications); // Should run before and after every controller exit
+
 		return redirect()->to('/projects');
 	}
 
@@ -447,12 +437,12 @@ class Projects extends Home {
 
 		// We add some new properties to each column
 		foreach ($columns as &$column) {
-			$checksum = base64_encode(json_encode($columns));
+			// $checksum = base64_encode(json_encode($columns));
 			// All columns enabled by default
 			$column["enabled"] = 1; 
 
-			// We add a checksum to each column, so we can detect if a columns data has changed and display this in the UI
-			$column["checksum"] = $checksum; 
+			// TODO: We add a checksum to each column, so we can detect if a columns data has changed and display this in the UI
+			// $column["checksum"] = $checksum; 
 		}
 
 		// Data will be saved in table user_tables
@@ -501,7 +491,7 @@ class Projects extends Home {
         $post = $this->request->getPost();
         if (empty($post["module_name"])) {
 			$this->notifications[] = ["warning", "No module name provided so we'll use the table name"];
-			$this->session->set("notifications", $this->notifications);
+			$this->session->set("notification", $this->notifications);
 		}
 
         $moduleData = array(

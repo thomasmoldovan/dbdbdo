@@ -61,7 +61,18 @@
 
                         <div class="btn-group ml-auto">
                             <div class="d-flex align-self-center pr-2">
-                                <input id="moduleLock" class="float-right" type="checkbox" checked="" data-toggle="toggle" data-size="xs" data-on="Locked" data-off="Unlocked" data-onstyle="primary" data-offstyle="danger">
+                                <div class="pr-2">
+                                    <input id="showOnMenu" class="ml-2" type="checkbox" checked 
+                                    data-toggle="toggle" data-size="xs" data-on="Yes" data-off="No" data-onstyle="success" data-offstyle="primary">
+                                </div>
+                                <div class="pr-2">
+                                    <input id="addToRoutes" class="ml-2" type="checkbox" checked 
+                                    data-toggle="toggle" data-size="xs" data-on="Yes" data-off="No" data-onstyle="success" data-offstyle="primary">
+                                </div>
+                                <div class="">
+                                    <input id="moduleLock" class="float-right" type="checkbox" checked="" 
+                                    data-toggle="toggle" data-size="xs" data-on="Locked" data-off="Unlocked" data-onstyle="primary" data-offstyle="danger">
+                                </div>
                             </div>
                             <button data-module_name="<?= $module[0]['module_name'] ?>" class="settingsModal btn btn-primary btn-sm btn-block m-1">
                                 Settings
@@ -294,6 +305,14 @@
                     <div class="the-body">
                         <!-- START PROPERTIES MODAL -->
                         <div class="">
+                            <label for=""Select template:></label>
+                            <div class="w-100">
+                                <select name="" id="" class="form form-control form-control-sm form-control-xs mb-3">
+                                    <option value="">1</option>
+                                    <option value="">2</option>
+                                    <option value="">3</option>
+                                </select>
+                            </div>
                             <div id="propContainer" class="hide">
                                 <div class="properties d-flex pt-2 pb-2">
                                     <input type="text" class="property form-control form-control-sm mr-2">
