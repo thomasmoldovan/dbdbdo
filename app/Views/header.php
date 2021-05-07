@@ -37,6 +37,10 @@
     .status-success { border: 2px solid #090; }
     .status-error { border: 2px solid #900; }
 
+    .txt-danger { color: #990; }
+    .txt-success { color: #090; }
+    .txt-error { color: #900; }
+
     .projectCard { transition: background-color 0.2s ease; min-width: 290px; max-width: 345px; }
     .card-normal { background: #ecf0f1; }
     .card-hover { background: #5ABDFF; cursor: pointer; }
@@ -70,6 +74,13 @@
         background-color: #000;
         opacity: .5;
     }
+    input:focus,
+    select:focus,
+    textarea:focus,
+    button:focus, button:active {
+        box-shadow: none !important;
+        outline: none !important;
+    }
 </style>
 
 <body>
@@ -100,5 +111,9 @@
                 toastr[value[0]](value[1]);
             });
         }
+
+        $("select").change(function () { 
+            $(this).blur();
+        });
     });
 </script>

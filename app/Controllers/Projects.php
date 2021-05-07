@@ -117,6 +117,7 @@ class Projects extends Home {
 		if ($this->auth->check()) {
 			$this->session->set("project_hash", $this->current_project["project_hash"]);
 
+			$modules->projectId = $this->current_project["id"];
 			$moduleList = $modules->getModuleColumns();
 
 			// Get's the settings for the link IF it has one
@@ -147,10 +148,10 @@ class Projects extends Home {
 				return redirect()->to('/projects');
 			}
 
-			$userModules = $this->getModulesInfo();
+			// $userModules = $this->getModulesInfo();
 
 			$data["project"] = $this->current_project;
-			$data["userModules"] = $userModules;
+			// $data["userModules"] = $userModules;
 			$data["moduleList"] = $moduleList;
 
 			$data["modules"] = $moduleData;

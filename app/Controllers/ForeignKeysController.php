@@ -40,7 +40,7 @@ class ForeignKeysController extends Home
 
 		// TODO: Read only from the read tables not from everything
 		// $tables = $schema->readTables($_ENV["database.default.database"]);
-		$tables = $table_info->getModulesColumns();
+		$tables = $table_info->getModulesColumns($this->current_project["id"]);
 
 		$data["title"] = "Foreign Keys";
 
@@ -63,7 +63,7 @@ class ForeignKeysController extends Home
 		foreach ($tables as $key => $table) {
             $temp = $this->getPrimaryKey($table['TABLE_NAME']);
             // If this table has a primary key, we add it to $this->pk_list
-            if ($temp !== false) {
+            if ($temp !== false && !isset($this->pk_list[$table['TABLE_NAME']])) {
                 $this->pk_list[$table['TABLE_NAME']] = $temp;
             }
         }
@@ -75,6 +75,7 @@ class ForeignKeysController extends Home
 
 		// Get the column details for every possible foreign
 		$column_types = [];		
+		$schema->setDatabase($_ENV["database.default.database"]);
 		foreach ($foreign_keys as $key => $link) {
 			if (!empty($link)) {
 				if (!isset($column_types[$link["table_name"].".".$link["table_column"]])) {
@@ -85,7 +86,11 @@ class ForeignKeysController extends Home
 				}
 
 				// I need the display_link
+				$schema->setDatabase($_ENV["database.default.database"]);
+				$table_info->projectId = $this->current_project["id"];
+				$columnsThatCanBeLinked = $table_info->getColumnsForTable($link["table_name"]);
 				$foreign_keys[$key]["display"] = $this->isLinkOn($link);
+				$foreign_keys[$key][$link["table_name"]] = $columnsThatCanBeLinked;
 
 				// I need the columns that can be linked, the columns in tables_info so
 				// I can have a dropdown with what can be displayed
@@ -100,27 +105,6 @@ class ForeignKeysController extends Home
 			}
 		}
 
-		$change_type_pk = array();
-		$change_type_fk = array();
-        $delete_queries = array();
-        $alter_queries  = array();
-
-		// This loop is for generating the querys for cleaning the database, and improve consistency
-        // foreach ($foreign_keys as $key => $link) {
-		// 	// Change PK and FK type to BIGINT(20)
-		// 	$change_type_pk[] = $this->changePKTypeQuery($link["table_name"], $link["table_column"]);
-		// 	$change_type_fk[] = $this->changeFKTypeQuery($link["key_table"], $link["key_column"]);
-
-		// 	// Clear entries that do not exist
-		// 	$delete_queries[] = $this->deleteUselessEntries($link["table_name"], $link["table_column"], $link["key_table"], $link["key_column"]);
-
-		// 	// Alter table queries to create the foreign keys
-		// 	$alter_queries[] = $this->showAlterQuery($link["table_name"], $link["table_column"], $link["key_table"], $link["key_column"]);
-		// }
-
-		// TODO check to see if pk has index, unique and autoincrement
-		// TODO check to see if fk has index, don't create a second one if it has
-
 		// LINKS SAVED
 		$links = new LinksModel();
 		$links->setDatabase($_ENV["database.default.database"]);
@@ -132,46 +116,12 @@ class ForeignKeysController extends Home
 		$data["columns"] = $columns;
 		$data["column_types"] = $column_types;
 
-		// TODO: I still need the table_info link for display_value column
-
-		// GENERATED QUERIES
-		$data["change_type_pk"] = $change_type_pk;
-		$data["change_type_fk"] = $change_type_fk;
-		$data["delete_queries"] = $delete_queries;
-		$data["alter_queries"] = $alter_queries;
-
 		// We need the current project for the project menu to show
 		$data["project"] = $this->current_project;
 
-		// $projectList = $projects->where(["user_id" => $this->user->id])->findAll();
-		// $projectSelected = $projects->where(["user_id" => $this->user->id, "id" => $this->current_project["project_hash"]])->first();
-
-		// if (!is_null($projectSelected) && (int)$projectSelected->id > 0) {			
-		// 	$this->session->set("projectId", $projectSelected->id);
-		// 	$this->projectId = $projectSelected->id;
-		// }
-
 		$schema = new SchemaModel();
-		// $tables = $schema->getTables($this->current_project["project_hash"]);
-		// $userModules = $this->getModulesInfo();
-		
-		// $userTables = $this->getTablesInfo();
-		// $tablesProcessed = array_unique(array_column($userTables, "table_name"));
 
         return $this->display_main("header", "fk", $data);
-
-		// return view('projects', ['view' => "ForeignKeysView",
-		// 							'session' => $this->session,
-		// 							'auth' => $this->auth->check(),
-		// 							'user' => $this->user,
-		// 							'config' => $this->config,
-		// 							'data' => $data,
-		// 							'projectSelected' => isset($projectSelected) ? $projectSelected : null,
-		// 							'projectList' => $projectList,
-		// 							'tablesProcessed' => isset($tablesProcessed) ? $tablesProcessed : null,
-		// 							'userTables' => isset($userTables) ? $userTables : null,
-		// 							'userModules' => isset($userModules) ? $userModules : [],
-		// 							'tables' => isset($tables) ? $tables : []]);
 	}
 
 	public function isLinkOn($link) {
@@ -301,7 +251,7 @@ class ForeignKeysController extends Home
 
 	public function getColumnType($projectHash, $table, $column) {
 		$schema = new SchemaModel();
-		// $schema->setDatabase($projectHash);
+		$schema->setDatabase("_".$projectHash);
 		$result = $schema->executeQuery($this->current_project["project_hash"], "SHOW COLUMNS FROM `{$table}` WHERE `field` = '{$column}'", "array");
         if (count($result) > 0) {
             return $result[0];

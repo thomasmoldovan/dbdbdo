@@ -20,21 +20,23 @@ class UserTableModel extends Model
     protected $validationRules    = [];
     protected $validationMessages = [];
 	protected $skipValidation     = true;
+
+	public $projectId = "";
 	
-	protected $database = "online";
-  
-  	public function getModulesColumns() {
+  	public function getModulesColumns($projectId) {
+		if (empty($projectId) && empty($this->projectId)) return "No project id";
     	$infosch = \Config\Database::connect("default");
 		$result = $infosch->query("SELECT user_tables.id,
 										  user_tables.table_name AS 'TABLE_NAME',
-                                      	  user_tables.column_name AS 'COLUMN_NAME'
+                                      	  user_tables.column_name AS 'COLUMN_NAME',
+										  user_tables.project_id
 											FROM
 												user_tables
 												LEFT JOIN tables_modules 
 													ON tables_modules.user_table_id = user_tables.id
 												LEFT JOIN user_modules 
 													ON user_modules.id = tables_modules.user_module_id
-											WHERE user_modules.module_name IS NOT NULL");
+											WHERE user_tables.project_id = {$projectId} AND user_modules.module_name IS NOT NULL");
 
 		return $result->getResultArray();
 	}
@@ -49,10 +51,11 @@ class UserTableModel extends Model
     }
     
     public function getColumnsForTable($table) {
+		if (empty($this->projectId)) return "No project id";
         $infosch = \Config\Database::connect("default");
 		$result = $infosch->query("SELECT user_tables.id, user_tables.table_name AS 'TABLE_NAME', user_tables.column_name AS 'COLUMN_NAME'
                                         FROM user_tables
-                                    WHERE TABLE_NAME = '".$table."'");
+                                    WHERE TABLE_NAME = '".$table."' AND user_tables.project_id = {$this->projectId}");
 
 		return $result->getResultArray();
 	}

@@ -103,8 +103,8 @@
                                     <th>Link</th>
                                     <th>Label</th>
                                     <th>Type</th>
-                                    <th>Properties</th>
                                     <th>Display As</th>
+                                    <th>Properties</th>
                                     <th>Enabled</th>
                                 </tr>
                             </thead>
@@ -120,7 +120,7 @@
                                                 <div class="d-flex">
                                                     <i class="fa fa-link pt-1"></i>&nbsp;
                                                     <? if ($component['primary']) { ?>
-                                                        Linked to&nbsp;<div class="text-warning"><?= $component["display"]; ?></div>
+                                                        Linked to&nbsp;<div class="text-warning bold"><?= $component["display_label"]; ?></div>
                                                     <? } ?>
                                                 </div>
                                             <? } ?>
@@ -137,13 +137,6 @@
                                             <? } else { ?>
                                                 <?= $component["type"] ?>
                                             <? } ?>
-                                        </td>
-                                        <td>
-                                            <button id="fieldProperties-<?= $component['user_table_id'] ?>"
-                                                data-id="<?= $component['user_table_id'] ?>"
-                                                data-column="<?= $component['column_name'] ?>"
-                                                class="fieldProperties btn btn-sm btn-primary" data-toggle="collapse"><i class="fa fa-eye"></i>
-                                            </button>
                                         </td>
                                         <td>
                                             <select data-save="<?= handledata(array('user_tables' => 'display_as', 'id' => $component['user_table_id'])) ?>"
@@ -170,6 +163,13 @@
                                                     <option value="">Select</option>
                                                 <? }?>
                                             </select>
+                                        </td>
+                                        <td>
+                                            <button id="fieldProperties-<?= $component['user_table_id'] ?>"
+                                                data-id="<?= $component['user_table_id'] ?>"
+                                                data-column="<?= $component['column_name'] ?>"
+                                                class="fieldProperties btn btn-sm btn-primary" data-toggle="collapse"><i class="fa fa-eye"></i>
+                                            </button>
                                         </td>
                                         <td>
                                             <input <?= $component["column_enabled"] == "1" ? "checked" : "" ?> name='disabled' value="isDisabled" class='form-control form-control-sm' type='checkbox' data-toggle='toggle' data-size='sm'
@@ -229,47 +229,47 @@
                     <div class="d-flex">
                         <div class="col-6 pb-3 pl-1">
                             <div class="">
-                                <input type="checkbox" id="exportModel" class="form-check-input">
-                                <label for="exportModel" class="form-check-label" >Entity</label>
+                                <input type="checkbox" id="" class="form-check-input">
+                                <label for="" class="form-check-label" >Entity</label>
                             </div>
                             <div class="">
-                                <input type="checkbox" id="exportModel" class="form-check-input">
-                                <label for="exportModel" class="form-check-label" >Migration</label>
+                                <input type="checkbox" id="" class="form-check-input">
+                                <label for="" class="form-check-label" >Migration</label>
                             </div>
                             <div class="">
-                                <input type="checkbox" id="exportModel" class="form-check-input">
-                                <label for="exportModel" class="form-check-label" >Model</label>
+                                <input type="checkbox" id="" class="form-check-input">
+                                <label for="" class="form-check-label" >Model</label>
                             </div>
                             <div class="">
-                                <input type="checkbox" id="exportView" class="form-check-input">
-                                <label for="exportView" class="form-check-label" >View</label>
+                                <input type="checkbox" id="" class="form-check-input">
+                                <label for="" class="form-check-label" >View</label>
                             </div>
                             <div class="">
-                                <input type="checkbox" id="exportController" class="form-check-input">
-                                <label for="exportController" class="form-check-label" >Validation</label>
+                                <input type="checkbox" id="" class="form-check-input">
+                                <label for="" class="form-check-label" >Validation</label>
                             </div>
                         </div>
 
                         <div class="col-6 pb-3 pl-1">
                             <div class="">
-                                <input type="checkbox" id="exportModel" class="form-check-input">
-                                <label for="exportModel" class="form-check-label" >Show on menu</label>
+                                <input type="checkbox" id="" class="form-check-input">
+                                <label for="" class="form-check-label" >Show on menu</label>
                             </div>
                             <div class="">
-                                <input type="checkbox" id="exportModel" class="form-check-input">
-                                <label for="exportModel" class="form-check-label" >Add routes</label>
+                                <input type="checkbox" id="" class="form-check-input">
+                                <label for="" class="form-check-label" >Add routes</label>
                             </div>
                             <div class="">
-                                <input type="checkbox" id="exportModel" class="form-check-input">
-                                <label for="exportModel" class="form-check-label" >Use authentication</label>
+                                <input type="checkbox" id="" class="form-check-input">
+                                <label for="" class="form-check-label" >Use authentication</label>
                             </div>
                             <div class="">
-                                <input type="checkbox" id="exportView" class="form-check-input">
-                                <label for="exportView" class="form-check-label" >Use jQuery</label>
+                                <input type="checkbox" id="" class="form-check-input">
+                                <label for="" class="form-check-label" >Use jQuery</label>
                             </div>
                             <div class="">
-                                <input type="checkbox" id="exportController" class="form-check-input">
-                                <label for="exportController" class="form-check-label" >Controller</label>
+                                <input type="checkbox" id="" class="form-check-input">
+                                <label for="" class="form-check-label" >Controller</label>
                             </div>
                         </div>
                     </div>
@@ -305,13 +305,34 @@
                     <div class="the-body">
                         <!-- START PROPERTIES MODAL -->
                         <div class="">
-                            <label for=""Select template:></label>
+                            <label for="tagTemplateDropdown" class="bold">Select template:</label>
                             <div class="w-100">
-                                <select name="" id="" class="form form-control form-control-sm form-control-xs mb-3">
-                                    <option value="">1</option>
-                                    <option value="">2</option>
-                                    <option value="">3</option>
-                                </select>
+                                <? if (isset($component)) { ?>
+                                    <select data-save="<?= handledata(array('user_tables' => 'display_as', 'id' => $component['user_table_id'])) ?>"
+                                            id="selectFormat" class="form form-control form-control-sm mb-2" name="format"
+                                            <?= $component['link_type'] == 2 ? "disabled" : "" ?>>
+                                        </hr>
+                                        <? if ($component['link_type'] != 2) { ?>
+                                            <option value="">Input</option>
+                                            <option value="checkbox" <?= $component["display_as"] == "checkbox" ? "selected" : "" ?>>Checkbox</option>
+                                            <option value="color" <?= $component["display_as"] == "color" ? "selected" : "" ?>>Color</option>
+                                            <option value="date" <?= $component["display_as"] == "date" ? "selected" : "" ?>>Date</option>
+                                            <option value="datetime-local" <?= $component["display_as"] == "datetime-local" ? "selected" : "" ?>>Datetime Local</option>
+                                            <option value="email" <?= $component["display_as"] == "email" ? "selected" : "" ?>>Email</option>
+                                            <option value="hidden" <?= $component["display_as"] == "hidden" ? "selected" : "" ?>>Hidden</option>
+                                            <option value="image" <?= $component["display_as"] == "image" ? "selected" : "" ?>>Image</option>
+                                            <option value="number" <?= $component["display_as"] == "number" ? "selected" : "" ?>>Number</option>
+                                            <option value="password" <?= $component["display_as"] == "password" ? "selected" : "" ?>>Password</option>
+                                            <option value="radio" <?= $component["display_as"] == "radio" ? "selected" : "" ?>>Radio</option>
+                                            <option value="tel" <?= $component["display_as"] == "tel" ? "selected" : "" ?>>Tel</option>
+                                            <option value="text" <?= $component["display_as"] == "text" ? "selected" : "" ?>>Text</option>
+                                            <option value="time" <?= $component["display_as"] == "time" ? "selected" : "" ?>>Time</option>
+                                            <option value="url" <?= $component["display_as"] == "url" ? "selected" : "" ?>>Url</option>
+                                        <? } else { ?>
+                                            <option value="">Select</option>
+                                        <? }?>
+                                    </select>
+                                <? } ?>
                             </div>
                             <div id="propContainer" class="hide">
                                 <div class="properties d-flex pt-2 pb-2">
@@ -329,6 +350,7 @@
                                     <button type="button" id="addProp" class="btn btn-success btn-sm"><i class="fa fa-plus"></i></button>
                                 </div>
                             </div>
+                            <div id="previewProperties" class="float-right"><button class="btn btn-primary">Preview</button></div>
                             <div id="propResult" class="">
                                 <h6 class="text-center mb-0 pt-3"><b>Preview</b></h6>
                                 <div class="pt-2">
@@ -358,16 +380,16 @@
     function updatePropertiesList() {
         $(".properties").remove();
         $("#propContainer").empty();
-        for (var fields in propArray) {
+        for (var key in propArray) {
             var props = [];
-            for (var prop in propArray[fields]) {
+            for (var prop in propArray[key]) {
                 tempprop = properties.clone();
                 tempprop.appendTo($("#propContainer"));
                 tempprop.find(".property").val(prop);
-                tempprop.find(".attribute").val(propArray[fields][prop]);
-                props.push(prop + '="' + propArray[fields][prop] + '"');
+                tempprop.find(".attribute").val(propArray[key][prop]);
+                props.push(prop + '="' + propArray[key][prop] + '"');
             }
-            $("#result").empty().append('<input ' + props.join(" ") + '>');
+            $("#result").empty().append('<button ' + props.join(" ") + '>');
         }
         $("#propContainer").removeClass("hide");
 
@@ -401,7 +423,7 @@
 
             $.ajax({
                 type: "post",
-                url: "/modules/ajaxLoadProperties",
+                url: "/ajax/ajaxLoadProperties",
                 data:  {
                     "columnId": $(this).data("id")
                 },
@@ -475,13 +497,28 @@
             propertiesList["columnId"] = $("#myId").val();
             $.ajax({
                 type: "post",
-                url: "modules/ajaxSaveProperties",
+                url: "/ajax/ajaxSaveProperties",
                 data: propertiesList,
                 dataType: "json",
                 success: function (response) {
-                    $("#propertiesListModal").modal("hide");
+                    // $("#propertiesListModal").modal("hide");
+                    updatePropertiesList();
                 }
             });
+        });
+
+        $("#previewProperties").click(function (e) {
+            e.preventDefault();
+
+            propertiesList = {};
+            for (var i = 0; i < $(".properties").length; i++) {
+                property = $($(".properties")[i]).find(".property").val();
+                attributes = $($(".properties")[i]).find(".attribute").val();
+                propertiesList[property] = attributes;
+            }
+// debugger;
+            propertiesList["columnId"] = $("#myId").val();
+            updatePropertiesList();
         });
 
         $("#addProp").click(function (e) {

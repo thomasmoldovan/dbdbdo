@@ -150,6 +150,11 @@
                                                 <select data-save="<?= handledata(array('links' => 'user_table_id_display', 'id' => $key["display"]["link_id"])) ?>"
                                                     name="display_column_<?= $key["display"]["link_id"]?>" id="display_column_<?= $key["display"]["link_id"] ?>" class="form-control form-control-sm">
                                                     <option value="0">None</option>
+                                                    <? foreach ($key[$key["table_name"]] as $column) { ?>
+                                                        <option value="<?= $column["id"] ?>" <?= $column["id"] == $key["display"]["user_table_id_display"] ? "selected" : ""; ?>>
+                                                            <?= $column["TABLE_NAME"].".".$column["COLUMN_NAME"] ?>
+                                                        </option>
+                                                    <? } ?>
                                                 </select>
                                             <? } ?>
                                         </td>
@@ -158,8 +163,7 @@
                                         </td>
                                         <td>              
                                             <? if ($can_link === true) { ?>                              
-                                                <input <?= $enabled ? "checked" : "" ?> name='complete' value="isComplete" class='btn btn-success btn-xs' type='checkbox' data-toggle='toggle' data-size='xs'
-                                                        />
+                                                <input <?= $enabled ? "checked" : "" ?> name='complete' value="isComplete" class='btn btn-success btn-xs' type='checkbox' data-toggle='toggle' data-size='xs'/>
                                             <? } ?>
                                         </td>
                                     </tr>
@@ -167,77 +171,6 @@
                         <? } ?>
                         </tbody>
                     </table>
-                </div>
-
-                <div id="fixes" class="tab-pane fade">
-                    <div class="panel-group col-lg-12 pl-30 pb-30" id="accordion">
-                        <div class="panel panel-default">
-                            <div class="panel-heading">
-                                <h4 class="panel-title">
-                                    <div data-toggle="collapse" data-parent="#accordion" href="#collapseOne">Change table Engine to InnoDB script</a>
-                                </h4>
-                            </div>
-                            <div id="collapseOne" class="panel-collapse collapse">
-                                <div class="panel-body">
-                                    <p></p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="panel panel-default">
-                            <div class="panel-heading">
-                                <h4 class="panel-title">
-                                    <div data-toggle="collapse" data-parent="#accordion" href="#collapseTwo">Change PK and FK column type</a>
-                                </h4>
-                            </div>
-                            <div id="collapseTwo" class="panel-collapse collapse">
-                                <div class="panel-body">
-                                    <p>
-                                        <div class="small">######################## Change Primary Keys type ############################</div>
-                                        <div><?= implode("</BR>", $data["change_type_pk"]) ?></div>
-
-                                        <br/>
-                                        <div class="small">######################## Change Foreign Keys type ############################</div>
-                                        <div><?= implode("</BR>", $data["change_type_fk"]) ?></div>
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="panel panel-default">
-                            <div class="panel-heading">
-                                <h4 class="panel-title">
-                                    <div data-toggle="collapse" data-parent="#accordion" href="#collapseThree">Delete entries from FK table, that do now have a corespondent in the PK table</a>
-                                </h4>
-                            </div>
-                            <div id="collapseThree" class="panel-collapse collapse">
-                                <div class="panel-body">
-                                    <p>
-                                        <?  foreach($data["delete_queries"] as $query) { ?>
-                                            <div class="small"><?= $query ?></div>
-                                        <? } ?>
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="panel panel-default">
-                            <div class="panel-heading">
-                                <h4 class="panel-title">
-                                    <div data-toggle="collapse" data-parent="#accordion" href="#collapseFour">Add Foreign Key script</a>
-                                </h4>
-                            </div>
-                            <div id="collapseFour" class="panel-collapse collapse">
-                                <div class="panel-body">
-                                    <p>
-                                        <?  foreach($data["alter_queries"] as $query) { ?>
-                                            <div class="small"><?= $query ?></div>
-                                        <? } ?>
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>

@@ -22,6 +22,7 @@ class UserModuleModel extends Model
     protected $skipValidation     = false;
 
     protected $DBGroup = "default";
+    public $projectId = "";
 
     public function getAllowedFields() {
         return $this->allowedFields;
@@ -38,8 +39,13 @@ class UserModuleModel extends Model
 			$where = " WHERE user_modules.module_name = '{$name}'";
 		}
 
+        if ($this->projectId != "") {
+			$where = " WHERE user_tables.project_id = '{$this->projectId}'";
+		}
+
 		$infosch = \Config\Database::connect("default");
 		$query = "SELECT  user_tables.id AS user_table_id,
+                            user_tables.project_id AS project_id,
                             user_tables.table_name,
                             user_tables.column_name,
                             user_tables.pk,
@@ -63,6 +69,7 @@ class UserModuleModel extends Model
                             LEFT JOIN user_tables `primary` ON primary.id = links.user_table_id_primary
                             LEFT JOIN user_tables `foreign` ON foreign.id = links.user_table_id_foreign
                             LEFT JOIN user_tables `display` ON display.id = links.user_table_id_display
+
                             {$where}
                     ORDER BY user_table_id ASC";
 

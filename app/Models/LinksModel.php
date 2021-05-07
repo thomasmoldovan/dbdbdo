@@ -22,6 +22,7 @@ class LinksModel extends Model
     protected $skipValidation     = false;
 
     protected $DBGroup = "default";
+    public $projectId = "";
 
     public function getAllowedFields() {
         return $this->allowedFields;
