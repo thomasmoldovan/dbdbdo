@@ -5,6 +5,7 @@ namespace App\Controllers;
 use App\Models\SchemaModel;
 use App\Models\ProjectModel;
 use App\Models\UserTableModel;
+
 use App\Models\UserModuleModel;
 use App\Models\TableModuleModel;
 
@@ -415,6 +416,52 @@ class Projects extends Home {
 		));
 	}
 
+	// Delete the table from DB
+	public function deleteTable() {
+		if (!$this->auth->check()) {
+			$this->notifications[] = ["info", "Your session has expired"];
+			$this->session->set("notification", $this->notifications);
+			return redirect()->to("/");
+		}
+
+        if ($this->request->isAjax()) {
+			$schema = new SchemaModel();
+			$projects = new ProjectModel();
+
+            $tableName = $this->request->getPost("table_name");
+            $project_hash = $this->request->getPost("project_hash");
+
+			if (!is_null($project_hash)) {
+				$this->current_project = $projects->getWhere(["user_id" => $this->user->id, "project_hash" => $project_hash])->getResultArray();
+			}
+	
+			if (empty($this->current_project)) {
+				// $this->auth->logout();
+				$this->notifications[] = ["error" => "Project not found ".__FILE__." ".__LINE__." ".__FUNCTION__.""];
+				$this->session->set("notification", $this->notifications);
+				return redirect()->to("/");
+			}
+	
+			$this->current_project = $this->current_project[0];
+
+			$result = $schema->executeOuterQuery("_".$this->current_project["project_hash"], "DROP TABLE ".$tableName);
+
+			$this->notifications[] = ["success", "Table deleted succesfully"];
+			$this->session->set("notification", $this->notifications);
+			return $this->response->setJSON(array(
+				"status" => "success",
+				"message" => "Table deleted succesfully"
+			));
+        }
+
+		$this->notifications[] = ["danger", "Only AJAX calls allowed"];
+		$this->session->set("notification", $this->notifications);
+        return $this->response->setJSON(array(
+			"status" => "danger",
+			"message" => "Only AJAX calls allowed"
+		));
+	}
+
 	public function getTableColumns($tableName = null, $project_hash = null) {
 		// AJAX calls have priority
 		if ($this->request->isAjax()) {
@@ -558,7 +605,7 @@ class Projects extends Home {
 
 		$schemaModel = new SchemaModel();
         $query = "UPDATE {$table} SET {$column} = '{$value}' WHERE id = {$id}";
-        $result = $schemaModel->executeQuery2($_ENV["database.default.database"], $query);
+        $result = $schemaModel->executeInnerQuery($_ENV["database.default.database"], $query);
 
         return $this->response->setJSON($result);
     }

@@ -120,7 +120,7 @@
                                                 <div class="d-flex">
                                                     <i class="fa fa-link pt-1"></i>&nbsp;
                                                     <? if ($component['primary']) { ?>
-                                                        Linked to&nbsp;<div class="text-warning bold"><?= $component["display_label"]; ?></div>
+                                                        Linked to&nbsp;<div class="text-primary bold"><?= $component["primary"].' -> showing '.$component["display"]; ?></div>
                                                     <? } ?>
                                                 </div>
                                             <? } ?>
@@ -461,6 +461,7 @@
                 url: "/writer",
                 data: {
                     "project_hash": "<?= $data["project"]["project_hash"]; ?>",
+                    "project_type": $("#projectType").prop('checked'),
                     "module_name": module_name
                 },
                 dataType: "json",

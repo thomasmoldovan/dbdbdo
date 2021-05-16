@@ -40,6 +40,10 @@
                             <button type="submit"
                                 class="resetTableButton btn btn-danger btn-sm float-right mr-1 no-outline"
                                 data-name="<?= $table["TABLE_NAME"] ?>">Reset</button>
+                            <? } else { ?>
+                            <button type="submit"
+                                class="deleteTableButton btn btn-secondary btn-sm float-right mr-1 no-outline"
+                                data-name="<?= $table["TABLE_NAME"] ?>">Delete</button>
                             <? } ?>
                         </div>
 
@@ -179,6 +183,28 @@
             });
         });
 
+        $(".deleteTableButton").click(function (e) {
+            e.preventDefault();
+            $(document).trigger("showLoadingScreen");
+            $.ajax({
+                type: "post",
+                url: "/projects/deleteTable",
+                data: {
+                    "table_name": $(this).data("name"),
+                    "project_hash": "<?= $data["project"]["project_hash"]; ?>"
+                },
+                dataType: "json",
+                success: function (response) {
+                    toastr.success(response.message);
+                    location = window.location;
+                },
+                error: function (response) {
+                    toastr.error(response.responseJSON.message, response.responseJSON.type);
+                    $(document).trigger("hideLoadingScreen");
+                }
+            });
+        });
+
         $(".addToModules").click(function (e) {
             e.preventDefault();
             tableName = $(this).attr("name");
@@ -223,7 +249,6 @@
                 complete: function (response) {
                     $(document).trigger("hideLoadingScreen");
                     var res = JSON.parse(response.responseText);
-                    console.log(res);
                     toastr.success("Module '" + res.module + "' has been successfully created");
                 },
                 error: function (error) {

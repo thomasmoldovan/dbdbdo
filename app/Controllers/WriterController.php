@@ -13,20 +13,24 @@ class WriterController extends Home {
     protected $export_type = "internal";
 
     public function writeFromTemplate() {
-        $modulesModel = new UserModuleModel();
         // $table_info = new UserTableModel();
-        $projects = new ProjectModel();
-
+        
         // Check if auth()
         // Check project hash
-
+        
         // $projectId = $this->session->get("projectId");
         // $projectHash = $projects->checkProjectBelongsToUser($projectId, $this->user->id)->project_hash;
+        if (!logged_in()) return redirect()->to('login');
+        
+        $modulesModel = new UserModuleModel();
+        $projects = new ProjectModel();
+
         $post = $this->request->getPost();
+        $post["project_type"] = $post["project_type"] == "true" ? "Internal" : "External";
 
         if (empty($post["module_name"])) return false;
         $project = $projects->getWhere(["user_id" => $this->user->id, "project_hash" => $post["project_hash"]])->getResultArray();
-
+        $this->current_project = $project[0];
 
         $module = $modulesModel->getModuleColumns($post["module_name"]);
         // $addToRoutes = (bool) $module[0]["add_to_routes"];
@@ -65,7 +69,7 @@ class WriterController extends Home {
                     $links[] = $module_column;
 
                     // We replace the data with the primary one
-                    $data["linked_fields"][] = $module_column["display"]." AS `".$module_column["column_name"]."`";
+                    $data["linked_fields"][] = $module_column["display"]." AS `".$module_column["display_label"]."`";
                 } else {
                     $data["linked_fields"][] = $module_column["table_name"].".".$module_column["column_name"];
                 }
@@ -122,7 +126,6 @@ class WriterController extends Home {
             } else continue;
 
             $properties = new PropertiesModel();
-            // $properties->setDatabase("online");
             $fieldProperties = $properties->getFieldProperties($id);
 
             if ($pk == "1") {
@@ -154,24 +157,27 @@ class WriterController extends Home {
                                                  {$foreign},
                                                  {$display}
                                           FROM {$primary_table}
-                                          LEFT JOIN {$foreign_table} ON {$foreign} = {$primary}";
+                                          LEFT JOIN {$foreign_table} ON {$foreign} = {$primary}
+                                          GROUP BY {$foreign} ORDER BY {$primary} ASC";
 
-                    $schema->setDatabase($projectHash);
-                    $resultDropdownJoin = $schema->executeQuery("default", $dropdownJoinQuery, "array");
+                    // TODO: Review these 2 lines
+                    if ($post["project_type"] == "Internal") {
+                        $resultDropdownJoin = $schema->executeInnerQuery($_ENV["database.default.database"], $dropdownJoinQuery, "array");
+                    } else {
+                        $resultDropdownJoin = $schema->executeOuterQuery("_".$this->current_project["project_hash"], $dropdownJoinQuery, "array");
+                    }
 
                     // CREATE THE OPTIONS LIST
                     $options = "";
                     // STATIC
-                    // foreach ($resultDropdownJoin as $key => $value) {
-                    //     $options .= $this->theSwitch(array(
-                    //         array("property" => "value",
-                    //               "attributes" => $value[$primary_column])), "option", $value[$display_column]);
-                    // }
+                    foreach ($resultDropdownJoin as $key => $value) {
+                        $options .= $this->theSwitch(array(
+                            array("property" => "value",
+                                  "attributes" => $value[$primary_column])), "option", $value[$display_column]);
+                    }
 
                     // DYNAMIC
-                    $options = '<? foreach ($join'.ucwords($display_table).' as $value) { ?>
-                                    <option value=\''.'<?= $value["id"] ?>\'><?= $value["'.$display_column.'"] ?></option>
-                                <? } ?>';
+
 
                     // CREATE THE SELECT
                     $test = $this->theSwitch($fieldProperties, "select", $options);
@@ -208,12 +214,13 @@ class WriterController extends Home {
         $prepareFields = implode(PHP_EOL, $prepareFields); // THIS
         $formInput .= "</form>";
 
-
-
         $file  = file_get_contents("../App/Templates/{$this->export_type}/CodeIgniter4/ci_4_model.raw");
         $file2 = file_get_contents("../App/Templates/{$this->export_type}/CodeIgniter4/ci_4_view.raw");
         $file3 = file_get_contents("../App/Templates/{$this->export_type}/CodeIgniter4/ci_4_controller.raw");
         $file4 = file_get_contents("../App/Templates/{$this->export_type}/CodeIgniter4/ci_4_route.raw");
+
+        // Set the right connection to DB
+        if ($post["project_type"] == "External") $file3 = str_replace("// {{external}} ", "", $file3);
 
         // Constructing the joined columns, the ones that are set in display
         $linked_fields =  implode(", ", $data["linked_fields"]);

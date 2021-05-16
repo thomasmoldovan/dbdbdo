@@ -55,9 +55,7 @@ git add .
 git commit -m"Initial commit"
 
 ### [x] Add upstream repository and push
-https://github.com/thomasmoldovan/dbdbdo.git
 
-### [ ] Setup hosting and renew domain
 ### [ ] Add git hooks
 ---
 * [x] Add javascript and css libraries
@@ -67,7 +65,6 @@ https://github.com/thomasmoldovan/dbdbdo.git
     * [x] Register
     * [x] Login
     * [x] Forgot password
-    * [ ] Github Login
     * [x] Confirm
     * [x] Reset Password
     * [ ] Profile Page
@@ -80,13 +77,13 @@ https://github.com/thomasmoldovan/dbdbdo.git
         * [ ] Duplicate Project
     * [x] View Project
         * [x] Read Columns
-        * [ ] Create Module
+        * [x] Create Module
         * [ ] Project Settings
         * [ ] Add Table
         * [ ] Add View
     * [x] Clear Projects
 * [ ] Project
     * [x] Reset table
-    * [ ] Select all and stuff
+    * [x] Select all and stuff
 * [x] Admin todo demo
 * [x] System view for admin

@@ -25,9 +25,12 @@ class Home extends BaseController{
 		$this->pages = config('Pages');
 		$this->user = user();
 
-		if (isset($_SESSION["notification"]) && is_array($_SESSION["notification"])) {
-			$this->notifications = $_SESSION["notification"];
-		}
+		// $this->notifications[] = ["info", "I am running index"];
+		// $this->session->set("notification", $this->notifications);
+
+		// if (isset($_SESSION["notification"]) && is_array($_SESSION["notification"])) {
+		// 	$this->notifications = $_SESSION["notification"];
+		// }
 	}
 
 	public function showHome() {

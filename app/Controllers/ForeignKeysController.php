@@ -241,7 +241,7 @@ class ForeignKeysController extends Home
 
 	public function getPrimaryKey($table) {
 		$schema = new SchemaModel();
-		$result = $schema->executeQuery($this->current_project["project_hash"], "SHOW INDEX FROM `{$table}`", "array");
+		$result = $schema->executeOuterQuery($this->current_project["project_hash"], "SHOW INDEX FROM `{$table}`", "array");
         if (count($result) > 0) {
             return $result[0]['Column_name'];
         } else {
@@ -252,7 +252,7 @@ class ForeignKeysController extends Home
 	public function getColumnType($projectHash, $table, $column) {
 		$schema = new SchemaModel();
 		$schema->setDatabase("_".$projectHash);
-		$result = $schema->executeQuery($this->current_project["project_hash"], "SHOW COLUMNS FROM `{$table}` WHERE `field` = '{$column}'", "array");
+		$result = $schema->executeOuterQuery($this->current_project["project_hash"], "SHOW COLUMNS FROM `{$table}` WHERE `field` = '{$column}'", "array");
         if (count($result) > 0) {
             return $result[0];
         } else {
