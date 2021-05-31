@@ -8,10 +8,11 @@ class Ajax extends Home {
 
 	public function index()	{
 		$check = $this->auth->check();
-		if ($this->auth->check()) {
-			 var_dump($this->auth->user());
+		if ($check) {
+			//  var_dump($this->auth->user());
             //  return $this->display_main("header", "todo");
-			return "AJAX";
+            return $this->response->setJSON(array("post" => $this->request->getPost()));
+			// return "AJAX";
 		}
         // return $this->display_main("header", "todo");
 		return "AJAX";

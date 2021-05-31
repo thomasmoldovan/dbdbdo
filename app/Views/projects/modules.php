@@ -62,12 +62,8 @@
                         <div class="btn-group ml-auto">
                             <div class="d-flex align-self-center pr-2">
                                 <div class="pr-2">
-                                    <input id="showOnMenu" class="ml-2" type="checkbox" checked 
-                                    data-toggle="toggle" data-size="xs" data-on="Yes" data-off="No" data-onstyle="success" data-offstyle="primary">
-                                </div>
-                                <div class="pr-2">
                                     <input id="addToRoutes" class="ml-2" type="checkbox" checked 
-                                    data-toggle="toggle" data-size="xs" data-on="Yes" data-off="No" data-onstyle="success" data-offstyle="primary">
+                                    data-toggle="toggle" data-size="xs" data-on="Show" data-off="No" data-onstyle="success" data-offstyle="primary">
                                 </div>
                                 <div class="">
                                     <input id="moduleLock" class="float-right" type="checkbox" checked="" 
@@ -77,13 +73,13 @@
                             <button data-module_name="<?= $module[0]['module_name'] ?>" class="settingsModal btn btn-primary btn-sm btn-block m-1">
                                 Settings
                             </button>
-                            <button data-module_name="<?= $module[0]['module_name'] ?>" class="fileWriter btn btn-primary btn-sm btn-block m-1">
+                            <div data-module_name="<?= $module[0]['module_name'] ?>" class="fileWriter btn btn-primary btn-sm btn-block m-1">
                                 Build
-                            </button>
+                            </div>
                             <button data-module_name="<?= $module[0]['module_name'] ?>" class="fileViewer btn btn-primary btn-sm btn-block m-1">
                                 View
                             </button>
-                            <button data-module_name="<?= $module[0]['module_name'] ?>" class="deleteModule btn btn-danger btn-sm btn-block m-1">
+                            <button onclick="deleteModule('<?= $module[0]['module_name'] ?>')" data-module_name="<?= $module[0]['module_name'] ?>" class="deleteModule btn btn-danger btn-sm btn-block m-1">
                                 Delete
                             </button>
                         </div>
@@ -172,7 +168,8 @@
                                             </button>
                                         </td>
                                         <td>
-                                            <input <?= $component["column_enabled"] == "1" ? "checked" : "" ?> name='disabled' value="isDisabled" class='form-control form-control-sm' type='checkbox' data-toggle='toggle' data-size='sm'
+                                            <input <?= $component["column_enabled"] == "1" ? "checked" : "" ?> name='disabled' value="isDisabled" 
+                                                    type='checkbox' data-toggle='toggle' data-size='sm'
                                                     data-save="<?= handledata(array('tables_modules' => 'enabled', 'id' => $component['user_table_id'])) ?>"
                                                     class="btn btn-success btn-sm"
                                                     />
@@ -229,48 +226,17 @@
                     <div class="d-flex">
                         <div class="col-6 pb-3 pl-1">
                             <div class="">
-                                <input type="checkbox" id="" class="form-check-input">
+                                <input type="checkbox" class="form-check-input">
                                 <label for="" class="form-check-label" >Entity</label>
-                            </div>
-                            <div class="">
-                                <input type="checkbox" id="" class="form-check-input">
-                                <label for="" class="form-check-label" >Migration</label>
-                            </div>
-                            <div class="">
-                                <input type="checkbox" id="" class="form-check-input">
-                                <label for="" class="form-check-label" >Model</label>
-                            </div>
-                            <div class="">
-                                <input type="checkbox" id="" class="form-check-input">
-                                <label for="" class="form-check-label" >View</label>
-                            </div>
-                            <div class="">
-                                <input type="checkbox" id="" class="form-check-input">
-                                <label for="" class="form-check-label" >Validation</label>
                             </div>
                         </div>
 
                         <div class="col-6 pb-3 pl-1">
                             <div class="">
-                                <input type="checkbox" id="" class="form-check-input">
+                                <input type="checkbox" class="form-check-input">
                                 <label for="" class="form-check-label" >Show on menu</label>
                             </div>
-                            <div class="">
-                                <input type="checkbox" id="" class="form-check-input">
-                                <label for="" class="form-check-label" >Add routes</label>
-                            </div>
-                            <div class="">
-                                <input type="checkbox" id="" class="form-check-input">
-                                <label for="" class="form-check-label" >Use authentication</label>
-                            </div>
-                            <div class="">
-                                <input type="checkbox" id="" class="form-check-input">
-                                <label for="" class="form-check-label" >Use jQuery</label>
-                            </div>
-                            <div class="">
-                                <input type="checkbox" id="" class="form-check-input">
-                                <label for="" class="form-check-label" >Controller</label>
-                            </div>
+                            
                         </div>
                     </div>
                     
@@ -370,8 +336,6 @@
     </div>
 </div>
 
-<script src="/js/common.js"></script>
-
 <script>
     var opened = "";
     var properties = {};
@@ -455,10 +419,12 @@
             e.preventDefault();
             $(document).trigger("showLoadingScreen");
             var module_name = $(e.currentTarget).data("module_name");
+            console.log("Writing module: " + module_name);
             if (module_name == "") return false;
             $.ajax({
                 type: "post",
                 url: "/writer",
+                async: true,
                 data: {
                     "project_hash": "<?= $data["project"]["project_hash"]; ?>",
                     "project_type": $("#projectType").prop('checked'),
@@ -466,14 +432,17 @@
                 },
                 dataType: "json",
                 success: function (response) {
+                    console.log("success");
                     console.log(response);
+                    $(document).trigger("hideLoadingScreen");
                 },
                 error: function (response) {
+                    console.log("error");
                     console.log(response);
                 },
                 complete: function (response) {
+                    console.log("complete");
                     console.log(response);
-                    $(document).trigger("hideLoadingScreen");
                 }
             });
         });
@@ -538,4 +507,19 @@
             console.log("Delete ", $(this).data("module_name"));
         });
     });
+
+    function deleteModule(moduleName) {
+        console.log(moduleName);
+        $.ajax({
+            type: "post",
+            url: "/ajax",
+            data: {
+                "data": "Echo"
+            },
+            dataType: "json",
+            success: function (response) {
+                console.log("Echo success");
+            }
+        });
+    }
 </script>

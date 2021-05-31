@@ -294,26 +294,20 @@
         element.removeClass("btn-primary btn-warning btn-danger btn-success").addClass("btn-warning");
         $.ajax({
             type: "post",
-            url: "<?= base_url() ?>/projects/getTableColumns",
+            url: "/projects/getTableColumns",
             data: {
                 "tableName": currentTable,
                 "project_hash": "<?= $data["project"]["project_hash"]; ?>"
             },
             dataType: "json",
             success: function (response) {
-                console.log(response);
                 $(element).children().removeClass().addClass("fas fa-eye");
                 $(element).removeClass("btn-primary btn-warning btn-danger btn-success");
                 $(element).addClass("btn-success");
-                location = window.location;
+                $(document).trigger("hideLoadingScreen");
             },
             error: function (response) {
-                console.log(response);
                 element.removeClass("btn-warning").addClass("btn-danger");
-            },
-            complete: function (response) {
-                console.log(response);
-                //location = window.location;
             }
         });
     }

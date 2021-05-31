@@ -7,15 +7,23 @@
         <div class="card">
             <h4 class="card-header">Import SQL schema</h4>
             <div class="card-body pb-0">
-                <h6 class="card-title">Project name: <small class="bold text-danger">*</small></h6>
-                <div class="pb-3">
-                    <input type="text" name="projectName" id="projectName" class="pl-1 form-control" value="" autocomplete="off">
-                    <div class="small error text-danger invisible" name="projectNameError" id="projectNameError"></div>
-                    <div class="pt-3 hide">
-                        <input type="checkbox" name="processAllTables" id="processAllTables" value="0" checked="">
-                        <label for="processAllTables">Process tables after import</label>
+
+                <div class="row">
+                    <div class="col-9">
+                        <h6 class="card-title">Project name: <small class="bold text-danger">*</small></h6>
+                        <div class="pb-3">
+                            <input type="text" name="projectName" id="projectName" class="pl-1 form-control form-control-sm" value="" autocomplete="off">
+                            <div class="small error text-danger invisible" name="projectNameError" id="projectNameError"></div>
+                        </div>                        
+                    </div>
+                    <div class="col-3">
+                        <h6 class="card-title">Project type:</h6>
+                        <div class="pb-3">
+                            <input type="checkbox" class="pl-1" name="projectType" id="projectType" data-toggle='toggle' data-size='sm' data-on="Internal" data-off="External" data-offstyle="danger">
+                        </div>
                     </div>
                 </div>
+                
 
                 <h6 class="card-title">Description:</h6>
                 <div class="pb-3">
@@ -103,8 +111,9 @@
                 url: "importSchema",
                 data: {
                     "name": $("#projectName").val(),
-                    "data": editor.getValue(),
-                    "processAllTables": $("#processAllTables").is(':checked')
+                    "description": $("#projectDescription").val(),
+                    "type": $("#projectType").val() == "on" ? 1 : 0,
+                    "data": editor.getValue()
                 },
                 dataType: "json",
                 success: function (response) {
@@ -113,7 +122,7 @@
                     }
                     console.log("Success");
                     console.log(response);
-                    toastr.success("Redirecting...", "Project was succesffully created");
+                    toastr.success("Redirecting...", "Project was succesfully created");
                 },
                 error: function (response) {
                     toastr.error("Error: " + response.message, "Error importing schema");

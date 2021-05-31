@@ -51,8 +51,9 @@ class Projects extends Home {
 					return redirect()->to("/");
 				}
 
+				// Now that we have a project loaded
 				if ($this->current_project) {
-					// Project List View
+					// Tables List View
 					$schema = new SchemaModel();
 					$data["project"] = $this->current_project;
 					$data["tables"] = $schema->getTables($this->current_project["project_hash"]);
@@ -69,8 +70,35 @@ class Projects extends Home {
 				}
 			}
 
-			// No hash - Return to projects page
-			$project_list = $projects->getProjectsForUser($this->user->id);
+			// No hash in the URL
+			// Display the projects page
+			$raw_project_list = $projects->getProjectsForUser($this->user->id);
+
+			$projects_array = [];
+			foreach ($raw_project_list as $project) {
+				if (!in_array($project->project_hash, $projects_array)) {
+					$projects_array[] = $project->project_hash;					
+
+					$project_list[$project->project_hash] = new \stdClass();
+					$project_list[$project->project_hash]->id = $project->id;
+					$project_list[$project->project_hash]->enabled = $project->enabled;
+					$project_list[$project->project_hash]->count_table_name = 1;
+					$project_list[$project->project_hash]->count_column_name = $project->count_table_name;
+					$project_list[$project->project_hash]->count_modules = 0;
+					$project_list[$project->project_hash]->count_links = $project->primary_link || $project->foreign_link ? 1 : 0;
+					$project_list[$project->project_hash]->project_description = $project->project_description;
+					$project_list[$project->project_hash]->project_name = $project->project_name;
+					$project_list[$project->project_hash]->project_hash = $project->project_hash;
+					$project_list[$project->project_hash]->project_id = $project->project_id;
+					$project_list[$project->project_hash]->updated_at = $project->updated_at;
+				} else {
+					$project_list[$project->project_hash]->count_table_name++;
+					$project_list[$project->project_hash]->count_column_name += $project->count_table_name;
+					$project_list[$project->project_hash]->count_modules += $project->module_id ? 1 : 0;
+					$project_list[$project->project_hash]->count_links += $project->primary_link || $project->foreign_link ? 1 : 0;
+				}
+			}
+
 			$data = ["project_list" => $project_list];
 			$this->session->set("notification", $this->notifications);
 			return $this->display_main("header", "projects", $data);
@@ -184,6 +212,8 @@ class Projects extends Home {
 	// Creates a DB with the provided schema
 	public function importSchema($data = null, $name = null) {
 		$name = $this->request->getPost("name");
+		$description = $this->request->getPost("description");
+		$type = $this->request->getPost("type");
 		$data = $this->request->getPost("data");
 
 		if (empty($name) || empty($data)) {
@@ -203,7 +233,6 @@ class Projects extends Home {
 		}
 
 		$userId = $this->user->id;
-		$projectName = $name;
 		$project_hash = substr(uniqid(), -6);
 
 		// Add the project
@@ -211,8 +240,10 @@ class Projects extends Home {
 			$this->current_project = $projects->insert([
 				"id" => null,
 				"user_id" => $userId,
-				"project_name" => $projectName,
 				"project_hash" => $project_hash,
+				"project_name" => $name,
+				"project_description" => $description,
+				"project_type" => $type,
 				"database" => $project_hash]
 			);
 		} catch (\Exception $ex) {
@@ -331,6 +362,13 @@ class Projects extends Home {
 		}
 
 		if (!is_null($result) && $nrTables > 0) {
+			$schema = new SchemaModel();
+        	$tables = $schema->getTables("_".$project_hash);
+
+			foreach ($tables as $table) {
+				$this->getTableColumns($table["TABLE_NAME"], $project_hash);
+			}
+
 			return $this->response->setJSON([
 				"project_hash" => $project_hash
 			]);
@@ -463,8 +501,8 @@ class Projects extends Home {
 	}
 
 	public function getTableColumns($tableName = null, $project_hash = null) {
-		// AJAX calls have priority
-		if ($this->request->isAjax()) {
+		if (!is_null($tableName) && !is_null($project_hash)) {
+		} elseif ($this->request->isAjax()) {
 			$tableName = $this->request->getPost("tableName");
 			$project_hash = $this->request->getPost("project_hash");
 		}
@@ -496,12 +534,13 @@ class Projects extends Home {
 		// Data will be saved in table user_tables
         $saved = $this->saveTableInfo($tableName, $columns);
 
-        if ($this->request->isAjax()) {
-            return $this->response->setJSON(array(
-                "tableName" => $tableName,
-                "columns" => $saved
-            ));
-        }
+		$this->notifications[] = ["success", "Saved ".count($saved)." columns in table ".$tableName];
+		$this->session->set("notification", $this->notifications);
+
+		return $this->response->setJSON(array(
+			"tableName" => $tableName,
+			"columns" => $columns
+		));
     }
 
 	public function saveTableInfo($tableName, $columns) {
@@ -522,7 +561,7 @@ class Projects extends Home {
         }, $columns);
 
         $userTable = new UserTableModel();
-        $userTable->where(array("table_name" => $tableName))->delete();
+        // $userTable->where(array("table_name" => $tableName))->delete();
 
         foreach ($columns as $column) {
             $result[] = $userTable->insert((Object)$column);
@@ -546,7 +585,8 @@ class Projects extends Home {
             "module_name" => $post["module_name"],
             "module_title" => ucwords($post["module_name"]),
             "module_type" => $post["module_name"],
-            "module_route" => $post["module_name"]
+            "module_route" => $post["module_name"],
+			"show_on_menu" => 1
         );
 
 		// Check for user and projects also

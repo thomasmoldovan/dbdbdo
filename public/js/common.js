@@ -1,4 +1,3 @@
-
 $(document).ready(function () {
     $('*[data-save]').off('change').on('change', autosaveChange);
     toastr.options = {
@@ -88,14 +87,25 @@ function query(query) {
 }
 
 function setElementStatus(element, status) {
-    element.removeClass('status-danger');
-    element.removeClass('status-success');
-    element.removeClass('status-error');
-    element.addClass('status-' + status);
+    // debugger;
+    if (element.is(':checkbox')) {
+        element.parent().removeClass('outline-danger btn-outline-danger');
+        element.parent().removeClass('outline-success btn-outline-success');
+        element.parent().removeClass('outline-error btn-outline-error');
+        element.parent().addClass('outline-' + status + ' btn-outline-' + status);
+    } else {
+        element.removeClass('status-danger');
+        element.removeClass('status-success');
+        element.removeClass('status-error');
+        element.addClass('status-' + status);
+    }
+    
 }
 
 function autosaveChange() {
     var element = $(this);
+
+    console.log("Autosave change");
     console.log(this);
 
     setElementStatus(element, 'danger');
@@ -107,23 +117,23 @@ function autosaveChange() {
     var type = element.attr("type");
     var value = element.val();
 
-    $('*[data-save]').off('change').on('change', autosaveChange);
+    // $('*[data-save]').off('change').on('change', autosaveChange);
 
     // Handle types here
     if (element.is(':checkbox')) {
         value = element.is(':checked') ? 1 : 0;
     }
 
-    return $.ajax({
+    $.ajax({
         type: 'post',
         url: url,
-        global: false,
         data: {
             "type": type,
             "param": param,
             "value": value
         },
         success: function (e) {
+            console.log("-> ", e);
             if (e.success == false) {
                 setElementStatus(element, 'error');
             } else {
@@ -134,6 +144,23 @@ function autosaveChange() {
             setElementStatus(element, 'error');
         }
     });
+
+    return true;
 }
 
 $('[data-toggle="tooltip"]').tooltip();
+
+$(document).ajaxSuccess(function (evt, jqXHR, settings) {
+    console.log(jqXHR.responseJSON);
+    //toastr[value[0]](value[1]);
+    //toastr.info(jqXHR.responseJSON);
+    // alert("Global success callback.");
+});
+
+$(document).ajaxError(function (evt, jqXHR, settings) {
+    // alert("Global error callback.");
+});
+
+$(document).ajaxComplete(function (evt, jqXHR, settings) {
+    // alert("Global complete callback.");
+});

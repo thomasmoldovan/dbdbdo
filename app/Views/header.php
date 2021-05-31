@@ -33,9 +33,14 @@
 
     .background-light { background: #1d1a18; }
     .height-limit-40 { height: 40px; }
+
     .status-danger { border: 2px solid #990; }
     .status-success { border: 2px solid #090; }
     .status-error { border: 2px solid #900; }
+
+    .outline-danger { border: 2px solid #990; }
+    .outline-success { border: 2px solid #090; }
+    .outline-error { border: 2px solid #900; }
 
     .txt-danger { color: #990; }
     .txt-success { color: #090; }
@@ -43,7 +48,7 @@
 
     .projectCard { transition: background-color 0.2s ease; min-width: 290px; max-width: 345px; }
     .card-normal { background: #ecf0f1; }
-    .card-hover { background: #5ABDFF; cursor: pointer; }
+    .card-hover { background: #91d3ff; cursor: pointer; }
 
     .no-outline { outline: none !important; box-shadow: none !important; }
 

@@ -12,10 +12,10 @@ class Home extends BaseController{
 	protected $authorize;
 	protected $session;
 
+	protected $signature;
+
 	public function __construct()
 	{
-		// Most services in this controller requires
-		// the session to be started - so fire it up!
 		helper('html');
 		helper('auth');
 		$this->session = service('session');
@@ -25,6 +25,8 @@ class Home extends BaseController{
 		$this->pages = config('Pages');
 		$this->user = user();
 
+		$this->signature = random_bytes(16);
+
 		// $this->notifications[] = ["info", "I am running index"];
 		// $this->session->set("notification", $this->notifications);
 
@@ -33,14 +35,9 @@ class Home extends BaseController{
 		// }
 	}
 
-	public function showHome() {
-		return $this->response->setStatusCode(200)
-							  ->setBody(true);
-	}
-
 	public function index()	{
 		$check = $this->auth->check();
-		if ($this->auth->check()) {
+		if ($check) {
 			$redirectURL = session('redirect_url') ?? '/';
 			unset($_SESSION['redirect_url']);
 			if ($redirectURL !== '/') {
@@ -65,12 +62,47 @@ class Home extends BaseController{
 
 	public function tried(\Exception $ex) {
 		$response["status"] = "error";
-		$response["code"] = 3481;
+		$response["code"] = $ex->getCode() ?? null;
 		$response["message"] = $ex->getMessage() ?? null;
 		if (ENVIRONMENT === "Development") {
 			$response["line"] = $ex->getLine() ?? null;
 			$response["file"] = $ex->getFile() ?? null;
 		}
 		return $this->response->setJSON($response);
+	}
+
+	public function notify($type = "info", $title = null, $text = null) {
+		$this->notifications[] = [$type, $text, $title];
+		$this->session->set("notification", $this->notifications);
+		return true;
+	}
+
+	public function check_db_connections() {
+		try {
+            $userTables = $userTable->findAll();
+        } catch (\Throwable $th) {
+            $message = $th->getMessage();
+            $code = $th->getCode();
+
+            echo view("templates/header", array("title" => "Ooops"));
+
+            // No such database
+            if ($code === 1049) {
+                echo view("system-wide/NoConnectionView", array(
+                    "message" => $message,
+                    "suggestion" => "Please check if the correct database name is present in .env file (database.default.database)"
+                ));
+            }
+
+            // No database connection
+            if ($code === 2002) {
+                echo view("system-wide/NoConnectionView", array(
+                    "message" => $message,
+                    "suggestion" => "Please refer to the available documentation and check if an active database is currently running"
+                ));
+            }
+            
+            return false;
+        }
 	}
 }

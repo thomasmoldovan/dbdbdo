@@ -160,24 +160,28 @@ class WriterController extends Home {
                                           LEFT JOIN {$foreign_table} ON {$foreign} = {$primary}
                                           GROUP BY {$foreign} ORDER BY {$primary} ASC";
 
-                    // TODO: Review these 2 lines
                     if ($post["project_type"] == "Internal") {
+                        // Internal: The data for the table is taken from out database
                         $resultDropdownJoin = $schema->executeInnerQuery($_ENV["database.default.database"], $dropdownJoinQuery, "array");
                     } else {
+                        // External: The data for the table is taken from the users database
                         $resultDropdownJoin = $schema->executeOuterQuery("_".$this->current_project["project_hash"], $dropdownJoinQuery, "array");
                     }
 
                     // CREATE THE OPTIONS LIST
                     $options = "";
-                    // STATIC
-                    foreach ($resultDropdownJoin as $key => $value) {
-                        $options .= $this->theSwitch(array(
-                            array("property" => "value",
-                                  "attributes" => $value[$primary_column])), "option", $value[$display_column]);
+                    
+                    if ($column["link_type"] == 1) {
+                        // STATIC
+                        foreach ($resultDropdownJoin as $key => $value) {
+                            $options .= $this->theSwitch(array(
+                                array("property" => "value",
+                                      "attributes" => $value[$primary_column])), "option", $value[$display_column]);
+                        }
+                    } elseif ($column["link_type"] == 1) {
+                        // DYNAMIC
+
                     }
-
-                    // DYNAMIC
-
 
                     // CREATE THE SELECT
                     $test = $this->theSwitch($fieldProperties, "select", $options);
@@ -219,8 +223,10 @@ class WriterController extends Home {
         $file3 = file_get_contents("../App/Templates/{$this->export_type}/CodeIgniter4/ci_4_controller.raw");
         $file4 = file_get_contents("../App/Templates/{$this->export_type}/CodeIgniter4/ci_4_route.raw");
 
-        // Set the right connection to DB
         if ($post["project_type"] == "External") $file3 = str_replace("// {{external}} ", "", $file3);
+
+        // if ($column["link_type"] == 1) $file3 = str_replace("// {{static}} ", "", $file3);
+        // if ($column["link_type"] == 2) $file3 = str_replace("// {{dynamic}} ", "", $file3);
 
         // Constructing the joined columns, the ones that are set in display
         $linked_fields =  implode(", ", $data["linked_fields"]);
@@ -295,6 +301,9 @@ class WriterController extends Home {
                 unlink("../{$export_prepath}App/Config/Generated/".$routesFilename.".php");
             }
         }
+
+        $result["response"][] = ["info", "Export type: ".$this->export_type];
+        $result["response"][] = ["info", "Link type: ".$column["link_type"]];
 
         if ($this->request->isAjax()) {
             return $this->response->setJSON($result);

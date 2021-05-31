@@ -159,7 +159,13 @@
                                             <? } ?>
                                         </td>
                                         <td>
-
+                                            <? if (isset($key["display"]["link_id"])) { ?>
+                                                <select data-save="<?= handledata(array('links' => 'link_type', 'id' => $key["display"]["link_id"])) ?>"
+                                                    name="link_type_<?= $key["display"]["link_id"]?>" id="link_type_<?= $key["display"]["link_id"] ?>" class="form-control form-control-sm">
+                                                    <option value="1">Static</option>
+                                                    <option value="2">Dynamic</option>
+                                                </select>
+                                            <? } ?>
                                         </td>
                                         <td>              
                                             <? if ($can_link === true) { ?>                              
