@@ -39,11 +39,11 @@
                         <button type="button" class="exampleCode btn btn-primary mb-3" id="SimpleForum" name="SimpleForum">Simple Forum</button>
                         <button type="button" class="exampleCode btn btn-primary mb-3" id="MySqlExample" name="MySqlExample">MySql Example</button>
                         <button type="button" class="exampleCode btn btn-primary mb-3" id="Authentication" name="Authentication">Authentication</button>
+                        <button type="button" class="btn btn-primary mb-3 float-right" id="processDatabaseSchema" name="processDatabaseSchema">Proceed</button>
                     </div>                        
                 </div>
                 
                 <textarea name="databaseSchema" id="databaseSchema" class="w-100" rows="10" value=""></textarea>
-                <button type="button" class="btn btn-primary mt-3" id="processDatabaseSchema" name="processDatabaseSchema">Proceed</button>
                 <div class="small error text-danger invisible">Project name cannot be empty</div>
             </div>
         </div>

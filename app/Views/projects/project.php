@@ -4,13 +4,13 @@
         <? foreach ($data["tables"] as $key => $table) {
         // Move this in PHP Controller
         $base64 = sha1(json_encode($table)); ?>
-        <div id="table<?= $key; ?>" class="container-fluid tableContainer">
+        <div class="container-fluid">
             <div class="header">
                 <div class="p-0 height-limit-40" href="#<?= $table["TABLE_NAME"] ?>"
                     data-toggle="collapse" aria-expanded="false" aria-controls="<?= $table["TABLE_NAME"] ?>">
                     <div class="f-row flex-row flex row align-self-center m-0 background-light">
 
-                        <div class="col-2 align-self-center w-100 pl-0">
+                        <div class="col-3 align-self-center w-100 pl-0">
                             <div class="d-flex d-row">
                                 <? if (!in_array($table["TABLE_NAME"], $data["tablesProcessed"])) {
                                     echo '<button class="action btn btn-sm btn-primary m-1 no-outline" data-id="'.$table["TABLE_NAME"].'" data-json="'.$base64.'"><i class="fab fa-readme"></i></button>';
@@ -18,12 +18,12 @@
                                     echo '<button class="action btn btn-sm btn-success m-1 no-outline" data-id="'.$table["TABLE_NAME"].'" data-json="'.$base64.'"><i class="fas fa-eye"></i></button>';
                                 } ?>
                                 <div class="pl-3 align-self-center">
-                                    <div class="bold text-white"><?= $table["TABLE_NAME"] ?></div>
+                                    <div class="text-white"><b><?= $table["TABLE_NAME"] ?></b>&nbsp;<small class="pl-3 pt-1">(3 Modules)</small></div>
                                 </div>
                             </div>
                         </div>
                         <div class="col-2 align-self-center bold text-white">Rows: <?= $table["TABLE_ROWS"] ?></div>
-                        <div class="col-2 align-self-center">
+                        <div class="col-1 align-self-center">
                             <div class="form-group pt-1 mb-1 text-white">
                                 <?= $table["ENGINE"] ?>
                             </div>

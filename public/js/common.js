@@ -152,9 +152,9 @@ $('[data-toggle="tooltip"]').tooltip();
 
 $(document).ajaxSuccess(function (evt, jqXHR, settings) {
     console.log(jqXHR.responseJSON);
-    //toastr[value[0]](value[1]);
-    //toastr.info(jqXHR.responseJSON);
-    // alert("Global success callback.");
+    // let value = JSON.parse(jqXHR.responseJSON);
+    toastr.info(jqXHR.responseJSON);
+    // toastr[value[0]](value[1]);
 });
 
 $(document).ajaxError(function (evt, jqXHR, settings) {

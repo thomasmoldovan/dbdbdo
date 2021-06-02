@@ -8,7 +8,7 @@ class UserModuleModel extends Model
     protected $primaryKey = 'id';
 
     protected $returnType = 'object';
-    protected $useSoftDeletes = true;
+    protected $useSoftDeletes = false;
 
     protected $allowedFields = ["id", "module_name", "module_title", "module_type", "module_route", "module_icon", "show_on_menu", "add_to_routes", "locked", "created_at", "updated_at", "deleted_at"];
 

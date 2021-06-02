@@ -41,149 +41,157 @@
 </style>
 <div class="mt-2">
     <ul class="nav flex-column">
-    <? foreach ($data["modules"] as $key => $module) {
-        $base64 = sha1(json_encode($module)); ?>
-        <div class="container-fluid">
-            <div class="header">
-                <div id="<?= $module[0]['module_name'] ?>Row" class="p-0 height-limit-40" href="#<?= $module[0]['module_name'] ?>" aria-expanded="false" aria-controls="<?= $module[0]['module_name'] ?>">
-                    <div class="f-row flex-row flex row align-self-center m-0 background-light">
+        <? if (isset($data["modules"]) && count($data["modules"])) { ?>
+            <? foreach ($data["modules"] as $key => $module) {
+                $base64 = sha1(json_encode($module)); ?>
+                <div class="container-fluid">
+                    <div class="header">
+                        <div id="<?= $module[0]['module_name'] ?>Row" class="p-0 height-limit-40" href="#<?= $module[0]['module_name'] ?>" aria-expanded="false" aria-controls="<?= $module[0]['module_name'] ?>">
+                            <div class="row align-self-center m-0 background-light">
 
-                        <div class="action align-self-center" data-id="<?= trim(strtolower($module[0]['module_name'])) ?>">
-                            <button class="btn btn-sm btn-primary m-1" data-toggle="collapse"><i class="fa fa-arrow-right"></i></button>
-                        </div>
-                        <div class="col-2 align-self-center">
-                            <div class="bold text-white"><?= $module[0]['module_name'] ?></div>
-                        </div>
-                        <div class="col-2 d-flex align-self-center text-white">
-                            <input type="text" name="routeName" id="routeName<?= $module[0]['module_name'] ?>" class="form-control form-control-sm" placeholder="Route Alias">
-                            <i class="fa fa-link pl-1 align-self-center" data-tooltip="Some tooltip from Thomas"></i>
-                        </div>
-
-                        <div class="btn-group ml-auto">
-                            <div class="d-flex align-self-center pr-2">
-                                <div class="pr-2">
-                                    <input id="addToRoutes" class="ml-2" type="checkbox" checked 
-                                    data-toggle="toggle" data-size="xs" data-on="Show" data-off="No" data-onstyle="success" data-offstyle="primary">
+                                <div class="action align-self-center" data-id="<?= trim(strtolower($module[0]['module_name'])) ?>">
+                                    <button class="btn btn-sm btn-primary m-1" data-toggle="collapse"><i class="fa fa-arrow-right"></i></button>
                                 </div>
-                                <div class="">
-                                    <input id="moduleLock" class="float-right" type="checkbox" checked="" 
-                                    data-toggle="toggle" data-size="xs" data-on="Locked" data-off="Unlocked" data-onstyle="primary" data-offstyle="danger">
+                                <div class="col-2 align-self-center">
+                                    <div class="text-white"><b><?= $module[0]['module_name'] ?></b>&nbsp;<small class="col-6 float-right">(12 columns)</small></div>
+                                </div>
+                                <div class="col-2 d-flex align-self-center text-white">
+                                    <input type="text" name="routeName" id="routeName<?= $module[0]['module_name'] ?>" class="form-control form-control-sm" placeholder="Route Alias">
+                                    <i class="fa fa-link pl-1 align-self-center" data-toggle="tooltip" data-placement="right" data-title="Some tooltip from Thomas"></i>
+                                </div>
+
+                                <div class="btn-group ml-auto">
+                                    <div class="d-flex align-self-center pr-2">
+                                        <div class="pr-2">
+                                            <input id="addToRoutes" class="ml-2" type="checkbox" checked 
+                                            data-toggle="toggle" data-size="xs" data-on="Show" data-off="No" data-onstyle="success" data-offstyle="primary">
+                                        </div>
+                                        <div class="">
+                                            <input id="moduleLock" class="float-right" type="checkbox" checked="" 
+                                            data-toggle="toggle" data-size="xs" data-on="Locked" data-off="Unlocked" data-onstyle="primary" data-offstyle="danger">
+                                        </div>
+                                    </div>
+                                    <button data-module_name="<?= $module[0]['module_name'] ?>" class="settingsModal btn btn-primary btn-sm btn-block m-1">
+                                        Settings
+                                    </button>
+                                    <div data-module_name="<?= $module[0]['module_name'] ?>" class="fileWriter btn btn-primary btn-sm btn-block m-1">
+                                        Build
+                                    </div>
+                                    <button data-module_name="<?= $module[0]['module_name'] ?>" class="fileViewer btn btn-primary btn-sm btn-block m-1">
+                                        View
+                                    </button>
+                                    <button onclick="deleteModule('<?= $module[0]['user_module_id'] ?>')" data-module_name="<?= $module[0]['module_name'] ?>" class="deleteModule btn btn-danger btn-sm btn-block m-1">
+                                        Delete
+                                    </button>
                                 </div>
                             </div>
-                            <button data-module_name="<?= $module[0]['module_name'] ?>" class="settingsModal btn btn-primary btn-sm btn-block m-1">
-                                Settings
-                            </button>
-                            <div data-module_name="<?= $module[0]['module_name'] ?>" class="fileWriter btn btn-primary btn-sm btn-block m-1">
-                                Build
-                            </div>
-                            <button data-module_name="<?= $module[0]['module_name'] ?>" class="fileViewer btn btn-primary btn-sm btn-block m-1">
-                                View
-                            </button>
-                            <button onclick="deleteModule('<?= $module[0]['module_name'] ?>')" data-module_name="<?= $module[0]['module_name'] ?>" class="deleteModule btn btn-danger btn-sm btn-block m-1">
-                                Delete
-                            </button>
                         </div>
                     </div>
-                </div>
-            </div>
-            <div class="content">
-                <div class="flex-row">
-                    <div class="collapse" id="<?= $module[0]['module_name'] ?>">
-                        <!-- COLUMNS -->
-                        <table id="<?= $module[0]['module_name'] ?>Details" name="<?= $module[0]['module_name'] ?>" class="table table-dark table-hover table-sm">
-                            <thead class="thead-dark">
-                                <tr>
-                                    <th></th>
-                                    <th>Column Name</th>
-                                    <th>PK</th>
-                                    <th>Link</th>
-                                    <th>Label</th>
-                                    <th>Type</th>
-                                    <th>Display As</th>
-                                    <th>Properties</th>
-                                    <th>Enabled</th>
-                                </tr>
-                            </thead>
+                    <div class="content">
+                        <div class="flex-row">
+                            <div class="collapse" id="<?= $module[0]['module_name'] ?>">
+                                <!-- COLUMNS -->
+                                <table id="<?= $module[0]['module_name'] ?>Details" name="<?= $module[0]['module_name'] ?>" class="table table-dark table-hover table-sm">
+                                    <thead class="thead-dark">
+                                        <tr>
+                                            <th></th>
+                                            <th>Column Name</th>
+                                            <th>PK</th>
+                                            <th>Link</th>
+                                            <th>Label</th>
+                                            <th>Type</th>
+                                            <th>Display As</th>
+                                            <th>Properties</th>
+                                            <th>Enabled</th>
+                                        </tr>
+                                    </thead>
 
-                            <tbody>                                
-                                <? foreach ($module as $component) { ?>
-                                    <tr>
-                                        <td class="align-self-center m-0 p-2"><?= $component["user_table_id"] ?></td>
-                                        <td class="align-self-center m-0 p-2"><?= $component["column_name"] ?></td>
-                                        <td class="align-self-center m-0 p-2"><?= $component["pk"] == 1 ? '<i class="fas fa-key text-warning"></i>' : '' ?></td>
-                                        <td class="align-self-center m-0 p-2">
-                                            <? if ((int)$component['link_id'] > 0) { ?>
-                                                <div class="d-flex">
-                                                    <i class="fa fa-link pt-1"></i>&nbsp;
-                                                    <? if ($component['primary']) { ?>
-                                                        Linked to&nbsp;<div class="text-primary bold"><?= $component["primary"].' -> showing '.$component["display"]; ?></div>
+                                    <tbody>                                
+                                        <? foreach ($module as $component) { ?>
+                                            <tr>
+                                                <td class="align-self-center m-0 p-2"><?= $component["user_table_id"] ?></td>
+                                                <td class="align-self-center m-0 p-2"><?= $component["column_name"] ?></td>
+                                                <td class="align-self-center m-0 p-2"><?= $component["pk"] == 1 ? '<i class="fas fa-key text-warning"></i>' : '' ?></td>
+                                                <td class="align-self-center m-0 p-2">
+                                                    <? if ((int)$component['link_id'] > 0) { ?>
+                                                        <div class="d-flex">
+                                                            <i class="fa fa-link pt-1"></i>&nbsp;
+                                                            <? if ($component['primary']) { ?>
+                                                                Linked to&nbsp;<div class="text-primary bold"><?= $component["primary"].' -> showing '.$component["display"]; ?></div>
+                                                            <? } ?>
+                                                        </div>
                                                     <? } ?>
-                                                </div>
-                                            <? } ?>
-                                        </td>
-                                        <td>
-                                            <input type="text" 
-                                                   data-save="<?= handledata(array('user_tables' => 'display_label', 'id' => $component['user_table_id'])) ?>"
-                                                   class="col-10 form-control form-control-sm" 
-                                                   value="<?= $component['display_label'] ?>">
-                                        </td>
-                                        <td class="align-self-center m-0 p-2">
-                                            <? if ($component['settings'] && !is_null($component['settings'])) { ?>
-                                                <div class="text-warning"><?= $component["settings"]["type"] ?></div>
-                                            <? } else { ?>
-                                                <?= $component["type"] ?>
-                                            <? } ?>
-                                        </td>
-                                        <td>
-                                            <select data-save="<?= handledata(array('user_tables' => 'display_as', 'id' => $component['user_table_id'])) ?>"
-                                                    id="selectFormat" class="form-control form-control-sm" name="format"
-                                                    <?= $component['link_type'] == 2 ? "disabled" : "" ?>>
+                                                </td>
+                                                <td>
+                                                    <input type="text" 
+                                                        data-save="<?= handledata(array('user_tables' => 'display_label', 'id' => $component['user_table_id'])) ?>"
+                                                        class="col-10 form-control form-control-sm" 
+                                                        value="<?= $component['display_label'] ?>">
+                                                </td>
+                                                <td class="align-self-center m-0 p-2">
+                                                    <? if ($component['settings'] && !is_null($component['settings'])) { ?>
+                                                        <div class="text-warning"><?= $component["settings"]["type"] ?></div>
+                                                    <? } else { ?>
+                                                        <?= $component["type"] ?>
+                                                    <? } ?>
+                                                </td>
+                                                <td>
+                                                    <select data-save="<?= handledata(array('user_tables' => 'display_as', 'id' => $component['user_table_id'])) ?>"
+                                                            id="selectFormat" class="form-control form-control-sm" name="format"
+                                                            <?= $component['link_type'] == 2 ? "disabled" : "" ?>>
 
-                                                <? if ($component['link_type'] != 2) { ?>
-                                                    <option value="">Input</option>
-                                                    <option value="checkbox" <?= $component["display_as"] == "checkbox" ? "selected" : "" ?>>Checkbox</option>
-                                                    <option value="color" <?= $component["display_as"] == "color" ? "selected" : "" ?>>Color</option>
-                                                    <option value="date" <?= $component["display_as"] == "date" ? "selected" : "" ?>>Date</option>
-                                                    <option value="datetime-local" <?= $component["display_as"] == "datetime-local" ? "selected" : "" ?>>Datetime Local</option>
-                                                    <option value="email" <?= $component["display_as"] == "email" ? "selected" : "" ?>>Email</option>
-                                                    <option value="hidden" <?= $component["display_as"] == "hidden" ? "selected" : "" ?>>Hidden</option>
-                                                    <option value="image" <?= $component["display_as"] == "image" ? "selected" : "" ?>>Image</option>
-                                                    <option value="number" <?= $component["display_as"] == "number" ? "selected" : "" ?>>Number</option>
-                                                    <option value="password" <?= $component["display_as"] == "password" ? "selected" : "" ?>>Password</option>
-                                                    <option value="radio" <?= $component["display_as"] == "radio" ? "selected" : "" ?>>Radio</option>
-                                                    <option value="tel" <?= $component["display_as"] == "tel" ? "selected" : "" ?>>Tel</option>
-                                                    <option value="text" <?= $component["display_as"] == "text" ? "selected" : "" ?>>Text</option>
-                                                    <option value="time" <?= $component["display_as"] == "time" ? "selected" : "" ?>>Time</option>
-                                                    <option value="url" <?= $component["display_as"] == "url" ? "selected" : "" ?>>Url</option>
-                                                <? } else { ?>
-                                                    <option value="">Select</option>
-                                                <? }?>
-                                            </select>
-                                        </td>
-                                        <td>
-                                            <button id="fieldProperties-<?= $component['user_table_id'] ?>"
-                                                data-id="<?= $component['user_table_id'] ?>"
-                                                data-column="<?= $component['column_name'] ?>"
-                                                class="fieldProperties btn btn-sm btn-primary" data-toggle="collapse"><i class="fa fa-eye"></i>
-                                            </button>
-                                        </td>
-                                        <td>
-                                            <input <?= $component["column_enabled"] == "1" ? "checked" : "" ?> name='disabled' value="isDisabled" 
-                                                    type='checkbox' data-toggle='toggle' data-size='sm'
-                                                    data-save="<?= handledata(array('tables_modules' => 'enabled', 'id' => $component['user_table_id'])) ?>"
-                                                    class="btn btn-success btn-sm"
-                                                    />
-                                        </td>
-                                    </tr>
-                                <? } ?>
-                            </tbody>
-                        </table>
-                        <!-- END COLUMNS -->
+                                                        <? if ($component['link_type'] != 2) { ?>
+                                                            <option value="">Input</option>
+                                                            <option value="checkbox" <?= $component["display_as"] == "checkbox" ? "selected" : "" ?>>Checkbox</option>
+                                                            <option value="color" <?= $component["display_as"] == "color" ? "selected" : "" ?>>Color</option>
+                                                            <option value="date" <?= $component["display_as"] == "date" ? "selected" : "" ?>>Date</option>
+                                                            <option value="datetime-local" <?= $component["display_as"] == "datetime-local" ? "selected" : "" ?>>Datetime Local</option>
+                                                            <option value="email" <?= $component["display_as"] == "email" ? "selected" : "" ?>>Email</option>
+                                                            <option value="hidden" <?= $component["display_as"] == "hidden" ? "selected" : "" ?>>Hidden</option>
+                                                            <option value="image" <?= $component["display_as"] == "image" ? "selected" : "" ?>>Image</option>
+                                                            <option value="number" <?= $component["display_as"] == "number" ? "selected" : "" ?>>Number</option>
+                                                            <option value="password" <?= $component["display_as"] == "password" ? "selected" : "" ?>>Password</option>
+                                                            <option value="radio" <?= $component["display_as"] == "radio" ? "selected" : "" ?>>Radio</option>
+                                                            <option value="tel" <?= $component["display_as"] == "tel" ? "selected" : "" ?>>Tel</option>
+                                                            <option value="text" <?= $component["display_as"] == "text" ? "selected" : "" ?>>Text</option>
+                                                            <option value="time" <?= $component["display_as"] == "time" ? "selected" : "" ?>>Time</option>
+                                                            <option value="url" <?= $component["display_as"] == "url" ? "selected" : "" ?>>Url</option>
+                                                        <? } else { ?>
+                                                            <option value="">Select</option>
+                                                        <? }?>
+                                                    </select>
+                                                </td>
+                                                <td>
+                                                    <button id="fieldProperties-<?= $component['user_table_id'] ?>"
+                                                        data-id="<?= $component['user_table_id'] ?>"
+                                                        data-column="<?= $component['column_name'] ?>"
+                                                        class="fieldProperties btn btn-sm btn-primary" data-toggle="collapse"><i class="fa fa-eye"></i>
+                                                    </button>
+                                                </td>
+                                                <td>
+                                                    <input <?= $component["column_enabled"] == "1" ? "checked" : "" ?> name='disabled' value="isDisabled" 
+                                                            type='checkbox' data-toggle='toggle' data-size='sm'
+                                                            data-save="<?= handledata(array('tables_modules' => 'enabled', 'id' => $component['user_table_id'])) ?>"
+                                                            class="btn btn-success btn-sm"
+                                                            />
+                                                </td>
+                                            </tr>
+                                        <? } ?>
+                                    </tbody>
+                                </table>
+                                <!-- END COLUMNS -->
+                            </div>
+                        </div>
                     </div>
                 </div>
+            <? } ?>
+        <? } else { ?>
+            <div class="w-100 text-center">
+                <h4>No modules found</h4>
+                <h6>How about we create one</h6>
+                <a href="/projects/<? ?>"> <button class="btn btn-primary btn-sm"><i class="fa fa-table"></i>&nbsp;Tables</button></a>
             </div>
-        </div>
-    <? } ?>
+        <? } ?>    
     </ul>
 </div>
 
@@ -508,17 +516,18 @@
         });
     });
 
-    function deleteModule(moduleName) {
-        console.log(moduleName);
+    function deleteModule(module_id) {
+        showLoadingScreen();
         $.ajax({
             type: "post",
-            url: "/ajax",
+            url: "/modules/deleteModule",
             data: {
-                "data": "Echo"
+                "module_id": module_id
             },
             dataType: "json",
             success: function (response) {
-                console.log("Echo success");
+                console.log(response);
+                // location = window.location;
             }
         });
     }

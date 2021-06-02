@@ -136,7 +136,7 @@
                                     $enabled = $key["display"];
                                     ?>
                                     <tr data-pk="<?= $key["table_name"].".".$key["table_column"]; ?>" data-fk="<?= $key["key_table"].".".$key["key_column"]; ?>">
-                                        <td><?= $key["display"] ? $key["display"]["link_id"] : "<button class='addLink btn btn-xs btn-primary'><i class='fa fa-plus'></i></button>" ?></td>
+                                        <td><?= $key["display"] ? $key["display"]["link_id"] : "?" ?></td>
                                         <td><?= $key["key_table"] ?></td>
                                         <td><?= $key["key_column"] ?></td>
                                         <td><?= $data["column_types"][$key["key_table"].".".$key["key_column"]]["Type"] ?><?= $fk_correct === true ? '&nbsp;<i class="fa fa-check text-success"></i>' : '&nbsp;<i class="fa fa-ban text-danger"></i>' ?></td>

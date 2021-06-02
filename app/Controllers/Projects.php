@@ -75,9 +75,10 @@ class Projects extends Home {
 			$raw_project_list = $projects->getProjectsForUser($this->user->id);
 
 			$projects_array = [];
+			$project_list = [];
 			foreach ($raw_project_list as $project) {
 				if (!in_array($project->project_hash, $projects_array)) {
-					$projects_array[] = $project->project_hash;					
+					$projects_array[] = $project->project_hash;
 
 					$project_list[$project->project_hash] = new \stdClass();
 					$project_list[$project->project_hash]->id = $project->id;
@@ -544,6 +545,7 @@ class Projects extends Home {
     }
 
 	public function saveTableInfo($tableName, $columns) {
+		
         $columns = array_map(function($column) {
             $newColumn = [];
             foreach (array_keys($this->mapping) as $value) {

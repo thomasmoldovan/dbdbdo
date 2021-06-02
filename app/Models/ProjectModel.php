@@ -52,6 +52,7 @@ class ProjectModel extends Model
                                     LEFT OUTER JOIN dbdbdo.links links_foreign
                                         ON (tables_modules.user_table_id =
                                             links_foreign.user_table_id_foreign)
+                                WHERE projects.user_id = {$user_id}
                                 GROUP BY projects.id, user_tables.table_name")->getResult();
         return $result;
     }

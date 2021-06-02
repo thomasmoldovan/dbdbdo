@@ -1,14 +1,23 @@
 <?php namespace App\Controllers;
 
 use App\Models\PropertiesModel;
-
-// TODO: to have a label or not
-// TODO: to show error message or not
-
-// Feature: Autobuild
-// Feature: Auto refresh view
+use App\Models\UserModuleModel;
+use App\Models\TableModuleModel;
 
 class Modules extends Home {
-    // Probably shoud be moved in PropertiesController
+    
+    public function deleteModule() {
+        $post = $this->request->getPost();
+
+        $user_modules = new UserModuleModel();
+        $tables_modules = new TableModuleModel();
+
+        // user_modules
+        // tables_modules
+        $user_modules->delete($post["module_id"]);
+        $tables_modules->where(["user_module_id" => $post["module_id"]])->delete();
+
+        return $this->response->setJSON($post);
+    }
     
 }
