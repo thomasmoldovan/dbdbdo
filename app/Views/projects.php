@@ -1,4 +1,4 @@
-<? echo view("projects/menu"); ?>
+<? echo view("projects/ProjectNavigation"); ?>
 <div class="h-100 pb-3">
     <div class="d-flex flex-wrap">
         <? if (count($data["project_list"])) { ?>

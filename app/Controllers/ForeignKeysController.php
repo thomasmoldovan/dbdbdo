@@ -6,7 +6,7 @@ use App\Models\ProjectModel;
 use App\Models\UserTableModel;
 use App\Models\LinksModel;
 
-class ForeignKeysController extends Home
+class ForeignKeysController extends HomeController
 {
     protected $pk_list = [];
     protected $current_project;
@@ -48,7 +48,7 @@ class ForeignKeysController extends Home
 		$rows = array();
 
         // Get every table column, and how many rows it has
-        $schema->setDatabase("_".$this->current_project["project_hash"]);
+        $schema->setDatabase($this->current_project["project_hash"]);
 		foreach ($tables as $key => $table) {
 			// TODO: I should only look for links between the tables (columns) I've scanned
 
@@ -251,7 +251,7 @@ class ForeignKeysController extends Home
 
 	public function getColumnType($projectHash, $table, $column) {
 		$schema = new SchemaModel();
-		$schema->setDatabase("_".$projectHash);
+		$schema->setDatabase($projectHash);
 		$result = $schema->executeOuterQuery($this->current_project["project_hash"], "SHOW COLUMNS FROM `{$table}` WHERE `field` = '{$column}'", "array");
         if (count($result) > 0) {
             return $result[0];

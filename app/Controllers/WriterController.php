@@ -1,32 +1,23 @@
 <?php namespace App\Controllers;
 
 use App\Models\SchemaModel;
+use App\Models\ProjectModel;
 use App\Models\UserModuleModel;
 use App\Models\UserTableModel;
 use App\Models\PropertiesModel;
-use App\Models\ProjectModel;
 use \Gajus\Dindent\Indenter;
 use CodeIgniter\Controller;
 
-class WriterController extends Home {
+class WriterController extends HomeController {
 
-    protected $export_type = "internal";
-
-    public function writeFromTemplate() {
-        // $table_info = new UserTableModel();
-        
-        // Check if auth()
-        // Check project hash
-        
-        // $projectId = $this->session->get("projectId");
-        // $projectHash = $projects->checkProjectBelongsToUser($projectId, $this->user->id)->project_hash;
+    public function buildExternalFiles() {
         if (!logged_in()) return redirect()->to('login');
         
-        $modulesModel = new UserModuleModel();
         $projects = new ProjectModel();
+        $modulesModel = new UserModuleModel();
 
         $post = $this->request->getPost();
-        $post["project_type"] = $post["project_type"] == "true" ? "Internal" : "External";
+        $project_type = $post["project_type"] == "true" ? "Internal" : "External";
 
         if (empty($post["module_name"])) return false;
         $project = $projects->getWhere(["user_id" => $this->user->id, "project_hash" => $post["project_hash"]])->getResultArray();
@@ -165,7 +156,7 @@ class WriterController extends Home {
                         $resultDropdownJoin = $schema->executeInnerQuery($_ENV["database.default.database"], $dropdownJoinQuery, "array");
                     } else {
                         // External: The data for the table is taken from the users database
-                        $resultDropdownJoin = $schema->executeOuterQuery("_".$this->current_project["project_hash"], $dropdownJoinQuery, "array");
+                        $resultDropdownJoin = $schema->executeOuterQuery($this->current_project["project_hash"], $dropdownJoinQuery, "array");
                     }
 
                     // CREATE THE OPTIONS LIST
@@ -218,12 +209,12 @@ class WriterController extends Home {
         $prepareFields = implode(PHP_EOL, $prepareFields); // THIS
         $formInput .= "</form>";
 
-        $file  = file_get_contents("../App/Templates/{$this->export_type}/CodeIgniter4/ci_4_model.raw");
-        $file2 = file_get_contents("../App/Templates/{$this->export_type}/CodeIgniter4/ci_4_view.raw");
-        $file3 = file_get_contents("../App/Templates/{$this->export_type}/CodeIgniter4/ci_4_controller.raw");
-        $file4 = file_get_contents("../App/Templates/{$this->export_type}/CodeIgniter4/ci_4_route.raw");
+        $file  = file_get_contents("../templates/{$project_type}/CodeIgniter4/ci_4_model.raw");
+        $file2 = file_get_contents("../templates/{$project_type}/CodeIgniter4/ci_4_view.raw");
+        $file3 = file_get_contents("../templates/{$project_type}/CodeIgniter4/ci_4_controller.raw");
+        $file4 = file_get_contents("../templates/{$project_type}/CodeIgniter4/ci_4_route.raw");
 
-        if ($post["project_type"] == "External") $file3 = str_replace("// {{external}} ", "", $file3);
+        if ($project_type == "External") $file3 = str_replace("// {{external}} ", "", $file3);
 
         // if ($column["link_type"] == 1) $file3 = str_replace("// {{static}} ", "", $file3);
         // if ($column["link_type"] == 2) $file3 = str_replace("// {{dynamic}} ", "", $file3);
@@ -257,7 +248,9 @@ class WriterController extends Home {
             $file4 = str_replace("{{".$key."}}", is_array($value) ? '"'.(string)$array.'"' : $value, $file4);
         }
 
-        $export_prepath = $this->export_type == "internal" ? "/" : "public/preview/";
+        $export_prepath = $project_type == "Internal" ? "/" : "public/preview/";
+        $export_prepath = "/";
+
         $modalFilename = $data["uc_model_name"]."Model";
         if (!write_file("../{$export_prepath}App/Models/".$modalFilename.".php", $file)) {
             $result["success"] = false;
@@ -302,7 +295,7 @@ class WriterController extends Home {
             }
         }
 
-        $result["response"][] = ["info", "Export type: ".$this->export_type];
+        $result["response"][] = ["info", "Export type: ".$project_type];
         $result["response"][] = ["info", "Link type: ".$column["link_type"]];
 
         if ($this->request->isAjax()) {

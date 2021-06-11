@@ -10,7 +10,7 @@ class UserModuleModel extends Model
     protected $returnType = 'object';
     protected $useSoftDeletes = false;
 
-    protected $allowedFields = ["id", "module_name", "module_title", "module_type", "module_route", "module_icon", "show_on_menu", "add_to_routes", "locked", "created_at", "updated_at", "deleted_at"];
+    protected $allowedFields = ["id", "module_name", "module_title", "module_type", "module_route", "module_icon", "show_on_menu", "add_to_routes", "locked", "last_build", "created_at", "updated_at", "deleted_at"];
 
     protected $useTimestamps = true;
     protected $createdField  = 'created_at';
@@ -30,7 +30,7 @@ class UserModuleModel extends Model
 
     public function getFieldLabels() {
         return false;
-        return ["ID", "Module Name", "Module Title", "Type", "Route"];
+        return ["ID", "Module Name", "Module Title", "Type", "Route", "Last Build"];
     }
 
     public function getModuleColumns($name = null) {
@@ -77,7 +77,8 @@ class UserModuleModel extends Model
 		return $result->getResultArray();
 	}
 
-	public function getActiveModules($userId = null) {
+	public function getActiveModules($user_id = null, $project_hash = null) {
+        if (is_null($user_id) || is_null($project_hash)) return false;
 		$infosch = \Config\Database::connect("default");
         $result = $infosch->query("SELECT 
                                     user_modules.id,
@@ -89,8 +90,11 @@ class UserModuleModel extends Model
                                     user_tables 
                                     LEFT JOIN tables_modules ON tables_modules.user_table_id =  user_tables.id
                                     LEFT JOIN user_modules ON user_modules.id = tables_modules.user_module_id
-									WHERE user_modules.show_on_menu = 1 AND user_tables.user_id = {$userId}
-                                    GROUP BY user_modules.id;");
+                                    LEFT JOIN projects ON projects.id = user_tables.project_id
+									WHERE user_modules.show_on_menu = 1 
+                                        AND user_tables.user_id = {$user_id}
+                                        AND projects.project_hash = '{$project_hash}'
+                                GROUP BY user_modules.id;");
 
 		return $result->getResultArray();
 	}

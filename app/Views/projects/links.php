@@ -1,4 +1,4 @@
-<? echo view("projects/menu"); ?>
+<? echo view("projects/ProjectNavigation"); ?>
 <style>
     /* same thing from modules view */
     #manage-table>tbody>tr>td {

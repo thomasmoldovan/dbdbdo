@@ -2,7 +2,7 @@
 
 namespace App\Controllers;
 
-class Home extends BaseController{
+class HomeController extends BaseController{
 	public $notifications;
 	
 	protected $auth;
@@ -11,6 +11,7 @@ class Home extends BaseController{
 	protected $pages;
 	protected $authorize;
 	protected $session;
+	protected $current_project;
 
 	protected $signature;
 
@@ -25,14 +26,7 @@ class Home extends BaseController{
 		$this->pages = config('Pages');
 		$this->user = user();
 
-		$this->signature = random_bytes(16);
-
-		// $this->notifications[] = ["info", "I am running index"];
-		// $this->session->set("notification", $this->notifications);
-
-		// if (isset($_SESSION["notification"]) && is_array($_SESSION["notification"])) {
-		// 	$this->notifications = $_SESSION["notification"];
-		// }
+		$this->signature = random_int(1, 10000);
 	}
 
 	public function index()	{
@@ -48,6 +42,15 @@ class Home extends BaseController{
 		} else {
 			return $this->display_main("header", "website");
 		}
+	}
+
+	public function checkIfLogged() {
+		if (!$this->auth->check()) {
+			$this->notifications[] = ["info", "Your session has expired"];
+			$this->session->set("notification", $this->notifications);
+			return redirect()->to("/");
+		}
+		return true;
 	}
 
 	public function display_main($header = "header", $content = "login", $data = []) {

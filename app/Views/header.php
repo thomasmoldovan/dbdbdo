@@ -89,7 +89,7 @@
 </style>
 
 <body>
-    <? echo view('App\navigation'); ?>
+    <? echo view('App\WebsiteNavigation'); ?>
     <? //echo view('App\debugbar'); ?>
 
     <? // echo in_groups(["Publisher"]) ? "TRUE" : "FALSE"; ?>

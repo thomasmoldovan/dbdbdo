@@ -1,4 +1,4 @@
-<? echo view("projects/menu"); ?>
+<? echo view("projects/ProjectNavigation"); ?>
 <div class="mt-2">
     <ul class="nav flex-column">
         <? foreach ($data["tables"] as $key => $table) {

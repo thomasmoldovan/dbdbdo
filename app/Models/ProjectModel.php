@@ -54,7 +54,34 @@ class ProjectModel extends Model
                                             links_foreign.user_table_id_foreign)
                                 WHERE projects.user_id = {$user_id}
                                 GROUP BY projects.id, user_tables.table_name")->getResult();
-        return $result;
+
+        $projects_array = [];
+        $project_list = [];
+        foreach ($result as $project) {
+            if (!in_array($project->project_hash, $projects_array)) {
+                $projects_array[] = $project->project_hash;
+
+                $project_list[$project->project_hash] = new \stdClass();
+                $project_list[$project->project_hash]->id = $project->id;
+                $project_list[$project->project_hash]->enabled = $project->enabled;
+                $project_list[$project->project_hash]->count_table_name = 1;
+                $project_list[$project->project_hash]->count_column_name = $project->count_table_name;
+                $project_list[$project->project_hash]->count_modules = 0;
+                $project_list[$project->project_hash]->count_links = $project->primary_link || $project->foreign_link ? 1 : 0;
+                $project_list[$project->project_hash]->project_description = $project->project_description;
+                $project_list[$project->project_hash]->project_name = $project->project_name;
+                $project_list[$project->project_hash]->project_hash = $project->project_hash;
+                $project_list[$project->project_hash]->project_id = $project->project_id;
+                $project_list[$project->project_hash]->updated_at = $project->updated_at;
+            } else {
+                $project_list[$project->project_hash]->count_table_name++;
+                $project_list[$project->project_hash]->count_column_name += $project->count_table_name;
+                $project_list[$project->project_hash]->count_modules += $project->module_id ? 1 : 0;
+                $project_list[$project->project_hash]->count_links += $project->primary_link || $project->foreign_link ? 1 : 0;
+            }
+        }
+
+        return $project_list;
     }
 
     public function checkProjectBelongsToUser($project_hash, $user_id) {

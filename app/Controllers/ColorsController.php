@@ -1,11 +1,12 @@
 <?php namespace App\Controllers;
 
-use App\Models\GroupsModel;
+use App\Models\ColorsModel;
 use App\Models\ProjectModel;
+// {{dynamic}} use App\Models\{{uc_join_model}}Model;
 use App\Models\UserModuleModel;
 use CodeIgniter\Controller;
 
-class GroupsController extends HomeController {
+class ColorsController extends HomeController {
 
     protected $session;
     protected $database;
@@ -16,24 +17,26 @@ class GroupsController extends HomeController {
 	}
 
     public function index($project_hash = null) {
-        $groups = new GroupsModel();
+        $colors = new ColorsModel();
         $projects = new ProjectModel();
+        // {{dynamic}} ${{join_model}} = new {{uc_join_model}}Model();
         $userModule = new UserModuleModel();
 
         // From dbdbdo database
         $userModule->setDatabase($_ENV["database.default.database"]);
-        $menuItems = $userModule->getActiveModules(user()->id);
+        $menuItems = $userModule->getActiveModules(user()->id, $project_hash);
 
         // From separate database
         $this->database = $project_hash;
-        $groups->setDatabase($this->database);
-        $groupsItems = $groups->findAll();
+        $colors->setDatabase($this->database);
+        $colorsItems = $colors->findAll();
 
-        $data["view"] = "GroupsView";
+        $data["view"] = "ColorsView";
         $data["navigation"] = false;
         $data["menuItems"] = $menuItems;
-        $data["headers"] = $groups->getAllowedFields();
-        $data["groupsItems"] = $groupsItems;
+        $data["headers"] = $colors->getAllowedFields();
+        $data["colorsItems"] = $colorsItems;
+        // {{dynamic}} $data["{{join_model}}Items"] = ${{join_model}}Items;
         $data["auth"] = service("authentication");
         $data["user"] = user();
 
@@ -52,7 +55,7 @@ class GroupsController extends HomeController {
             return $this->response->setJSON(["notification" => $this->notifications]);
         }
 
-        $groups = new GroupsModel();
+        $colors = new ColorsModel();
         $projects = new ProjectModel();
 
         $this->current_project = $projects->checkProjectBelongsToUser($project_hash, user()->id);
@@ -63,7 +66,7 @@ class GroupsController extends HomeController {
         }
 
         $this->database = $project_hash;
-        $groups->setDatabase($this->database);
+        $colors->setDatabase($this->database);
 
         if ($this->request->isAjax()) {
             if (isset($post["id"])) {
@@ -76,9 +79,9 @@ class GroupsController extends HomeController {
             if ($validation->run() == TRUE) { }
 
             if (!is_null($update_id)) {
-                $groups->update($update_id, $post);
+                $colors->update($update_id, $post);
             } else {
-                $groups->insert($post);
+                $colors->insert($post);
             }
         }
 
@@ -102,7 +105,7 @@ class GroupsController extends HomeController {
             return $this->response->setJSON(["notification" => $this->notifications]);
         }
 
-        $groups = new GroupsModel();
+        $colors = new ColorsModel();
         $projects = new ProjectModel();
 
         $this->current_project = $projects->checkProjectBelongsToUser($project_hash, user()->id);
@@ -113,21 +116,21 @@ class GroupsController extends HomeController {
         }
 
         $this->database = $project_hash;
-        $groups->setDatabase($this->database);
+        $colors->setDatabase($this->database);
 
-        $primary = $groups->getPrimary();  // The primary key
-        $allLabels = $groups->getFieldLabels();
-        $allColumns = $groups->getAllowedFields();
+        $primary = $colors->getPrimary();  // The primary key
+        $allLabels = $colors->getFieldLabels();
+        $allColumns = $colors->getAllowedFields();
 
-        $allGroups = $groups->getGroupsList();
+        $allColors = $colors->getColorsList();
 
-        foreach ($allGroups as &$item) {
+        foreach ($allColors as &$item) {
             $item["check"] = json_encode($item);
         }
         $data["primary"] = $primary;
         $data["headers"] = $allLabels;
         $data["allColumns"] = $allColumns;
-        $data["groupsItems"] = $allGroups;
+        $data["colorsItems"] = $allColors;
 
         return $this->response->setJSON($data);
     }
@@ -140,7 +143,7 @@ class GroupsController extends HomeController {
             return $this->response->setJSON(["notification" => $this->notifications]);
         }
 
-        $groups = new GroupsModel();
+        $colors = new ColorsModel();
         $projects = new ProjectModel();
 
         $this->current_project = $projects->checkProjectBelongsToUser($project_hash, user()->id);
@@ -151,11 +154,11 @@ class GroupsController extends HomeController {
         }
 
         $this->database = $project_hash;
-        $groups->setDatabase($this->database);
+        $colors->setDatabase($this->database);
 
         if ($this->request->isAjax()) {
-            $groups_id = (int) $post["id"];
-            $groups->delete($groups_id);
+            $colors_id = (int) $post["id"];
+            $colors->delete($colors_id);
         }
 
         return $this->response->setJSON(true);

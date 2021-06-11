@@ -10,7 +10,7 @@
             <input id="projectType" type="checkbox" 
                 data-save="<?= handledata(array('projects' => 'project_type', 'id' => $data["project"]["id"])) ?>" 
                 data-toggle="toggle" data-size="xs" data-on="Internal" data-off="External" data-onstyle="primary" data-offstyle="danger"
-                <? if ($data["project"]["project_type"] == 0) echo "checked"; ?> disabled>
+                <? if ($data["project"]["project_type"] == 1) echo "checked"; ?> disabled>
         <? } else { ?>
             <? if (isset($data["project_list"]) && count($data["project_list"])) { ?>
                 <a href="/projects/create"> <button class="btn btn-primary btn-sm"><i class="fa fa-plus"></i>&nbsp;New Project</button></a>

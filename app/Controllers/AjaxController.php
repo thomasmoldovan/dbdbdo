@@ -4,7 +4,7 @@ namespace App\Controllers;
 
 use App\Models\PropertiesModel;
 
-class Ajax extends Home {
+class AjaxController extends HomeController {
 
 	public function index()	{
 		$check = $this->auth->check();
@@ -66,5 +66,22 @@ class Ajax extends Home {
 
             return $this->response->setJSON(array("properties" => array($results)));
         }
+    }
+
+    public function autosave() {
+        $post = $this->request->getPost();
+
+        $params = base64_decode($post["param"]);
+        $value = $post["value"];
+        $data = json_decode($params);
+        $id = $data->id;
+        unset($data->id);
+        foreach ($data as $table => $column) break;
+
+		$schemaModel = new SchemaModel();
+        $query = "UPDATE {$table} SET {$column} = '{$value}' WHERE id = {$id}";
+        $result = $schemaModel->executeInnerQuery($_ENV["database.default.database"], $query);
+
+        return $this->response->setJSON($result);
     }
 }
