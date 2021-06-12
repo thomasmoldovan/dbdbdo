@@ -1,46 +1,52 @@
 <div class="btn-group mb-3">
-    <a id="createGroupsButton" href="#">
-        <button type="button" class="createGroups btn btn-sm btn-danger mt-3" data-toggle="modal">
+    <a id="createTasksButton" href="#">
+        <button type="button" class="createTasks btn btn-sm btn-danger mt-3" data-toggle="modal">
             Create 
-            <?= singular("Groups") ?>
+            <?= singular("Tasks") ?>
         </button>
     </a>
 </div>
 <div class="row-fluid p-0">
-    <table id="manageGroups" class="table table-light table-hover">
+    <table id="manageTasks" class="table table-light table-hover">
         <thead class="thead-light">
             <tr></tr>
         </thead>
         <tbody></tbody>
     </table>
 </div>
-<div class="modal fade" id="createGroupsModal" tabindex="-1" role="dialog" aria-labelledby="createGroupsModal" aria-hidden="true">
+<div class="modal fade" id="createTasksModal" tabindex="-1" role="dialog" aria-labelledby="createTasksModal" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
-        <form id="createGroupsForm" class="col-12" method="post" action="create">
+        <form id="createTasksForm" class="col-12" method="post" action="create">
             <div class="modal-content">
                 <div class="modal-header">
                     <div class="col-12">
                         <div class="row">
-                            <h5 class="modal-title" id="createGroups">
-                                Create groups 
+                            <h5 class="modal-title" id="createTasks">
+                                Create tasks 
                             </h5>
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close"> <span aria-hidden="true">&times;</span> </button>
                         </div>
-                        <div class="row"> <small id="smallTitle" class="form-text text-muted">These are the most beautiful groups ever</small> </div>
+                        <div class="row"> <small id="smallTitle" class="form-text text-muted">These are the most beautiful tasks ever</small> </div>
                     </div>
                 </div>
                 <div class="error"></div>
                 <div class="modal-body">
                     <div class="the-body">
                         <form>
-                            <label for='id' class='w-100 mb-0 bold pr-3'>id</label>
+                            <label for='id' class='w-100 mb-0 bold pr-3'>ID</label>
                             <div id='id' name='id' class='form-control form-control-sm' readonly=''></div>
-                            <label for='name' class='w-100 mb-0 bold pr-3'>name</label>
-                            <input id='name' name='name' class='form-control form-control-sm'/>
-                            <label for='color_id' class='w-100 mb-0 bold pr-3'>color_id</label>
-                            <select id='color_id' name='color_id' class='form-control form-control-sm'>
-                                <option value='21'>345353</option>
+                            <label for='group_id' class='w-100 mb-0 bold pr-3'>Group</label>
+                            <select id='group_id' name='group_id' class='form-control form-control-sm'>
+                                <option value='16'>Main</option>
                             </select>
+                            <label for='taskname' class='w-100 mb-0 bold pr-3'>Task</label>
+                            <input id='taskname' name='taskname' class='form-control form-control-sm'/>
+                            <label for='color_id' class='w-100 mb-0 bold pr-3'>Color</label>
+                            <select id='color_id' name='color_id' class='form-control form-control-sm'>
+                                <option value='21'>Red</option>
+                            </select>
+                            <label for='complete' class='w-100 mb-0 bold pr-3'>Complete</label>
+                            <input id='complete' name='complete' class='form-control form-control-sm' type='checkbox' data-toggle='toggle' data-size='sm'/>
                         </form>
                     </div>
                 </div>
@@ -53,21 +59,21 @@
         </form>
     </div>
 </div>
-<div class="modal fade" id="deleteGroupsModal" tabindex="0" role="dialog" aria-labelledby="deleteGroupsModal" aria-hidden="true">
+<div class="modal fade" id="deleteTasksModal" tabindex="0" role="dialog" aria-labelledby="deleteTasksModal" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <div class="col-12">
                     <div class="row">
-                        <h5 class="modal-title" id="deleteGroups">
-                            Delete groups 
+                        <h5 class="modal-title" id="deleteTasks">
+                            Delete tasks 
                         </h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close"> <span aria-hidden="true">×</span> </button>
                     </div>
                 </div>
             </div>
             <div class="error"></div>
-            <form id="deleteGroupsForm" class="col-12" method="post" action="delete">
+            <form id="deleteTasksForm" class="col-12" method="post" action="delete">
                 <div class="modal-body">
                     <div class="the-body mb-3"> Are you sure you want to delete this entry ? </div>
                     <div class="modal-footer text-center">
@@ -89,7 +95,7 @@
         $(document).trigger("showLoadingScreen");
         $.ajax({
             type: "post",
-            url: "groups/list",
+            url: "tasks/list",
             data: {
                 "project_hash": "<?= $_SESSION["project_hash"]; ?>"
             },
@@ -97,7 +103,7 @@
             success: function (response) {
                 var body = "";
                 if (response.empty == true) return false;
-                $.each(response.groupsItems, function(index, row) {
+                $.each(response.tasksItems, function(index, row) {
                     var values = [];
                     check = row.check;
                     delete row.check;
@@ -117,19 +123,19 @@
                                 <td><input type="checkbox" class="item" data-id="` + row.id + `"></td>
                                 <td>` + values.join("</td><td>") + `</td>
                                 <td class="d-flex justify-content-end">
-                                    <button class="editGroups action btn btn-success btn-sm mr-2" title="Edit" data-id="` + row.id + `"
+                                    <button class="editTasks action btn btn-success btn-sm mr-2" title="Edit" data-id="` + row.id + `"
                                         data-json="` + btoa(check) + `">
                                         <i class="fas fa-edit"></i>
                                     </button>
-                                    <button class="deleteGroups action btn btn-danger btn-sm" title="Delete" data-id="` + row.id + `">
+                                    <button class="deleteTasks action btn btn-danger btn-sm" title="Delete" data-id="` + row.id + `">
                                         <i class="fa fa-trash"></i>
                                     </button>
                                 </td>
                             </tr>`;
                 });
                 
-                $("#manageGroups > thead > tr").html('<th><input type="checkbox" id="select_all"></th><th>' + response.headers.join('</th><th>') + '</th><th style="text-align: right;">Actions</th>');
-                $("#manageGroups > tbody").html(body);
+                $("#manageTasks > thead > tr").html('<th><input type="checkbox" id="select_all"></th><th>' + response.headers.join('</th><th>') + '</th><th style="text-align: right;">Actions</th>');
+                $("#manageTasks > tbody").html(body);
                 $(document).trigger("hideLoadingScreen");
             },
             error: function(response) {
@@ -148,7 +154,7 @@
             .off()
             .on("click", function (e) {
                 var selected = $("#select_all").is(":checked");
-                $("#manageGroups").find("tbody").find("tr").each((index, item) => {
+                $("#manageTasks").find("tbody").find("tr").each((index, item) => {
                     var current = $(item).find("td").first().find("input");
                     if (!$(current).prop("checked")) {
                         $(current).click();
@@ -173,17 +179,17 @@
             });
 
         // SHOW Delete modal
-        $('.deleteGroups')
+        $('.deleteTasks')
             .off()
             .on('click', function (e) {
                 e.preventDefault();
                 id = $(this).data("id");
                 $("#deleteID").val(id);
-                $('#deleteGroupsModal').modal('show');
+                $('#deleteTasksModal').modal('show');
             });
 
         // SUBMIT Delete modal
-        $('#deleteGroupsModal')
+        $('#deleteTasksModal')
             .off()
             .on('submit.bs.modal', function (e) {
                 e.preventDefault();
@@ -192,7 +198,7 @@
 
                 $.ajax({
                     type: "post",
-                    url: "groups/delete",
+                    url: "tasks/delete",
                     data: {
                         "id": id,
                         "project_hash": "<?= $_SESSION["project_hash"]; ?>"
@@ -207,7 +213,7 @@
                         } else {
                             // Deleted
                             refresh();
-                            $('#deleteGroupsModal').modal("hide");
+                            $('#deleteTasksModal').modal("hide");
                             $(document).trigger("hideLoadingScreen");
                             return true;
                         }
@@ -216,7 +222,7 @@
             });
 
         // CREATE or UPDATE
-        $('.createGroups, .editGroups')
+        $('.createTasks, .editTasks')
             .off()
             .on('click', function (e) {
                 e.preventDefault();
@@ -224,42 +230,44 @@
 
                 if (typeof jsonData == "undefined") {
                     // Create
-                    groupsData = {};
+                    tasksData = {};
                     $("div[name='id']").hide();
                     $("label[for='id']").hide();
                     $("input[id='id']").val("").change(); // This is the hidden ID field
-                    $('#createGroups').text('Create');
+                    $('#createTasks').text('Create');
                 } else {
                     // Update
                     $("div[name='id']").show();
                     $("label[for='id']").show();
-                    groupsData = JSON.parse(atob(jsonData));
+                    tasksData = JSON.parse(atob(jsonData));
 
-                    $("input[id='id']").val(groupsData.id).change(); // This is the hidden ID field
-                    $("div[name='id']").text(groupsData.id);
-                    $('#createGroups').text('Edit');
+                    $("input[id='id']").val(tasksData.id).change(); // This is the hidden ID field
+                    $("div[name='id']").text(tasksData.id);
+                    $('#createTasks').text('Edit');
                 }            
                 
                 // This here -> FOREIGN KEY
-                // $("input[name='group_id']").val(groupsData.id);
+                // $("input[name='group_id']").val(tasksData.id);
 
                 // Rest I have
-                $("input[id='id']").val(groupsData.id);
-$("input[id='name']").val(groupsData.name);
-$("select[value='" + groupsData.id + "']").attr("selected", "selected");
+                $("input[id='id']").val(tasksData.id);
+$("select[value='" + tasksData.id + "']").attr("selected", "selected");
+$("input[id='taskname']").val(tasksData.taskname);
+$("select[value='" + tasksData.id + "']").attr("selected", "selected");
+$("input[id='complete']").bootstrapToggle(tasksData.tasks_complete == 1 ? 'on' : 'off');
                 
-                $('#createGroupsModal').modal('show');
+                $('#createTasksModal').modal('show');
             });
 
-        $('#createGroupsModal')
+        $('#createTasksModal')
             .off()
             .on('submit.bs.modal', function (e) {
                 e.preventDefault();
 
-                preData = $("#createGroupsForm").serializeArray();
+                preData = $("#createTasksForm").serializeArray();
                 $.ajax({
                     type: "post",
-                    url: "groups/create",
+                    url: "tasks/create",
                     data: $.param(preData),
                     dataType: "json",
                     success: function (response) {
@@ -268,7 +276,7 @@ $("select[value='" + groupsData.id + "']").attr("selected", "selected");
                             return false;
                         } else {
                             refresh();
-                            $('#createGroupsModal').modal("hide");
+                            $('#createTasksModal').modal("hide");
                             return true;
                         }
                     }

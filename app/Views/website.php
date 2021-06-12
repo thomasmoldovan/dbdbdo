@@ -42,7 +42,7 @@
 	<div class="row">
 		<div class="col-md-4 mb-5">
 			<div class="card h-100">
-				<img class="card-img-top" src="https://via.placeholder.com/300x200" alt="..." />
+				<img class="card-img-top" src="https://picsum.photos/300/200" alt="..." />
 				<div class="card-body">
 					<h4 class="card-title">Schema Importer</h4>
 					<p class="card-text">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sapiente esse necessitatibus neque sequi doloribus.</p>
@@ -52,7 +52,7 @@
 		</div>
 		<div class="col-md-4 mb-5">
 			<div class="card h-100">
-				<img class="card-img-top" src="https://via.placeholder.com/300x200" alt="..." />
+				<img class="card-img-top" src="https://picsum.photos/300/200" alt="..." />
 				<div class="card-body">
 					<h4 class="card-title">Module Creation</h4>
 					<p class="card-text">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sapiente esse necessitatibus neque sequi doloribus totam ut praesentium aut.</p>
@@ -62,7 +62,7 @@
 		</div>
 		<div class="col-md-4 mb-5">
 			<div class="card h-100">
-				<img class="card-img-top" src="https://via.placeholder.com/300x200" alt="..." />
+				<img class="card-img-top" src="https://picsum.photos/300/200" alt="..." />
 				<div class="card-body">
 					<h4 class="card-title">Foreign Key Detection</h4>
 					<p class="card-text">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sapiente esse necessitatibus neque.</p>
@@ -72,7 +72,7 @@
 		</div>
 		<div class="col-md-4 mb-5">
 			<div class="card h-100">
-				<img class="card-img-top" src="https://via.placeholder.com/300x200" alt="..." />
+				<img class="card-img-top" src="https://picsum.photos/300/200" alt="..." />
 				<div class="card-body">
 					<h4 class="card-title">Complete CRUD</h4>
 					<p class="card-text">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sapiente esse necessitatibus neque.</p>
@@ -82,9 +82,19 @@
 		</div>
 		<div class="col-md-4 mb-5">
 			<div class="card h-100">
-				<img class="card-img-top" src="https://via.placeholder.com/300x200" alt="..." />
+				<img class="card-img-top" src="https://picsum.photos/300/200" alt="..." />
 				<div class="card-body">
 					<h4 class="card-title">Multiple Export Types</h4>
+					<p class="card-text">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sapiente esse necessitatibus neque.</p>
+				</div>
+				<div class="card-footer"><a class="btn btn-primary" href="#!">Find Out More!</a></div>
+			</div>
+		</div>
+		<div class="col-md-4 mb-5">
+			<div class="card h-100">
+				<img class="card-img-top" src="https://picsum.photos/300/200" alt="..." />
+				<div class="card-body">
+					<h4 class="card-title">Custom Tag Fields</h4>
 					<p class="card-text">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sapiente esse necessitatibus neque.</p>
 				</div>
 				<div class="card-footer"><a class="btn btn-primary" href="#!">Find Out More!</a></div>

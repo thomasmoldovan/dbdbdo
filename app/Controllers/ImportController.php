@@ -362,15 +362,24 @@ class ImportController extends HomeController {
 	public function linkTableToModule() {
         $userModules = new UserModuleModel();
         $tablesModules = new TableModuleModel();
+        $project = new ProjectModel();
 
         // TODO: Review this function
         $post = $this->request->getPost();
+
+        if ($this->current_project = $project->checkProjectBelongsToUser($post["project_hash"], $this->user->id)) {
+
+        }
+
         if (empty($post["module_name"])) {
 			$this->notifications[] = ["warning", "No module name provided so we'll use the table name"];
 			$this->session->set("notification", $this->notifications);
 		}
 
+
+
         $moduleData = array(
+            "project_id" => (int)$this->current_project->id,
             "module_name" => $post["module_name"],
             "module_title" => ucwords($post["module_name"]),
             "module_type" => $post["module_name"],

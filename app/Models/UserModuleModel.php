@@ -10,7 +10,7 @@ class UserModuleModel extends Model
     protected $returnType = 'object';
     protected $useSoftDeletes = false;
 
-    protected $allowedFields = ["id", "module_name", "module_title", "module_type", "module_route", "module_icon", "show_on_menu", "add_to_routes", "locked", "last_build", "created_at", "updated_at", "deleted_at"];
+    protected $allowedFields = ["id", "project_id", "module_name", "module_title", "module_type", "module_route", "module_icon", "show_on_menu", "add_to_routes", "locked", "last_build", "created_at", "updated_at", "deleted_at"];
 
     protected $useTimestamps = true;
     protected $createdField  = 'created_at';
@@ -30,7 +30,7 @@ class UserModuleModel extends Model
 
     public function getFieldLabels() {
         return false;
-        return ["ID", "Module Name", "Module Title", "Type", "Route", "Last Build"];
+        return ["ID", "Project ID", "Module Name", "Module Title", "Type", "Route", "Last Build"];
     }
 
     public function getModuleColumns($name = null) {

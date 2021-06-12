@@ -52,7 +52,7 @@
                                 <div class="action align-self-center" data-id="<?= trim(strtolower($module[0]['module_name'])) ?>">
                                     <button class="btn btn-sm btn-primary m-1" data-toggle="collapse"><i class="fa fa-arrow-right"></i></button>
                                 </div>
-                                <div class="col-2 align-self-center">
+                                <div class="col-4 align-self-center">
                                     <div class="text-white"><b><?= $module[0]['module_name'] ?></b>&nbsp;<small class="col-6 float-right pt-1">(12 columns)</small></div>
                                 </div>
                                 <div class="col-2 d-flex align-self-center text-white">

@@ -1,12 +1,12 @@
 <?php namespace App\Controllers;
 
-use App\Models\GroupsModel;
+use App\Models\TasksModel;
 use App\Models\ProjectModel;
 // {{dynamic}} use App\Models\{{uc_join_model}}Model;
 use App\Models\UserModuleModel;
 use CodeIgniter\Controller;
 
-class GroupsController extends HomeController {
+class TasksController extends HomeController {
 
     protected $session;
     protected $database;
@@ -17,7 +17,7 @@ class GroupsController extends HomeController {
 	}
 
     public function index($project_hash = null) {
-        $groups = new GroupsModel();
+        $tasks = new TasksModel();
         $projects = new ProjectModel();
         // {{dynamic}} ${{join_model}} = new {{uc_join_model}}Model();
         $userModule = new UserModuleModel();
@@ -28,14 +28,14 @@ class GroupsController extends HomeController {
 
         // From separate database
         $this->database = $project_hash;
-        $groups->setDatabase($this->database);
-        $groupsItems = $groups->findAll();
+        $tasks->setDatabase($this->database);
+        $tasksItems = $tasks->findAll();
 
-        $data["view"] = "GroupsView";
+        $data["view"] = "TasksView";
         $data["navigation"] = false;
         $data["menuItems"] = $menuItems;
-        $data["headers"] = $groups->getAllowedFields();
-        $data["groupsItems"] = $groupsItems;
+        $data["headers"] = $tasks->getAllowedFields();
+        $data["tasksItems"] = $tasksItems;
         // {{dynamic}} $data["{{join_model}}Items"] = ${{join_model}}Items;
         $data["auth"] = service("authentication");
         $data["user"] = user();
@@ -55,7 +55,7 @@ class GroupsController extends HomeController {
             return $this->response->setJSON(["notification" => $this->notifications]);
         }
 
-        $groups = new GroupsModel();
+        $tasks = new TasksModel();
         $projects = new ProjectModel();
 
         $this->current_project = $projects->checkProjectBelongsToUser($project_hash, user()->id);
@@ -66,7 +66,7 @@ class GroupsController extends HomeController {
         }
 
         $this->database = $project_hash;
-        $groups->setDatabase($this->database);
+        $tasks->setDatabase($this->database);
 
         if ($this->request->isAjax()) {
             if (isset($post["id"])) {
@@ -79,9 +79,9 @@ class GroupsController extends HomeController {
             if ($validation->run() == TRUE) { }
 
             if (!is_null($update_id)) {
-                $groups->update($update_id, $post);
+                $tasks->update($update_id, $post);
             } else {
-                $groups->insert($post);
+                $tasks->insert($post);
             }
         }
 
@@ -105,7 +105,7 @@ class GroupsController extends HomeController {
             return $this->response->setJSON(["notification" => $this->notifications]);
         }
 
-        $groups = new GroupsModel();
+        $tasks = new TasksModel();
         $projects = new ProjectModel();
 
         $this->current_project = $projects->checkProjectBelongsToUser($project_hash, user()->id);
@@ -116,21 +116,21 @@ class GroupsController extends HomeController {
         }
 
         $this->database = $project_hash;
-        $groups->setDatabase($this->database);
+        $tasks->setDatabase($this->database);
 
-        $primary = $groups->getPrimary();  // The primary key
-        $allLabels = $groups->getFieldLabels();
-        $allColumns = $groups->getAllowedFields();
+        $primary = $tasks->getPrimary();  // The primary key
+        $allLabels = $tasks->getFieldLabels();
+        $allColumns = $tasks->getAllowedFields();
 
-        $allGroups = $groups->getGroupsList();
+        $allTasks = $tasks->getTasksList();
 
-        foreach ($allGroups as &$item) {
+        foreach ($allTasks as &$item) {
             $item["check"] = json_encode($item);
         }
         $data["primary"] = $primary;
         $data["headers"] = $allLabels;
         $data["allColumns"] = $allColumns;
-        $data["groupsItems"] = $allGroups;
+        $data["tasksItems"] = $allTasks;
 
         return $this->response->setJSON($data);
     }
@@ -143,7 +143,7 @@ class GroupsController extends HomeController {
             return $this->response->setJSON(["notification" => $this->notifications]);
         }
 
-        $groups = new GroupsModel();
+        $tasks = new TasksModel();
         $projects = new ProjectModel();
 
         $this->current_project = $projects->checkProjectBelongsToUser($project_hash, user()->id);
@@ -154,11 +154,11 @@ class GroupsController extends HomeController {
         }
 
         $this->database = $project_hash;
-        $groups->setDatabase($this->database);
+        $tasks->setDatabase($this->database);
 
         if ($this->request->isAjax()) {
-            $groups_id = (int) $post["id"];
-            $groups->delete($groups_id);
+            $tasks_id = (int) $post["id"];
+            $tasks->delete($tasks_id);
         }
 
         return $this->response->setJSON(true);
