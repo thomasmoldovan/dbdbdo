@@ -46,7 +46,7 @@
                                 <option value='21'>Red</option>
                             </select>
                             <label for='complete' class='w-100 mb-0 bold pr-3'>Complete</label>
-                            <input id='complete' name='complete' class='form-control form-control-sm' type='checkbox' data-toggle='toggle' data-size='sm'/>
+                            <input id='complete' name='complete' class='border-3 form-control form-control-sm' type='checkbox' data-toggle='toggle' data-size='sm'/>
                         </form>
                     </div>
                 </div>
@@ -95,7 +95,7 @@
         $(document).trigger("showLoadingScreen");
         $.ajax({
             type: "post",
-            url: "tasks/list",
+            url: "taskslist/list",
             data: {
                 "project_hash": "<?= $_SESSION["project_hash"]; ?>"
             },
@@ -198,7 +198,7 @@
 
                 $.ajax({
                     type: "post",
-                    url: "tasks/delete",
+                    url: "taskslist/delete",
                     data: {
                         "id": id,
                         "project_hash": "<?= $_SESSION["project_hash"]; ?>"
@@ -251,10 +251,10 @@
 
                 // Rest I have
                 $("input[id='id']").val(tasksData.id);
-$("select[value='" + tasksData.id + "']").attr("selected", "selected");
-$("input[id='taskname']").val(tasksData.taskname);
-$("select[value='" + tasksData.id + "']").attr("selected", "selected");
-$("input[id='complete']").bootstrapToggle(tasksData.tasks_complete == 1 ? 'on' : 'off');
+                $("select[value='" + tasksData.id + "']").attr("selected", "selected");
+                $("input[id='taskname']").val(tasksData.taskname);
+                $("select[value='" + tasksData.id + "']").attr("selected", "selected");
+                $("input[id='complete']").bootstrapToggle(tasksData.tasks_complete == 1 ? 'on' : 'off');
                 
                 $('#createTasksModal').modal('show');
             });
@@ -267,7 +267,7 @@ $("input[id='complete']").bootstrapToggle(tasksData.tasks_complete == 1 ? 'on' :
                 preData = $("#createTasksForm").serializeArray();
                 $.ajax({
                     type: "post",
-                    url: "tasks/create",
+                    url: "taskslist/create",
                     data: $.param(preData),
                     dataType: "json",
                     success: function (response) {

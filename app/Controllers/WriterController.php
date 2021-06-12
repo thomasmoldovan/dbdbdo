@@ -333,6 +333,7 @@ class WriterController extends HomeController {
         $data = array(
             "uc_model_name" => ucwords($module[0]["module_name"]),
             "model_name" => $module[0]["module_name"],
+            "module_route" => $module[0]["module_route"],
             "table_name" => $module[0]["table_name"],
             "primary_key"  => null, // TODO: Maybe the primary columns is not the first, and does not contain ID
             "allowed_fields" => [],
@@ -396,6 +397,7 @@ class WriterController extends HomeController {
         foreach($module as $column) {
             $id = $column["user_table_id"];
             $module_name = $column["module_name"];
+            $module_route = $column["module_route"];
             $table_name = $column["table_name"];
             $column_name = $column["column_name"];
             $label = $column["display_label"];

@@ -13,10 +13,15 @@ class SchemaModel extends Model {
 
 	// Get all tables from database
 	// NOTE: This will also include the VIEWS
-    public function getTables($database = null) {
+    public function getTables($database = null, $tables = null) {
 		if (is_null($database)) return false;
+
+		$only_show = "";
+		if (!is_null($tables)) $only_show = " AND TABLE_NAME IN (\"".implode('","', $tables)."\") ";
+
 		$infosch = \Config\Database::connect("informationSchema");
-		$result = $infosch->query("SELECT * FROM tables WHERE table_schema = '{$database}' ORDER BY table_name");
+		$query = "SELECT * FROM tables WHERE table_schema = '{$database}' {$only_show} ORDER BY table_name";
+		$result = $infosch->query($query);
 		return $result->getResultArray();
     }
 

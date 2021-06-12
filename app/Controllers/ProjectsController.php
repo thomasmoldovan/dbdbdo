@@ -18,7 +18,7 @@ class ProjectsController extends HomeController {
 		if ($this->checkIfLogged() !== true) {
 			return redirect()->to("/");;
 		}
-		$projects = new \App\Models\ProjectModel();
+		$projects = new ProjectModel();
 
 		// Check if we have a hash in the URL
 		if (isset($hash) && !is_null($hash)) {
@@ -30,14 +30,38 @@ class ProjectsController extends HomeController {
 				$this->current_project = $project[0];
 
 				// Tables List View
-				$schema = new SchemaModel();
-				$data["project"] = $this->current_project;
-				$data["tables"] = $schema->getTables($this->current_project["project_hash"]);
-				$data["userTables"] = $schema->getTablesInfo($this->user->id, $this->current_project["id"]);
-				$data["tablesProcessed"] = array_unique(array_column($data["userTables"], "table_name"));
+				if ($this->current_project["project_hash"] == 0) {
+					// EXTERNAL
+					$schema = new SchemaModel();
+					$data["project"] = $this->current_project;
+					$data["tables"] = $schema->getTables($this->current_project["project_hash"]); 
+					$data["userTables"] = $schema->getTablesInfo($this->user->id, $this->current_project["id"]);
+					$data["tablesProcessed"] = array_unique(array_column($data["userTables"], "table_name"));
+	
+					$this->session->set("notification", $this->notifications);
+					return $this->display_main("header", "project", $data);
+				} else {
+					$schema = new SchemaModel();
+					$data["project"] = $this->current_project;
+					// I need the exact tables of this project so it will not show everything
+					$data["tables"] = $projects->getInnerProjectTables($this->current_project["id"]);
+					$data["tables"] = $schema->getTables($this->current_project["database"], $data["tables"]);
+					// Now we overwrite the tables with our info from information_schema, only for those ids
+					// $data["tables"] = $schema->getTables($this->current_project["database"], $ids);
 
-				$this->session->set("notification", $this->notifications);
-				return $this->display_main("header", "project", $data);
+					$data["userTables"] = $schema->getTablesInfo($this->user->id, $this->current_project["id"]);
+					$data["tablesProcessed"] = array_unique(array_column($data["userTables"], "table_name"));
+	
+					$this->session->set("notification", $this->notifications);
+					return $this->display_main("header", "project", $data);
+
+					if ($this->current_project->project_type == 0) {
+						$tables = $schema->getTables($this->current_project->project_hash);
+					} else {
+						$tables = [["TABLE_NAME" => $this->current_project->project_hash]];
+					}
+				}
+				
 			} else {
 				// No project with user_id and project_hash found
 
@@ -100,7 +124,7 @@ class ProjectsController extends HomeController {
 		$drop_db_query = "";
 		if (is_array($dbs)) {			
 			foreach ($dbs as $db) {
-				$drop_db_query = "DROP DATABASE _".$db->project_hash.";";
+				$drop_db_query = "DROP DATABASE ".$db->project_hash.";";
 				try {
 					$dbs = $rootConn->query($drop_db_query);
 				} catch (\Exception $ex) {

@@ -38,12 +38,18 @@
                         <div class="col-2 align-self-center bold text-white small pl-0 pr-0">
                             <? if (in_array($table["TABLE_NAME"], $data["tablesProcessed"])) { ?>
                             <button type="submit"
+                                data-toggle="tooltip" data-title="Something here"
                                 class="resetTableButton btn btn-danger btn-sm float-right mr-1 no-outline"
                                 data-name="<?= $table["TABLE_NAME"] ?>">Reset</button>
+                            <button type="submit"
+                                data-toggle="tooltip" data-title="Something here"
+                                class="deleteTableButton btn btn-secondary btn-sm float-right mr-1 no-outline"
+                                data-name="<?= $table["TABLE_NAME"] ?>">Delete</button>  
                             <? } else { ?>
                             <button type="submit"
+                                data-toggle="tooltip" data-title="Something here"
                                 class="deleteTableButton btn btn-secondary btn-sm float-right mr-1 no-outline"
-                                data-name="<?= $table["TABLE_NAME"] ?>">Delete</button>
+                                data-name="<?= $table["TABLE_NAME"] ?>">Process</button>
                             <? } ?>
                         </div>
 
