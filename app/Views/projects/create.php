@@ -108,7 +108,7 @@
 
             $.ajax({
                 type: "post",
-                url: "importSchema",
+                url: "/import/importSchema",
                 data: {
                     "name": $("#projectName").val(),
                     "description": $("#projectDescription").val(),

@@ -2,9 +2,208 @@
 
 namespace App\Controllers;
 
-use App\Models\PropertiesModel;
+use App\Models\ProjectModel;
+use App\Models\SchemaModel;
+use App\Models\UserTableModel;
+use App\Models\UserModuleModel;
+use App\Models\TableModuleModel;
 
 class ImportController extends HomeController {
+
+    private $mapping = array(
+        "table_name" => "TABLE_NAME",
+        "column_name" => "COLUMN_NAME",
+        "type" => "COLUMN_TYPE",
+        "pk" => "COLUMN_KEY",
+        "default" => "COLUMN_DEFAULT",
+        "null" => "IS_NULLABLE",
+        "ai" => "EXTRA",
+        "permissions" => "PRIVILEGES",
+        "comment" => "COLUMN_COMMENT"
+    );
+
+    // Creates a DB with the provided schema
+	public function importSchema($data = null, $name = null) {
+		$name = $this->request->getPost("name");
+		$description = $this->request->getPost("description");
+		$type = $this->request->getPost("type");
+		$data = $this->request->getPost("data");
+
+		if (empty($name) || empty($data)) {
+			return $this->response->setJSON(array(
+				"status" => "error",
+				"message" => "Something values were empty"
+			));
+		}
+
+		$projects = new \App\Models\ProjectModel();
+		$rootConn = \Config\Database::connect("default");
+
+		try {
+			$importerConn = \Config\Database::connect("schemaImporter");
+		} catch (\Exception $ex) {
+			return $this->tried($ex);
+		}
+
+		$userId = $this->user->id;
+		$project_hash = substr(uniqid(), -6);
+
+		// Add the project
+		try {
+			$this->current_project = $projects->insert([
+				"id" => null,
+				"user_id" => $userId,
+				"project_hash" => $project_hash,
+				"project_name" => $name,
+				"project_description" => $description,
+				"project_type" => $type,
+				"database" => $project_hash]
+			);
+		} catch (\Exception $ex) {
+			$project_hash = null;
+			return $this->tried($ex);
+		}
+
+		$this->current_project = $projects->find($this->current_project);
+
+		// EXTERNAL - project_type - 1
+		if ($this->current_project->project_type == 0) {
+			// Create sepparate database
+			$result = null;
+			$sql = "CREATE DATABASE {$this->current_project->project_hash};";
+			try {
+				$result = $importerConn->query($sql);
+			} catch (\Exception $ex)  {
+				return $this->tried($ex);
+			}
+
+			// Prepare for import
+			$importerConn->setDatabase($project_hash);
+			$importerConn->query("SET FOREIGN_KEY_CHECKS = 0;");
+			$importerConn->query("SET SQL_MODE = '';");
+		}
+
+		// INTERNAL - project_type - 0 - this import will go to our database
+		if ($this->current_project->project_type == 1) {
+			$importerConn->setDatabase($_ENV["database.default.database"]);
+			$importerConn->query("SET FOREIGN_KEY_CHECKS = 0;");
+			$importerConn->query("SET SQL_MODE = '';");
+		}		
+
+		$separator = "\r\n";
+		$nrTables = 0;
+		$tempcommand = "";
+
+		$line = strtok($data, $separator);
+		while ($line !== false) {
+			// Skip if comment
+			if (substr($line, 0, 2) == '--' || substr($line, 0, 2) == '/*' || substr($line, 0, 2) == '/*' || $line == '') continue;
+
+			// Add this line to the current command
+			$tempcommand .= $line;
+
+			// If it has a semicolon at the end, it's the end of the query
+			if (substr(trim($tempcommand), -1, 1) == ';') {
+
+				// TODO: Turn these import filters into a loop
+				// $restricted_importer_keywords = ["drop", "database", "show", "privilege"];
+				// foreach ($restricted_importer_keywords as $keyword) {
+				// 	if (stripos($tempcommand, $keyword) !== false) {
+				// 		$tempcommand = '';
+				// 		$line = strtok($separator);
+				// 		continue;
+				// 	}
+				// }
+
+				// Ignore line if DATABASE statement present
+				$wtf1 = stripos($tempcommand, "drop");
+				if (stripos($tempcommand, "database") != false) {
+					$tempcommand = '';
+					$line = strtok($separator);
+					continue;
+				}
+
+				// Ignore line if DATABASE statement present
+				$wtf2 = stripos($tempcommand, "database");
+				if (stripos($tempcommand, "database") != false) {
+					$tempcommand = '';
+					$line = strtok($separator);
+					continue;
+				}
+
+				// Ignore line if DATABASE statement present
+				$wtf3 = stripos($tempcommand, "show");
+				if (stripos($tempcommand, "show") != false) {
+					$tempcommand = '';
+					$line = strtok($separator);
+					continue;
+				}
+
+				// Ignore line if DATABASE statement present
+				$wtf4 = stripos($tempcommand, "privilege");
+				if (stripos($tempcommand, "privilege") != false) {
+					$tempcommand = '';
+					$line = strtok($separator);
+					continue;
+				}
+
+				// Perform the query
+				if (!empty($tempcommand)) {
+					$nrTables++;
+					try {
+						// No INSERTS
+						$result = $importerConn->query($tempcommand);
+					} catch (\Exception $ex)  {
+						if ($ex->getCode() == 1142) {
+							return $this->response->setJSON(array(
+								"status" => "error",
+								"code" => $ex->getCode(),
+								"response" => ["error", "You do not have permissions to run that command"]
+							));
+						} else if ($ex->getCode() == 1064) {
+							return $this->response->setJSON(array(
+								"status" => "error",
+								"code" => $ex->getCode(),
+								"response" => ["error", "You have an error in your SQL script"]
+							));
+						} else {
+							return $this->tried($ex);
+						}
+					}
+				}
+
+				$tempcommand = '';
+			}
+
+			$line = strtok($separator);
+		}
+
+		if (is_null($result) || $nrTables == 0) {
+			return $this->response->setJSON(array(
+				"status" => "error",
+				"message" => "Something went wrong executing the SQL script"
+			));
+		}
+
+		if (!is_null($result) && $nrTables > 0) {
+			$schema = new SchemaModel();
+        	$tables = $schema->getTables($this->current_project->project_hash);
+
+			foreach ($tables as $table) {
+				$this->getTableColumns($table["TABLE_NAME"], $this->current_project->project_hash);
+			}
+
+			return $this->response->setJSON([
+				"project_hash" => $project_hash,
+                "response" => ["success", "Project ".$this->current_project->project_hash." created."]
+			]);
+		} else {
+			return $this->response->setJSON(array(
+				"status" => "error",
+				"message" => "Something went wrong executing the SQL script"
+			));
+		}
+	}
 
     // Resets the information gathered about a table
 	public function resetTable() {
@@ -39,7 +238,8 @@ class ImportController extends HomeController {
 
         return $this->response->setJSON(array(
 			"status" => "success",
-			"message" => "Table reset succesfull"
+			"message" => "Table reset succesfull",
+            
 		));
 	}
 
@@ -76,16 +276,14 @@ class ImportController extends HomeController {
 			$this->notifications[] = ["success", "Table deleted succesfully"];
 			$this->session->set("notification", $this->notifications);
 			return $this->response->setJSON(array(
-				"status" => "success",
-				"message" => "Table deleted succesfully"
+				"response" => ["error", "Table deleted succesfully"]
 			));
         }
 
 		$this->notifications[] = ["danger", "Only AJAX calls allowed"];
 		$this->session->set("notification", $this->notifications);
         return $this->response->setJSON(array(
-			"status" => "danger",
-			"message" => "Only AJAX calls allowed"
+            "response" => ["error", "Only AJAX calls allowed"]
 		));
 	}
 
@@ -128,7 +326,8 @@ class ImportController extends HomeController {
 
 		return $this->response->setJSON(array(
 			"tableName" => $tableName,
-			"columns" => $columns
+			"columns" => $columns,
+            "response" => ["success", "Saved ".count($saved)." columns in table ".$tableName]
 		));
     }
 

@@ -167,7 +167,7 @@
             $(document).trigger("showLoadingScreen");
             $.ajax({
                 type: "post",
-                url: "/projects/resetTable",
+                url: "/import/resetTable",
                 data: {
                     "table_name": $(this).data("name")
                 },
@@ -188,7 +188,7 @@
             $(document).trigger("showLoadingScreen");
             $.ajax({
                 type: "post",
-                url: "/projects/deleteTable",
+                url: "/import/deleteTable",
                 data: {
                     "table_name": $(this).data("name"),
                     "project_hash": "<?= $data["project"]["project_hash"]; ?>"
@@ -233,7 +233,7 @@
             // module/create
             $.ajax({
                 type: "post",
-                url: "/projects/linkTableToModule",
+                url: "/import/linkTableToModule",
                 data: {
                     "module_name": tableName,
                     "selectedColumns": selectedColumns,
@@ -294,13 +294,14 @@
         element.removeClass("btn-primary btn-warning btn-danger btn-success").addClass("btn-warning");
         $.ajax({
             type: "post",
-            url: "/projects/getTableColumns",
+            url: "/import/getTableColumns",
             data: {
                 "tableName": currentTable,
                 "project_hash": "<?= $data["project"]["project_hash"]; ?>"
             },
             dataType: "json",
             success: function (response) {
+                location = window.location;
                 $(element).children().removeClass().addClass("fas fa-eye");
                 $(element).removeClass("btn-primary btn-warning btn-danger btn-success");
                 $(element).addClass("btn-success");

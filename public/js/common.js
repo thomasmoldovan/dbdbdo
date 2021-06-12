@@ -111,7 +111,7 @@ function autosaveChange() {
     setElementStatus(element, 'danger');
     var url = element.data('hurl');
     if (!url) {
-        url = "/projects/autosave";
+        url = "/ajax/autosave";
     }
     var param = element.data('save');
     var type = element.attr("type");
@@ -152,15 +152,18 @@ $('[data-toggle="tooltip"]').tooltip();
 
 $(document).ajaxSuccess(function (evt, jqXHR, settings) {
     console.log(jqXHR.responseJSON);
-    // let value = JSON.parse(jqXHR.responseJSON);
-    toastr.info(jqXHR.responseJSON);
-    // toastr[value[0]](value[1]);
+    if (jqXHR.responseJSON.response) response = jqXHR.responseJSON.response;
+    if (typeof response !== "undefined" && response[1] && response[2]) toastr.success(response[1], response[2]);
 });
 
 $(document).ajaxError(function (evt, jqXHR, settings) {
-    // alert("Global error callback.");
+    console.log(jqXHR.responseJSON);
+    if (jqXHR.responseJSON.response) response = jqXHR.responseJSON.response;
+    if (typeof response !== "undefined" && response[1] && response[2]) toastr.error(response[1], response[2]);
 });
 
 $(document).ajaxComplete(function (evt, jqXHR, settings) {
-    // alert("Global complete callback.");
+    // console.log(jqXHR.responseJSON);
+    // let response = jqXHR.responseJSON.response;
+    // toastr.info(response[1], response[2]);
 });

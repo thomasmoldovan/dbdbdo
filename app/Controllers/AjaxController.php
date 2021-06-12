@@ -2,6 +2,7 @@
 
 namespace App\Controllers;
 
+use App\Models\SchemaModel;
 use App\Models\PropertiesModel;
 
 class AjaxController extends HomeController {

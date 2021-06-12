@@ -133,10 +133,9 @@
                                     $pk_correct = $pk_type === $fk_type ? true : false;
                                     $fk_correct = $fk_type === $pk_type ? true : false;
                                     $can_link = $pk_correct === true && $fk_correct === true ? true : false;
-                                    $enabled = $key["display"];
                                     ?>
                                     <tr data-pk="<?= $key["table_name"].".".$key["table_column"]; ?>" data-fk="<?= $key["key_table"].".".$key["key_column"]; ?>">
-                                        <td><?= $key["display"] ? $key["display"]["link_id"] : "?" ?></td>
+                                        <td><?= is_array($key["display"]) ? $key["display"]["link_id"] : "<button class='addLink btn btn-xs btn-primary'><i class='fa fa-plus'></i></button>" ?></td>
                                         <td><?= $key["key_table"] ?></td>
                                         <td><?= $key["key_column"] ?></td>
                                         <td><?= $data["column_types"][$key["key_table"].".".$key["key_column"]]["Type"] ?><?= $fk_correct === true ? '&nbsp;<i class="fa fa-check text-success"></i>' : '&nbsp;<i class="fa fa-ban text-danger"></i>' ?></td>
@@ -144,7 +143,7 @@
                                         <td><?= $key["table_column"] ?></td>
                                         <td><?= $data["column_types"][$key["table_name"].".".$key["table_column"]]["Type"] ?><?= $pk_correct === true ? '&nbsp;<i class="fa fa-check text-success"></i>' : '&nbsp;<i class="fa fa-ban text-danger"></i>' ?></td>
                                         <td>
-                                            <? if ($key["display"]) { ?>
+                                            <? if (is_array($key["display"])) { ?>
                                                 <!-- Columns of the foreign key table -->
                                                 <!-- The trick here is to have the table_info_id of the display table so they can be linked -->
                                                 <select data-save="<?= handledata(array('links' => 'user_table_id_display', 'id' => $key["display"]["link_id"])) ?>"
@@ -162,14 +161,16 @@
                                             <? if (isset($key["display"]["link_id"])) { ?>
                                                 <select data-save="<?= handledata(array('links' => 'link_type', 'id' => $key["display"]["link_id"])) ?>"
                                                     name="link_type_<?= $key["display"]["link_id"]?>" id="link_type_<?= $key["display"]["link_id"] ?>" class="form-control form-control-sm">
-                                                    <option value="1">Static</option>
-                                                    <option value="2">Dynamic</option>
+                                                    <option value="1" <?= $key["display"]["link_type"] == 1 ? "selected" : ""; ?>>Static</option>
+                                                    <option value="2" <?= $key["display"]["link_type"] == 2 ? "selected" : ""; ?>>Dynamic</option>
                                                 </select>
                                             <? } ?>
                                         </td>
                                         <td>              
-                                            <? if ($can_link === true) { ?>                              
-                                                <input <?= $enabled ? "checked" : "" ?> name='complete' value="isComplete" class='btn btn-success btn-xs' type='checkbox' data-toggle='toggle' data-size='xs'/>
+                                            <? if ($can_link === true && is_array($key["display"])) { ?>                              
+                                                <input <?= $key["display"]["link_id"] == "1" ? "checked" : "" ?> 
+                                                        data-save="<?= handledata(array('links' => 'enabled', 'id' => $key["display"]["link_id"])) ?>"
+                                                        name='complete' value="isComplete" class='btn btn-success btn-xs' type='checkbox' data-toggle='toggle' data-size='xs'/>
                                             <? } ?>
                                         </td>
                                     </tr>
