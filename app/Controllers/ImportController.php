@@ -46,7 +46,32 @@ class ImportController extends HomeController {
 		}
 
 		$userId = $this->user->id;
-		$project_hash = substr(uniqid(), -6);
+		$project_hash = null;
+		$random_color_hash = substr(uniqid(), -6);
+		// EXTERNAL - project_type - 1
+		if ((int) $type == 0 || $type == 1) {
+			// Create sepparate database
+			$result = null;
+			$project_hash = $random_color_hash;
+			$sql = "CREATE DATABASE {$project_hash};";
+			try {
+				$result = $importerConn->query($sql);
+			} catch (\Exception $ex)  {
+				return $this->tried($ex);
+			}
+
+			// Prepare for import
+			$importerConn->setDatabase($project_hash);
+		}
+
+		// INTERNAL - project_type - 1 - this import will go to our database
+		if ((int)$type == 1) {
+			// $project_hash = $name;
+			// $importerConn->setDatabase($_ENV["database.default.database"]);
+
+			// Important ... i need to know what the tables names are
+			// So we also create and import there, read what we need and then drop the database
+		}
 
 		// Add the project
 		try {
@@ -66,33 +91,13 @@ class ImportController extends HomeController {
 
 		$this->current_project = $projects->find($this->current_project);
 
-		// EXTERNAL - project_type - 1
-		if ($this->current_project->project_type == 0) {
-			// Create sepparate database
-			$result = null;
-			$sql = "CREATE DATABASE {$this->current_project->project_hash};";
-			try {
-				$result = $importerConn->query($sql);
-			} catch (\Exception $ex)  {
-				return $this->tried($ex);
-			}
-
-			// Prepare for import
-			$importerConn->setDatabase($project_hash);
-			$importerConn->query("SET FOREIGN_KEY_CHECKS = 0;");
-			$importerConn->query("SET SQL_MODE = '';");
-		}
-
-		// INTERNAL - project_type - 0 - this import will go to our database
-		if ($this->current_project->project_type == 1) {
-			$importerConn->setDatabase($_ENV["database.default.database"]);
-			$importerConn->query("SET FOREIGN_KEY_CHECKS = 0;");
-			$importerConn->query("SET SQL_MODE = '';");
-		}		
+		$importerConn->query("SET FOREIGN_KEY_CHECKS = 0;");
+		$importerConn->query("SET SQL_MODE = '';");
 
 		$separator = "\r\n";
 		$nrTables = 0;
 		$tempcommand = "";
+		$clean_query = "";
 
 		$line = strtok($data, $separator);
 		while ($line !== false) {
@@ -153,6 +158,9 @@ class ImportController extends HomeController {
 					try {
 						// No INSERTS
 						$result = $importerConn->query($tempcommand);
+						if ($this->current_project->project_type == 1) {
+							$rootConn->query($tempcommand);
+						}
 					} catch (\Exception $ex)  {
 						if ($ex->getCode() == 1142) {
 							return $this->response->setJSON(array(
@@ -187,10 +195,25 @@ class ImportController extends HomeController {
 
 		if (!is_null($result) && $nrTables > 0) {
 			$schema = new SchemaModel();
-        	$tables = $schema->getTables($this->current_project->project_hash);
+
+			if ($this->current_project->project_type == 0) {
+				$tables = $schema->getTables($this->current_project->project_hash);
+			} else {
+				// TO DO NOW
+				// Here is the problem
+				// I don't know the table names
+
+				// get the table names
+				$tables = $schema->getTables($this->current_project->project_hash);
+				// set the database of current project to ours and save()
+				$projects->update($this->current_project->id, ["database" => $_ENV["database.default.database"]]);
+				$this->current_project = $projects->find($this->current_project->id);
+				// drop the other db
+				$rootConn->query("DROP DATABASE ".$this->current_project->project_hash.";");
+			}
 
 			foreach ($tables as $table) {
-				$this->getTableColumns($table["TABLE_NAME"], $this->current_project->project_hash);
+				$this->getTableColumns($table["TABLE_NAME"], $this->current_project->database);
 			}
 
 			return $this->response->setJSON([
@@ -297,8 +320,8 @@ class ImportController extends HomeController {
 		if (is_null($project_hash)) { return false; }
 
 		// Check to see if projectId belongs to current logged user
-		$projects = new ProjectModel();
-		$this->current_project = $projects->checkProjectBelongsToUser($project_hash, $this->user->id);
+		// $projects = new ProjectModel();
+		// $this->current_project = $projects->checkProjectBelongsToUser($project_hash, $this->user->id);
 
 		if (!isset($this->current_project)) return false;
 		if (empty($this->current_project)) return false;
@@ -306,7 +329,11 @@ class ImportController extends HomeController {
 
 		// Read the info about the table so we can use it our way
         $schema = new SchemaModel();
-        $columns = $schema->getColumns($this->current_project->project_hash, $tableName, $this->mapping);
+		if ($this->current_project->project_type == 0) {
+			$columns = $schema->getColumns($this->current_project->project_hash, $tableName, $this->mapping);
+		} else if ($this->current_project->project_type == 1) {
+			$columns = $schema->getColumns($_ENV["database.default.database"], $tableName, $this->mapping);
+		}
 
 		// We add some new properties to each column
 		foreach ($columns as &$column) {

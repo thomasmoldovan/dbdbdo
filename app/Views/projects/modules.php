@@ -56,8 +56,10 @@
                                     <div class="text-white"><b><?= $module[0]['module_name'] ?></b>&nbsp;<small class="col-6 float-right pt-1">(12 columns)</small></div>
                                 </div>
                                 <div class="col-2 d-flex align-self-center text-white">
-                                    <input type="text" name="routeName" id="routeName<?= $module[0]['module_name'] ?>" class="form-control form-control-sm" placeholder="Route Alias">
-                                    <i class="fa fa-link pl-1 align-self-center" data-toggle="tooltip" data-placement="right" data-title="Some tooltip from Thomas"></i>
+                                    <input type="text" name="routeName" id="routeName<?= $module[0]['module_route'] ?>" 
+                                           data-save="<?= handledata(array('user_modules' => 'module_route', 'id' => $module[0]['id'])) ?>"
+                                           value="<?= $module[0]['module_route'] ?>"
+                                           class="form-control form-control-sm" placeholder="Route Alias">
                                 </div>
 
                                 <div class="btn-group ml-auto">

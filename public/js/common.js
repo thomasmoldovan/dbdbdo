@@ -1,5 +1,6 @@
 $(document).ready(function () {
     $('*[data-save]').off('change').on('change', autosaveChange);
+    $('*[data-toggle="tooltip"]').tooltip();
     toastr.options = {
         "closeButton": false,
         "debug": false,
@@ -147,8 +148,6 @@ function autosaveChange() {
 
     return true;
 }
-
-$('[data-toggle="tooltip"]').tooltip();
 
 $(document).ajaxSuccess(function (evt, jqXHR, settings) {
     console.log(jqXHR.responseJSON);

@@ -29,6 +29,19 @@ class ProjectModel extends Model
         return ["ID", "User ID", "DB Name", "Project Name", "Project Description", "Project Type", "Project Hash"];
     }
 
+    public function getInnerProjectTables($project_id) {
+        $temp = $this->query("SELECT user_tables.table_name FROM user_tables
+                                LEFT JOIN projects ON projects.id = user_tables.project_id 
+                                WHERE projects.project_type = 1 AND user_tables.project_id = {$project_id}
+                                GROUP BY user_tables.table_name")->getResultArray();
+        $result = [];
+        foreach ($temp as $name) {
+            $result[] = $name["table_name"];
+        }
+
+        return $result;
+    }
+
     public function getProjectsForUser($user_id) {
         $result = $this->query("SELECT user_tables.project_id,
                                         projects.id,
