@@ -22,11 +22,12 @@ class PropertiesModel extends Model
     protected $skipValidation     = false;
 
     public function getFieldProperties($columnId) {
-        $infosch = \Config\Database::connect("default");
-		$result = $infosch->query("SELECT property, attributes
-									FROM properties
-									WHERE properties.user_table_id = {$columnId};");
+        $schema = new SchemaModel();
+        $this->setDatabase("dbdbdo");
+        $result = $schema->executeOuterQuery("dbdbdo", "SELECT property, attributes
+                                        FROM properties
+                                        WHERE properties.user_table_id = {$columnId};");
 
-		return $result->getResultArray();
+		return $result;
     }
 }

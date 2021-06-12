@@ -235,6 +235,7 @@
                 type: "post",
                 url: "/import/linkTableToModule",
                 data: {
+                    "project_hash": "<?= $data["project"]["project_hash"]; ?>",
                     "module_name": tableName,
                     "selectedColumns": selectedColumns,
                     "setIds": $("#setIds" + tableName).prop("checked"),

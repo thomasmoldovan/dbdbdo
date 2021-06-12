@@ -160,7 +160,8 @@
                                         <td>
                                             <? if (isset($key["display"]["link_id"])) { ?>
                                                 <select data-save="<?= handledata(array('links' => 'link_type', 'id' => $key["display"]["link_id"])) ?>"
-                                                    name="link_type_<?= $key["display"]["link_id"]?>" id="link_type_<?= $key["display"]["link_id"] ?>" class="form-control form-control-sm">
+                                                    name="link_type_<?= $key["display"]["link_type"]?>" id="link_type_<?= $key["display"]["link_type"] ?>" class="form-control form-control-sm">
+                                                    <option value="0" <?= $key["display"]["link_type"] == 0 ? "selected" : ""; ?>>Please Select</option>
                                                     <option value="1" <?= $key["display"]["link_type"] == 1 ? "selected" : ""; ?>>Static</option>
                                                     <option value="2" <?= $key["display"]["link_type"] == 2 ? "selected" : ""; ?>>Dynamic</option>
                                                 </select>
@@ -168,7 +169,7 @@
                                         </td>
                                         <td>              
                                             <? if ($can_link === true && is_array($key["display"])) { ?>                              
-                                                <input <?= $key["display"]["link_id"] == "1" ? "checked" : "" ?> 
+                                                <input <?= $key["display"]["enabled"] == "1" ? "checked" : "" ?> 
                                                         data-save="<?= handledata(array('links' => 'enabled', 'id' => $key["display"]["link_id"])) ?>"
                                                         name='complete' value="isComplete" class='btn btn-success btn-xs' type='checkbox' data-toggle='toggle' data-size='xs'/>
                                             <? } ?>

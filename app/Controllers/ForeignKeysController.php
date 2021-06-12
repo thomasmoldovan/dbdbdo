@@ -119,8 +119,6 @@ class ForeignKeysController extends HomeController
 		// We need the current project for the project menu to show
 		$data["project"] = $this->current_project;
 
-		$schema = new SchemaModel();
-
         return $this->display_main("header", "fk", $data);
 	}
 
