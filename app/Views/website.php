@@ -19,6 +19,15 @@
 			<p>Not only that, it can also find links between columns and link them in forms or listings</p>
 			<a class="btn btn-primary btn-lg" href="#!">See Demo »</a>
 		</div>
+		<div class="col-md-8 mb-5">
+			<h2>Usefull for:</h2>
+			<hr />
+			<p>Browse DB data quickly</p>
+			<p>Quickly prototype apps</p>
+			<p>A quick interface for new ideas</p>
+			<p>The starting blocks code for you new big thing</p>
+			<a class="btn btn-primary btn-lg" href="#!">See Demo »</a>
+		</div>
 		<div class="col-md-4 mb-5">
 			<h2>Links</h2>
 			<hr />

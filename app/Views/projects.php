@@ -6,7 +6,10 @@
                 <div class="projectCard mb-3 ml-3 mr-3 p-3 card-normal" data-id="<?= $project->project_hash; ?>">
                     <div class="media-body">
                         <strong><?= $project->project_name; ?></strong>
-                        <small class="float-right"><?= $project->project_hash; ?></small>
+                        <small class="float-right">
+                            <?= $project->project_type == 1 ? '<i class="fa fa-ban text-danger"></i>' : ""; ?>
+                            <?= $project->project_hash; ?>
+                        </small>
                         <br>
                         <small class="bold"><?= $project->project_description; ?></small>
                         <hr class="mt-2 mb-2 bg-success">

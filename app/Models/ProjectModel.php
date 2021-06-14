@@ -47,6 +47,7 @@ class ProjectModel extends Model
                                         projects.id,
                                         projects.project_hash,
                                         projects.project_name,
+                                        projects.project_type,
                                         projects.project_description,
                                         COUNT(user_tables.table_name) AS count_table_name,
                                         tables_modules.id AS module_id,
@@ -83,6 +84,7 @@ class ProjectModel extends Model
                 $project_list[$project->project_hash]->count_links = $project->primary_link || $project->foreign_link ? 1 : 0;
                 $project_list[$project->project_hash]->project_description = $project->project_description;
                 $project_list[$project->project_hash]->project_name = $project->project_name;
+                $project_list[$project->project_hash]->project_type = $project->project_type;
                 $project_list[$project->project_hash]->project_hash = $project->project_hash;
                 $project_list[$project->project_hash]->project_id = $project->project_id;
                 $project_list[$project->project_hash]->updated_at = $project->updated_at;

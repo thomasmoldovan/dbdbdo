@@ -30,7 +30,7 @@ class ProjectsController extends HomeController {
 				$this->current_project = $project[0];
 
 				// Tables List View
-				if ($this->current_project["project_hash"] == 0) {
+				if ((int)$this->current_project["project_type"] == 0) {
 					// EXTERNAL
 					$schema = new SchemaModel();
 					$data["project"] = $this->current_project;
@@ -40,14 +40,15 @@ class ProjectsController extends HomeController {
 	
 					$this->session->set("notification", $this->notifications);
 					return $this->display_main("header", "project", $data);
-				} else {
+				} else if ((int)$this->current_project["project_type"] == 1) {
+					// INTERNAL
 					$schema = new SchemaModel();
 					$data["project"] = $this->current_project;
+
 					// I need the exact tables of this project so it will not show everything
 					$data["tables"] = $projects->getInnerProjectTables($this->current_project["id"]);
-					$data["tables"] = $schema->getTables($this->current_project["database"], $data["tables"]);
 					// Now we overwrite the tables with our info from information_schema, only for those ids
-					// $data["tables"] = $schema->getTables($this->current_project["database"], $ids);
+					$data["tables"] = $schema->getTables($this->current_project["database"], $data["tables"]);
 
 					$data["userTables"] = $schema->getTablesInfo($this->user->id, $this->current_project["id"]);
 					$data["tablesProcessed"] = array_unique(array_column($data["userTables"], "table_name"));
@@ -60,8 +61,7 @@ class ProjectsController extends HomeController {
 					} else {
 						$tables = [["TABLE_NAME" => $this->current_project->project_hash]];
 					}
-				}
-				
+				}				
 			} else {
 				// No project with user_id and project_hash found
 
