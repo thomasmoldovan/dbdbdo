@@ -47,6 +47,7 @@ class ProjectModel extends Model
                                         projects.id,
                                         projects.project_hash,
                                         projects.project_name,
+                                        projects.project_type,
                                         projects.project_description,
                                         COUNT(user_tables.table_name) AS count_table_name,
                                         tables_modules.id AS module_id,
@@ -55,14 +56,14 @@ class ProjectModel extends Model
                                         tables_modules.user_table_id,
                                         links_primary.user_table_id_primary AS primary_link,
                                         links_foreign.user_table_id_foreign AS foreign_link
-                                FROM (((dbdbdo.user_tables user_tables
-                                        LEFT OUTER JOIN dbdbdo.links links_primary
+                                FROM (((user_tables user_tables
+                                        LEFT OUTER JOIN links links_primary
                                             ON (user_tables.id = links_primary.user_table_id_primary))
-                                        RIGHT OUTER JOIN dbdbdo.projects projects
+                                        RIGHT OUTER JOIN projects projects
                                         ON (projects.id = user_tables.project_id))
-                                    LEFT OUTER JOIN dbdbdo.tables_modules tables_modules
+                                    LEFT OUTER JOIN tables_modules tables_modules
                                         ON (user_tables.id = tables_modules.user_table_id))
-                                    LEFT OUTER JOIN dbdbdo.links links_foreign
+                                    LEFT OUTER JOIN links links_foreign
                                         ON (tables_modules.user_table_id =
                                             links_foreign.user_table_id_foreign)
                                 WHERE projects.user_id = {$user_id}
@@ -83,13 +84,21 @@ class ProjectModel extends Model
                 $project_list[$project->project_hash]->count_links = $project->primary_link || $project->foreign_link ? 1 : 0;
                 $project_list[$project->project_hash]->project_description = $project->project_description;
                 $project_list[$project->project_hash]->project_name = $project->project_name;
+                $project_list[$project->project_hash]->project_type = $project->project_type;
                 $project_list[$project->project_hash]->project_hash = $project->project_hash;
                 $project_list[$project->project_hash]->project_id = $project->project_id;
                 $project_list[$project->project_hash]->updated_at = $project->updated_at;
+
+                if ((int)$project->module_id > 0) {
+                    $project_list[$project->project_hash]->count_modules++;
+                }
             } else {
                 $project_list[$project->project_hash]->count_table_name++;
                 $project_list[$project->project_hash]->count_column_name += $project->count_table_name;
-                $project_list[$project->project_hash]->count_modules += $project->module_id ? 1 : 0;
+
+                if ((int)$project->module_id > 0) {
+                    $project_list[$project->project_hash]->count_modules++;
+                }
                 $project_list[$project->project_hash]->count_links += $project->primary_link || $project->foreign_link ? 1 : 0;
             }
         }

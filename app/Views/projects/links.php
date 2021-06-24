@@ -87,20 +87,25 @@
     }
 </style>
 
-<section class="container-fluid invisible">
+<section class="col d-flex">
     <div class="dropdown">
         <button class="btn btn-default dropdown-toggle btn-primary" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
             <i class="fa fa-cog"></i>
+            user.id -> info.user_id
             <span class="caret"></span>
         </button>
         <ul class="dropdown-menu checkbox-menu allow-focus" aria-labelledby="dropdownMenu1">  
-            <li><label><input type="checkbox">&nbsp;user.id -> info.user_id</label></li>
+            <li><label><input type="checkbox" checked>&nbsp;user.id -> info.user_id</label></li>
             <li><label><input type="checkbox">&nbsp;user.id -> info.userId</label></li>
             <li><label><input type="checkbox">&nbsp;user.id -> info.userID</label></li>
             <li><label><input type="checkbox">&nbsp;user.id -> info.userid</label></li>
             <li><label><input type="checkbox">&nbsp;user.user_id -> info.user_id</label></li>
          </ul>
     </div>
+    <input type="text" placeholder="Prefix" class="form-control-sm mt-1 ml-3 mr-3">
+    <button class="btn btn-default btn-primary" type="button" id="refreshLinks">
+        <i class="fa fa-search"></i>
+    </button>
 </section>
 
 <section class="container-fluid invisible pt-3">

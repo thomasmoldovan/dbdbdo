@@ -64,7 +64,7 @@ class HomeController extends BaseController{
 	}
 
 	public function tried(\Exception $ex) {
-		$response["status"] = "error";
+		$response["status"] = "error" ?? null;
 		$response["code"] = $ex->getCode() ?? null;
 		$response["message"] = $ex->getMessage() ?? null;
 		if (ENVIRONMENT === "Development") {
@@ -74,10 +74,37 @@ class HomeController extends BaseController{
 		return $this->response->setJSON($response);
 	}
 
+	public function respond($status, $title, $message) {
+		$response["status"] = $status ?? null;
+		$response["title"] = $title ?? null;
+		$response["message"] = $message ?? null;
+
+		return $this->response->setJSON($response);
+	}
+
 	public function notify($type = "info", $title = null, $text = null) {
 		$this->notifications[] = [$type, $text, $title];
 		$this->session->set("notification", $this->notifications);
 		return true;
+	}
+
+	public function generate_hash() {
+		$charset = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+		$base = strlen($charset);
+		$result = '';
+
+		$now = $this->milliseconds();
+		while ($now >= $base){
+			$i = $now % $base;
+			$result = $charset[$i] . $result;
+			$now /= $base;
+		}
+		return substr($result, -6);
+	}
+
+	private function milliseconds() {
+		$mt = explode(' ', microtime());
+		return ((int)$mt[1]) * 1000 + ((int)round($mt[0] * 1000));
 	}
 
 	public function check_db_connections() {

@@ -546,7 +546,7 @@ class WriterController extends HomeController {
         }
 
         $export_prepath = $project_type == "Internal" ? "/" : "public/preview/";
-        $export_prepath = "/";
+        // $export_prepath = "/";
 
         $modalFilename = $data["uc_model_name"]."Model";
         if (!write_file("../{$export_prepath}App/Models/".$modalFilename.".php", $file)) {

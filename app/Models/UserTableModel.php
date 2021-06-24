@@ -41,11 +41,11 @@ class UserTableModel extends Model
 		return $result->getResultArray();
 	}
 
-	public function getIdByTableAndColulmn($tableName = null, $columnName = null) {
+	public function getIdByTableAndColulmn($tableName = null, $columnName = null, $projecId = null) {
 		$infosch = \Config\Database::connect("default");
 		$result = $infosch->query("SELECT id
                                         FROM user_tables
-                                   WHERE table_name = '{$tableName}' AND column_name='{$columnName}'");
+                                   WHERE table_name = '{$tableName}' AND column_name='{$columnName}' AND project_id='{$projecId}'");
 
 		return $result->getResult()[0]->id;
     }

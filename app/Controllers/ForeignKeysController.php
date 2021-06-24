@@ -5,11 +5,26 @@ use App\Models\UserModuleModel;
 use App\Models\ProjectModel;
 use App\Models\UserTableModel;
 use App\Models\LinksModel;
+use CodeIgniter\Controller;
 
 class ForeignKeysController extends HomeController
 {
     protected $pk_list = [];
+	protected $pages;
     protected $current_project;
+
+	public function __construct() {
+		// TODO: Have this in a base class that all controllers will be based on
+        helper('auth');
+        helper('general');
+        helper('html');
+		$this->session = service('session');
+		$this->config = config('Auth');
+		$this->auth = service('authentication');
+		$this->pages = config('Pages');
+		$this->user = user();
+		$this->projectId = $this->session->get("projectId");
+	}
     
 	public function index($project_hash = null) {
 		if (!$this->auth->check()) {
@@ -278,11 +293,18 @@ class ForeignKeysController extends HomeController
 	}
 
 	public function saveForeignKey() {
+		$this->checkIfLogged();
+
 		$post = $this->request->getPost();
 
 		if (empty($post)) {
 			return $this->response->setJSON(array("error" => "No POST data"));
 		}
+
+		$projects = new ProjectModel();
+
+		$hash = $this->session->get("project_hash");
+		$this->current_project = $projects->getWhere(["user_id" => $this->user->id, "project_hash" => $hash])->getResultArray()[0];
 
 		if ($this->request->isAJAX()) {
 			if (!empty($post["user_table_id_primary"]) && !empty($post["user_table_id_foreign"])) {
@@ -295,8 +317,8 @@ class ForeignKeysController extends HomeController
 				$user_table_id_display = isset($post["user_table_id_display"]) ? $post["user_table_id_display"] : 0;
 				$enabled = 1;
 				
-				$pkId = $tableInfo->getIdByTableAndColulmn(explode(".", $user_table_id_primary)[0], explode(".", $user_table_id_primary)[1]);
-				$fkId = $tableInfo->getIdByTableAndColulmn(explode(".", $user_table_id_foreign)[0], explode(".", $user_table_id_foreign)[1]);
+				$pkId = $tableInfo->getIdByTableAndColulmn(explode(".", $user_table_id_primary)[0], explode(".", $user_table_id_primary)[1], $this->current_project["id"]);
+				$fkId = $tableInfo->getIdByTableAndColulmn(explode(".", $user_table_id_foreign)[0], explode(".", $user_table_id_foreign)[1], $this->current_project["id"]);
 				$dkId = $user_table_id_display;
 				
 				// TODO: Check if exists and update, DO NOT DELETE

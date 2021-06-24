@@ -150,15 +150,35 @@ function autosaveChange() {
 }
 
 $(document).ajaxSuccess(function (evt, jqXHR, settings) {
-    console.log(jqXHR.responseJSON);
-    if (jqXHR.responseJSON.response) response = jqXHR.responseJSON.response;
-    if (typeof response !== "undefined" && response[1] && response[2]) toastr.success(response[1], response[2]);
+    if (typeof jqXHR.responseJSON !== "undefined") {
+        console.log(jqXHR.responseJSON);
+        var res = jqXHR.responseJSON;
+        if (typeof res !== "undefined") {
+            // status, title, message
+            if (typeof res.status == "undefined") { res.status = "info"; }
+            if (typeof res.title == "undefined") { res.title = "--"; }
+            if (typeof res.message == "undefined") { res.message = jqXHR.responseJSON.response; }
+            toastr[res.status](res.title, res.message);
+        } else {
+            toastr.info(jqXHR.responseJSON);
+        }
+    }
 });
 
 $(document).ajaxError(function (evt, jqXHR, settings) {
-    console.log(jqXHR.responseJSON);
-    if (jqXHR.responseJSON.response) response = jqXHR.responseJSON.response;
-    if (typeof response !== "undefined" && response[1] && response[2]) toastr.error(response[1], response[2]);
+    if (typeof jqXHR.responseJSON !== "undefined") {
+        console.log(jqXHR.responseJSON);
+        var res = jqXHR.responseJSON;
+        if (typeof res !== "undefined") {
+            // status, title, message
+            if (typeof res.status == "undefined") { res.status = "error"; }
+            if (typeof res.title == "undefined") { res.title = "--"; }
+            if (typeof res.message == "undefined") { res.message = jqXHR.responseJSON.response; }
+            toastr[res.status](res.title, res.message);
+        } else {
+            toastr.info(jqXHR.responseJSON);
+        }
+    }
 });
 
 $(document).ajaxComplete(function (evt, jqXHR, settings) {

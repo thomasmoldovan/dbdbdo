@@ -111,7 +111,7 @@
         // Show notifications that came through $_SESSION
         notifications = <?= json_encode(isset($_SESSION["notification"]) ? $_SESSION["notification"] : ""); ?>;
         if (notifications.length > 0) {
-            <? unset($_SESSION["notification"]); ?>
+            <? //unset($_SESSION["notification"]); ?>
             $.each(notifications, function(index, value) {
                 toastr[value[0]](value[1]);
             });

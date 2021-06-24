@@ -1,3 +1,3 @@
 <?php
-    echo "index";
+    echo "dbdbdo";
     phpinfo();
