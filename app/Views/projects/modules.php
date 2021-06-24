@@ -191,7 +191,7 @@
             <div class="w-100 text-center">
                 <h4>No modules found</h4>
                 <h6>How about we create one</h6>
-                <a href="/projects/<? ?>"> <button class="btn btn-primary btn-sm"><i class="fa fa-table"></i>&nbsp;Tables</button></a>
+                <a href="/projects/<?= $data["project"]["project_hash"]; ?>/tables/"> <button class="btn btn-primary btn-sm"><i class="fa fa-table"></i>&nbsp;Tables</button></a>
             </div>
         <? } ?>    
     </ul>
@@ -529,7 +529,7 @@
             dataType: "json",
             success: function (response) {
                 console.log(response);
-                // location = window.location;
+                location = window.location;
             }
         });
     }

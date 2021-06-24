@@ -118,7 +118,7 @@ class ProjectsController extends HomeController {
 		// DROP all the user databases
 		$dbs = $rootConn->query("SELECT project_hash FROM projects;")->getResult();
 		if (empty($dbs)) {
-			$this->notifications[] = ["info", "No projects to delete"];
+			$this->notify("info", "No projects to delete");
 		}
 
 		$drop_db_query = "";
@@ -145,8 +145,6 @@ class ProjectsController extends HomeController {
 
 		// TODO: Delete files also
 		
-		$this->session->set("notification", $this->notifications); // Should run before and after every controller exit
-
 		return redirect()->to('/projects');
 	}
 

@@ -117,21 +117,17 @@
                 },
                 dataType: "json",
                 success: function (response) {
-                    if (response.status == "error") {
-                        toastr.error(response.message, response.code);
-                    }
                     console.log("Success");
                     console.log(response);
-                    toastr.success("Redirecting...", "Project was succesfully created");
                 },
                 error: function (response) {
-                    toastr.error("Error: " + response.message, "Error importing schema");
                     hideLoadingScreen();
                 },
                 complete: function (response) {
                     console.log("Complete");
                     console.log(response);
-                    window.location = "http://localhost:8080/projects/" + response.responseJSON.project_hash;
+                    hideLoadingScreen();
+                    // window.location = "http://localhost:8080/projects/" + response.responseJSON.project_hash;
                 },
             });
         }

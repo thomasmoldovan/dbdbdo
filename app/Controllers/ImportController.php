@@ -47,7 +47,7 @@ class ImportController extends HomeController {
 
 		$userId = $this->user->id;
 		$project_hash = null;
-		$random_color_hash = substr(uniqid(), -6);
+		$random_color_hash = $this->generate_hash();
 		// EXTERNAL - project_type - 1
 		if ((int) $type == 0 || $type == 1) {
 			// Create sepparate database
@@ -62,15 +62,6 @@ class ImportController extends HomeController {
 
 			// Prepare for import
 			$importerConn->setDatabase($project_hash);
-		}
-
-		// INTERNAL - project_type - 1 - this import will go to our database
-		if ((int)$type == 1) {
-			// $project_hash = $name;
-			// $importerConn->setDatabase($_ENV["database.default.database"]);
-
-			// Important ... i need to know what the tables names are
-			// So we also create and import there, read what we need and then drop the database
 		}
 
 		// Add the project
@@ -162,21 +153,10 @@ class ImportController extends HomeController {
 							$rootConn->query($tempcommand);
 						}
 					} catch (\Exception $ex)  {
-						if ($ex->getCode() == 1142) {
-							return $this->response->setJSON(array(
-								"status" => "error",
-								"code" => $ex->getCode(),
-								"response" => ["error", "You do not have permissions to run that command"]
-							));
-						} else if ($ex->getCode() == 1064) {
-							return $this->response->setJSON(array(
-								"status" => "error",
-								"code" => $ex->getCode(),
-								"response" => ["error", "You have an error in your SQL script"]
-							));
-						} else {
-							return $this->tried($ex);
-						}
+						$rootConn->query("DROP DATABASE ".$this->current_project->project_hash.";");
+						$projects->delete($this->current_project->id);
+						$this->current_project = null;
+						return $this->tried($ex);
 					}
 				}
 
@@ -199,13 +179,9 @@ class ImportController extends HomeController {
 			if ($this->current_project->project_type == 0) {
 				$tables = $schema->getTables($this->current_project->project_hash);
 			} else {
-				// TO DO NOW
-				// Here is the problem
-				// I don't know the table names
-
 				// get the table names
 				$tables = $schema->getTables($this->current_project->project_hash);
-				// set the database of current project to ours and save()
+				// set the database of current project to ours
 				$projects->update($this->current_project->id, ["database" => $_ENV["database.default.database"]]);
 				$this->current_project = $projects->find($this->current_project->id);
 				// drop the other db
@@ -216,10 +192,7 @@ class ImportController extends HomeController {
 				$this->getTableColumns($table["TABLE_NAME"], $this->current_project->database);
 			}
 
-			return $this->response->setJSON([
-				"project_hash" => $project_hash,
-                "response" => ["success", "Project ".$this->current_project->project_hash." created."]
-			]);
+			return $this->respond("success", "Project ".$this->current_project->project_hash." created.", null);
 		} else {
 			return $this->response->setJSON(array(
 				"status" => "error",
