@@ -23,22 +23,21 @@ class ForeignKeysController extends HomeController
 		$this->auth = service('authentication');
 		$this->pages = config('Pages');
 		$this->user = user();
-		$this->projectId = $this->session->get("projectId");
+		$this->projectHash = $this->session->get("project_hash");
+
+		$projects = new ProjectModel();
+		$this->current_project = $projects->getWhere(["user_id" => $this->user->id, "project_hash" => $this->projectHash])->getResultArray();
 	}
     
 	public function index($project_hash = null) {
-		if (!$this->auth->check()) {
-			$this->notifications[] = ["info", "Your session has expired"];
-			$this->session->set("notification", $this->notifications);
-			return redirect()->to("/");
-		}
+		$this->checkIfLogged();
 
 		$schema = new SchemaModel();
 		$projects = new ProjectModel();
 		$modules = new UserModuleModel();
         $table_info = new UserTableModel();
 
-		if (!is_null($project_hash)) {
+		if (is_null($this->current_project) && !is_null($project_hash)) {
 			$this->current_project = $projects->getWhere(["user_id" => $this->user->id, "project_hash" => $project_hash])->getResultArray();
 		}
 
@@ -63,12 +62,15 @@ class ForeignKeysController extends HomeController
 		$rows = array();
 
         // Get every table column, and how many rows it has
-        $schema->setDatabase($this->current_project["project_hash"]);
+		if ($this->current_project["project_type"] == "0") {
+			$schema->setDatabase($this->current_project["project_hash"]);
+		}
+		
 		foreach ($tables as $key => $table) {
 			// TODO: I should only look for links between the tables (columns) I've scanned
 
 			// Do I need this ? I already have the info
-			$columns[$table["TABLE_NAME"]] = $schema->getColumns($this->current_project["project_hash"], $table["TABLE_NAME"]);
+			$columns[$table["TABLE_NAME"]] = $schema->getColumns($this->current_project["database"], $table["TABLE_NAME"]);
 
 			//$sql = "SELECT count(*) AS `rows` FROM `{$table["TABLE_NAME"]}`";
 			//$rows[$table["TABLE_NAME"]] = $schema->executeQuery($projectHash, $sql, "array");
@@ -76,7 +78,7 @@ class ForeignKeysController extends HomeController
 
 		// Get the primary key for every table
 		foreach ($tables as $key => $table) {
-            $temp = $this->getPrimaryKey($table['TABLE_NAME']);
+            $temp = $this->getPrimaryKey($this->current_project["database"], $table['TABLE_NAME']);
             // If this table has a primary key, we add it to $this->pk_list
             if ($temp !== false && !isset($this->pk_list[$table['TABLE_NAME']])) {
                 $this->pk_list[$table['TABLE_NAME']] = $temp;
@@ -94,10 +96,10 @@ class ForeignKeysController extends HomeController
 		foreach ($foreign_keys as $key => $link) {
 			if (!empty($link)) {
 				if (!isset($column_types[$link["table_name"].".".$link["table_column"]])) {
-					$column_types[$link["table_name"].".".$link["table_column"]] = $this->getColumnType($this->current_project["project_hash"], $link["table_name"], $link["table_column"]);
+					$column_types[$link["table_name"].".".$link["table_column"]] = $this->getColumnType($this->current_project["database"], $link["table_name"], $link["table_column"]);
 				}
 				if (!isset($column_types[$link["key_table"].".".$link["key_column"]])) {
-					$column_types[$link["key_table"].".".$link["key_column"]] = $this->getColumnType($this->current_project["project_hash"], $link["key_table"], $link["key_column"]);
+					$column_types[$link["key_table"].".".$link["key_column"]] = $this->getColumnType($this->current_project["database"], $link["key_table"], $link["key_column"]);
 				}
 
 				// I need the display_link
@@ -177,6 +179,7 @@ class ForeignKeysController extends HomeController
 
 		// Find all links like color -> color_id
 		$primaryNames = array_keys($all_the_tables_and_columns);
+		$userTables = new UserTableModel();
 		foreach ($primaryNames as $primary_table) {
 			for ($i = 1; $i <= 4; $i++) {
 				$handeled = $this->handleTableName($primary_table, $i);
@@ -185,10 +188,13 @@ class ForeignKeysController extends HomeController
 					foreach ($every_column as $key => $column) {
 						if ($handeled === $column['COLUMN_NAME']) {
 							$id = [];
+							// TODO: Rename these acordingly
 							$id["table_name"] = $primary_table;
 							$id["table_column"] = $this->pk_list[$primary_table];
+							$id["table_id"] = $userTables->getIdByTableAndColulmn($id["table_name"], $id["table_column"], $this->current_project["id"]);
 							$id["key_table"] = $table_name;
 							$id["key_column"] = $column['COLUMN_NAME'];
+							$id["key_id"] = $userTables->getIdByTableAndColulmn($id["key_table"], $id["key_column"], $this->current_project["id"]);
 							$ids[] = $id;
 						}
 					}
@@ -252,9 +258,10 @@ class ForeignKeysController extends HomeController
 		}
 	}
 
-	public function getPrimaryKey($table) {
+	public function getPrimaryKey($database, $table) {
 		$schema = new SchemaModel();
-		$result = $schema->executeOuterQuery($this->current_project["project_hash"], "SHOW INDEX FROM `{$table}`", "array");
+		$schema->setDatabase($database);
+		$result = $schema->executeOuterQuery($database, "SHOW INDEX FROM `{$table}`", "array");
         if (count($result) > 0) {
             return $result[0]['Column_name'];
         } else {
@@ -262,10 +269,10 @@ class ForeignKeysController extends HomeController
         }
 	}
 
-	public function getColumnType($projectHash, $table, $column) {
+	public function getColumnType($database, $table, $column) {
 		$schema = new SchemaModel();
-		$schema->setDatabase($projectHash);
-		$result = $schema->executeOuterQuery($this->current_project["project_hash"], "SHOW COLUMNS FROM `{$table}` WHERE `field` = '{$column}'", "array");
+		$schema->setDatabase($database);
+		$result = $schema->executeOuterQuery($database, "SHOW COLUMNS FROM `{$table}` WHERE `field` = '{$column}'", "array");
         if (count($result) > 0) {
             return $result[0];
         } else {

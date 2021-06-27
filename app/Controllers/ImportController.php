@@ -47,7 +47,7 @@ class ImportController extends HomeController {
 
 		$userId = $this->user->id;
 		$project_hash = null;
-		$random_color_hash = $this->generate_hash();
+		$random_color_hash = "T".$this->generate_hash();
 		// EXTERNAL - project_type - 1
 		if ((int) $type == 0 || $type == 1) {
 			// Create sepparate database
