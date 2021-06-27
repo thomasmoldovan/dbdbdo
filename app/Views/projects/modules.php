@@ -429,15 +429,18 @@
             e.preventDefault();
             $(document).trigger("showLoadingScreen");
             var module_name = $(e.currentTarget).data("module_name");
-            console.log("Writing module: " + module_name);
+            console.log("Writing module" + <?= $data["project"]["project_type"]; ?> + ": " + module_name);
+            if ("<?= $data["project"]["project_type"]; ?>" == "0") {
+                url = "/buildExternalFiles";
+            } else {
+                url = "/buildInternalFiles";
+            }
             if (module_name == "") return false;
             $.ajax({
                 type: "post",
-                url: "/writer",
+                url: url,
                 async: true,
                 data: {
-                    "project_hash": "<?= $data["project"]["project_hash"]; ?>",
-                    "project_type": $("#projectType").prop('checked'),
                     "module_name": module_name
                 },
                 dataType: "json",
@@ -461,7 +464,9 @@
         $(".fileViewer").click(function (e) {
             e.preventDefault();
             var module_name = $(e.currentTarget).data("module_name");
-            window.open('preview/' + module_name, '_blank');
+            // console.log(module_name);
+            // debugger;
+            window.open('/preview/public/<?= strtolower($data["project"]["project_hash"]); ?>/' + module_name, '_blank');
         });
 
         $("#saveProperties").click(function (e) {

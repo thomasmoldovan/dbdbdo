@@ -74,7 +74,7 @@ class HomeController extends BaseController{
 		return $this->response->setJSON($response);
 	}
 
-	public function respond($status, $title, $message) {
+	public function respond($status, $title, $message = null) {
 		$response["status"] = $status ?? null;
 		$response["title"] = $title ?? null;
 		$response["message"] = $message ?? null;
@@ -89,17 +89,8 @@ class HomeController extends BaseController{
 	}
 
 	public function generate_hash() {
-		$charset = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-		$base = strlen($charset);
-		$result = '';
-
-		$now = $this->milliseconds();
-		while ($now >= $base){
-			$i = $now % $base;
-			$result = $charset[$i] . $result;
-			$now /= $base;
-		}
-		return substr($result, -6);
+		$color = dechex(rand(0x000000, 0xFFFFFF));
+		return $color;
 	}
 
 	private function milliseconds() {

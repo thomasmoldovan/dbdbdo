@@ -48,7 +48,9 @@ class LinksModel extends Model
         if (!is_null($link)) $query .= " WHERE (`primary`.table_name = '{$link['table_name']}')
                                             AND (`primary`.column_name = '{$link['table_column']}')
                                             AND (`foreign`.table_name = '{$link['key_table']}')
-                                            AND (`foreign`.column_name = '{$link['key_column']}')";
+                                            AND (`foreign`.column_name = '{$link['key_column']}')
+                                            AND (`primary`.id = '{$link['table_id']}')
+                                            AND (`foreign`.id = '{$link['key_id']}')";
 
         $result = $dbConn->query($query);
 

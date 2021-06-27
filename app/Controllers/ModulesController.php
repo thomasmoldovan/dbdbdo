@@ -55,7 +55,7 @@ class ModulesController extends HomeController {
 			$moduleData[$item["module_name"]][] = $item;
 		}
 
-		if (isset($this->current_project["project_hash"]) && strlen(trim($this->current_project["project_hash"])) == 6) {
+		if (isset($this->current_project["project_hash"]) && strlen(trim($this->current_project["project_hash"])) == 7) {
 			$tables = $schema->getTables($this->current_project["project_hash"]);
 		} else {
 			return redirect()->to('/projects');
@@ -64,6 +64,7 @@ class ModulesController extends HomeController {
 		// $userModules = $this->getModulesInfo();
 
 		$data["project"] = $this->current_project;
+		$data["preview_link"] = strtolower($this->current_project["project_hash"]);
 		// $data["userModules"] = $userModules;
 		$data["moduleList"] = $moduleList;
 
