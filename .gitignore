@@ -129,3 +129,4 @@ node_modules
 public/preview
 templates
 sql
+_keep.*
