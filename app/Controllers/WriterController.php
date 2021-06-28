@@ -13,33 +13,33 @@ class WriterController extends HomeController {
     protected $current_project;
 
     public function buildInternalFiles() {
-        if (!logged_in()) return redirect()->to('login');
+        $this->checkIfLogged();
         
         $projects = new ProjectModel();
         $modulesModel = new UserModuleModel();
 
         $post = $this->request->getPost();
-        $project_type = $post["project_type"] == 0 ? "External" : "Internal";
+        if (empty($post["module_name"])) {
+            return $this->respond("error", "No module name provided");
+        }
 
-        if (empty($post["module_name"])) return false;
-        $project = $projects->getWhere(["user_id" => $this->user->id, "project_hash" => $post["project_hash"]])->getResultArray();
-        $this->current_project = $project[0];
+        $this->projectHash = $this->session->get("project_hash");
+        if (empty($this->projectHash)) {
+            return $this->respond("error", "No project loaded");
+        }
+
+        $this->current_project = $projects->getWhere(["user_id" => $this->user->id, "project_hash" => $this->projectHash])->getResultArray();
+        if (empty($this->current_project)) {
+            return $this->respond("error", "Project not found");
+        }
+        $this->current_project = $this->current_project[0];
 
         $module = $modulesModel->getModuleColumns($post["module_name"]);
-        // $addToRoutes = (bool) $module[0]["add_to_routes"];
-
-        // Attaches the settings for each column
-        // foreach ($module as $key => $value) {
-        //     if ((int)$value["link_id"] > 0) {
-        //         $module[$key]["settings"] = $table_info->getTableInfoSettings($value["user_table_id_display"]);
-        //     } else {
-        //         $module[$key]["settings"] = null;
-        //     }
-        // }
 
         $data = array(
             "uc_model_name" => ucwords($module[0]["module_name"]),
             "model_name" => $module[0]["module_name"],
+            "module_route" => $module[0]["module_route"],
             "table_name" => $module[0]["table_name"],
             "primary_key"  => null, // TODO: Maybe the primary columns is not the first, and does not contain ID
             "allowed_fields" => [],
@@ -50,14 +50,18 @@ class WriterController extends HomeController {
         $links = [];
         $data["linked_fields"] = [];
         foreach ($module as $key => $module_column) {
-
+            // It's the primary key
             if ($module_column["pk"] == "1") {
-                $data["primary_key"] = $data["primary_key"] ? $data["primary_key"] : $module_column["column_name"]; // ???
+                // Remember the primary key name
+                $data["primary_key"] = $module_column["column_name"];
             }
 
-            if ($module_column["column_enabled"] !== "1") {}
-            else {
-                // If we have a link, then we remove that value from allowed fields and replace with a join
+            // It's not a key
+            if ($module_column["column_enabled"] !== "1") {
+                // If it's not enabled
+            } else {
+                // If we have a link, then we remove that value from allowed fields 
+                // because we will replace it with a joined value
                 if ((int) $module_column["link_id"] >= 1) {
                     $links[] = $module_column;
 
@@ -212,6 +216,9 @@ class WriterController extends HomeController {
         $prepareFields = implode(PHP_EOL, $prepareFields); // THIS
         $formInput .= "</form>";
 
+        $project_type = $this->current_project["project_type"] == 0 ? "External" : "Internal";
+        $export_prepath = $project_type == "Internal" ? "/" : "public/preview/";
+
         $file  = file_get_contents("../templates/{$project_type}/CodeIgniter4/ci_4_model.raw");
         $file2 = file_get_contents("../templates/{$project_type}/CodeIgniter4/ci_4_view.raw");
         $file3 = file_get_contents("../templates/{$project_type}/CodeIgniter4/ci_4_controller.raw");
@@ -226,6 +233,15 @@ class WriterController extends HomeController {
         $linked_fields =  implode(", ", $data["linked_fields"]);
         $file = str_replace("{{linked_fields}}", $linked_fields, $file);
         $file = str_replace("{{field_joins}}", $data["field_joins"], $file);
+
+        $file  = str_replace("{{project_hash}}", strtolower($this->current_project["project_hash"]), $file);
+        $file2 = str_replace("{{project_hash}}", strtolower($this->current_project["project_hash"]), $file2);
+        $file3 = str_replace("{{project_hash}}", strtolower($this->current_project["project_hash"]), $file3);
+        $file3 = str_replace("{{project_name}}", strtolower($this->current_project["project_name"]), $file3);
+        $file4 = str_replace("{{project_hash}}", strtolower($this->current_project["project_hash"]), $file4);
+
+        $file4 = str_replace("{{module_route}}", strtolower($data["module_route"]), $file4);
+        
         if (count($data["linked_fields"]) > 0) {
             // TODO: Needs to be able to handle more than one join on a table
             // foreach ($data["joined_tables"])            
@@ -240,16 +256,14 @@ class WriterController extends HomeController {
             
             $result[$key] = strpos($file, $key);
             $file  = str_replace("{{".$key."}}", is_array($value) ? '"'.(string)$array.'"' : $value, $file);
-
             $file2 = str_replace("{{".$key."}}", is_array($value) ? '"'.(string)$array.'"' : $value, $file2);
-            $file2 = str_replace("{{form_body}}", $formInput, $file2);
-            $file2 = str_replace("{{update_fields}}", (string)$updateFields, $file2);
-            $file2 = str_replace("{{prepare_fields}}", (string)$prepareFields, $file2);
-
             $file3 = str_replace("{{".$key."}}", is_array($value) ? '"'.(string)$array.'"' : $value, $file3);
-
             $file4 = str_replace("{{".$key."}}", is_array($value) ? '"'.(string)$array.'"' : $value, $file4);
         }
+
+        $file2 = str_replace("{{form_body}}", $formInput, $file2);
+        $file2 = str_replace("{{update_fields}}", (string)$updateFields, $file2);
+        $file2 = str_replace("{{prepare_fields}}", (string)$prepareFields, $file2);
 
         $export_prepath = $project_type == "Internal" ? "/" : "public/preview/";
         $export_prepath = "/";
@@ -333,16 +347,6 @@ class WriterController extends HomeController {
 
         $modulesModel->projectId = $this->current_project["id"];
         $module = $modulesModel->getModuleColumns($post["module_name"]);
-        // $addToRoutes = (bool) $module[0]["add_to_routes"];
-
-        // Attaches the settings for each column
-        // foreach ($module as $key => $value) {
-        //     if ((int)$value["link_id"] > 0) {
-        //         $module[$key]["settings"] = $table_info->getTableInfoSettings($value["user_table_id_display"]);
-        //     } else {
-        //         $module[$key]["settings"] = null;
-        //     }
-        // }
 
         $data = array(
             "uc_model_name" => ucwords($module[0]["module_name"]),
@@ -464,7 +468,7 @@ class WriterController extends HomeController {
                                           LEFT JOIN {$foreign_table} ON {$foreign} = {$primary}
                                           GROUP BY {$foreign} ORDER BY {$primary} ASC";
 
-                    if ($post["project_type"] == "Internal") {
+                    if ($this->current_project["project_type"] == 1) {
                         // Internal: The data for the table is taken from out database
                         $resultDropdownJoin = $schema->executeInnerQuery($_ENV["database.default.database"], $dropdownJoinQuery, "array");
                     } else {
@@ -529,6 +533,9 @@ class WriterController extends HomeController {
         if (!file_exists("../{$export_prepath}App/Config/Generated")) {
             mkdir("../{$export_prepath}App/Config/Generated", 0777, true);
         }
+        if (!file_exists("../{$export_prepath}App/Config/Generated/{$this->current_project["project_hash"]}")) {
+            mkdir("../{$export_prepath}App/Config/Generated/{$this->current_project["project_hash"]}", 0777, true);
+        }
         if (!file_exists("../{$export_prepath}App/Controllers/{$this->current_project["project_hash"]}")) {
             mkdir("../{$export_prepath}App/Controllers/{$this->current_project["project_hash"]}", 0777, true);
         }
@@ -553,12 +560,14 @@ class WriterController extends HomeController {
         $file  = str_replace("{{project_hash}}", strtolower($this->current_project["project_hash"]), $file);
         $file2 = str_replace("{{project_hash}}", strtolower($this->current_project["project_hash"]), $file2);
         $file3 = str_replace("{{project_hash}}", strtolower($this->current_project["project_hash"]), $file3);
+        $file3 = str_replace("{{project_name}}", strtolower($this->current_project["project_name"]), $file3);
         $file4 = str_replace("{{project_hash}}", strtolower($this->current_project["project_hash"]), $file4);
 
         $file4 = str_replace("{{module_route}}", strtolower($data["module_route"]), $file4);
 
         // Constructing the joined columns, the ones that are set in display
         $linked_fields =  implode(", ", $data["linked_fields"]);
+        $file = str_replace("{{linked_fields}}", $linked_fields, $file);
         $file = str_replace("{{field_joins}}", $data["field_joins"], $file);
         if (count($data["linked_fields"]) > 0) {
             // TODO: Needs to be able to handle more than one join on a table
@@ -574,19 +583,17 @@ class WriterController extends HomeController {
             
             $result[$key] = strpos($file, $key);
             $file  = str_replace("{{".$key."}}", is_array($value) ? '"'.(string)$array.'"' : $value, $file);
-
             $file2 = str_replace("{{".$key."}}", is_array($value) ? '"'.(string)$array.'"' : $value, $file2);
-            $file2 = str_replace("{{form_body}}", $formInput, $file2);
-            $file2 = str_replace("{{update_fields}}", (string)$updateFields, $file2);
-            $file2 = str_replace("{{prepare_fields}}", (string)$prepareFields, $file2);
-
             $file3 = str_replace("{{".$key."}}", is_array($value) ? '"'.(string)$array.'"' : $value, $file3);
-
             $file4 = str_replace("{{".$key."}}", is_array($value) ? '"'.(string)$array.'"' : $value, $file4);
         }
 
+        $file2 = str_replace("{{form_body}}", $formInput, $file2);
+        $file2 = str_replace("{{update_fields}}", (string)$updateFields, $file2);
+        $file2 = str_replace("{{prepare_fields}}", (string)$prepareFields, $file2);
+
         $modalFilename = $data["uc_model_name"]."Model";
-        if (!write_file("../{$export_prepath}App/Models/{$this->current_project["project_hash"]}/".$modalFilename.".php", $file)) {
+        if (!write_file("../{$export_prepath}App/Models/{$this->current_project["project_hash"]}/{$modalFilename}.php", $file)) {
             $result["success"] = false;
         } else {
             $result["success"] = true;
@@ -595,31 +602,32 @@ class WriterController extends HomeController {
         $indenter = new \Gajus\Dindent\Indenter();
         $file2 = $indenter->indent($file2);
         $viewFilename = $data["uc_model_name"]."View";
-        if (!write_file("../{$export_prepath}App/Views/{$this->current_project["project_hash"]}/".$viewFilename.".php", $file2)) {
+        if (!write_file("../{$export_prepath}App/Views/{$this->current_project["project_hash"]}/{$viewFilename}.php", $file2)) {
             $result["success"] = false;
         } else {
             $result["success"] = true;
         }
 
         $controllerFilename = $data["uc_model_name"]."Controller";
-        if (!write_file("../{$export_prepath}App/Controllers/{$this->current_project["project_hash"]}/".$controllerFilename.".php", $file3)) {
+        if (!write_file("../{$export_prepath}App/Controllers/{$this->current_project["project_hash"]}/{$controllerFilename}.php", $file3)) {
             $result["success"] = false;
         } else {
             $result["success"] = true;
         }
 
-        $routesFilename = "{$this->current_project["project_hash"]}Routes";
+        // $routesFilename = "{$this->current_project["project_hash"]}Routes";
+        $routesFilename = $data["uc_model_name"]."Routes";
         // ROUTES
         $addToRoutes = true;
         if (true || $addToRoutes) {
-            if (!write_file("../{$export_prepath}App/Config/Generated/".$routesFilename.".php", $file4)) {
+            if (!write_file("../{$export_prepath}App/Config/Generated/{$this->current_project["project_hash"]}/{$routesFilename}.php", $file4)) {
                 $result["success"] = false;
             } else {
                 $result["success"] = true;
             }
         } else {
-            if (file_exists("../{$export_prepath}App/Config/Generated/".$routesFilename.".php")) {
-                unlink("../{$export_prepath}App/Config/Generated/".$routesFilename.".php");
+            if (file_exists("../{$export_prepath}App/Config/Generated/{$this->current_project["project_hash"]}/{$routesFilename}.php")) {
+                unlink("../{$export_prepath}App/Config/Generated/{$this->current_project["project_hash"]}/{$routesFilename}.php");
             }
         }
 

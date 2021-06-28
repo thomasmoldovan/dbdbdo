@@ -464,9 +464,15 @@
         $(".fileViewer").click(function (e) {
             e.preventDefault();
             var module_name = $(e.currentTarget).data("module_name");
-            // console.log(module_name);
-            // debugger;
-            window.open('/preview/public/<?= strtolower($data["project"]["project_hash"]); ?>/' + module_name, '_blank');
+            console.log(module_name);
+
+            if (<?= $data["project"]["project_type"]; ?> == 1) {
+                // Internal
+                window.open('/projects/<?= strtolower($data["project"]["project_hash"]); ?>/preview/' + module_name, '_blank');
+            } else if (<?= $data["project"]["project_type"]; ?> == 0) {
+                // External
+                window.open('/preview/public/<?= strtolower($data["project"]["project_hash"]); ?>/' + module_name, '_blank');
+            }            
         });
 
         $("#saveProperties").click(function (e) {

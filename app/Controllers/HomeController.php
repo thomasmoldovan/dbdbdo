@@ -63,6 +63,17 @@ class HomeController extends BaseController{
 		]);
 	}
 
+	public function display_internal_preview($header = "preview", $content = "login", $data = []) {
+		return view($header, [
+			"auth" => $this->auth, 
+			"config" => $this->config,
+			"user" => $this->user,
+			"page" => $this->pages->pages[$content]["view"],
+			"menuItems" => $data["menuItems"],
+			"data" => $data
+		]);
+	}
+
 	public function tried(\Exception $ex) {
 		$response["status"] = "error" ?? null;
 		$response["code"] = $ex->getCode() ?? null;

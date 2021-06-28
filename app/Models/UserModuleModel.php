@@ -34,13 +34,13 @@ class UserModuleModel extends Model
     }
 
     public function getModuleColumns($name = null) {
-		$where = "";
+		$where = " WHERE (1=1) ";
 		if (!is_null($name)) {
-			$where = " WHERE user_modules.module_name = '{$name}'";
+			$where .= " AND user_modules.module_name = '{$name}'";
 		}
 
         if ($this->projectId != "") {
-			$where = " WHERE user_tables.project_id = '{$this->projectId}'";
+			$where .= " AND user_tables.project_id = '{$this->projectId}'";
 		}
 
 		$infosch = \Config\Database::connect("default");
@@ -74,7 +74,7 @@ class UserModuleModel extends Model
 
                             {$where}
                     ORDER BY user_table_id ASC";
-
+        // echo $query; die();
 		$result = $infosch->query($query);
 		return $result->getResultArray();
 	}

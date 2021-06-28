@@ -72,10 +72,6 @@ class ModulesController extends HomeController {
 
 		$this->session->set("notification", $this->notifications);
 		return $this->display_main("header", "modules", $data);
-		
-		$this->notifications[] = ["info", "Hello from modules 2 :)"];
-		$this->session->set("notification", $this->notifications);
-		return redirect()->to("/");
 	}
 
     public function deleteModule() {
