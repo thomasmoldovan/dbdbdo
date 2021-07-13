@@ -86,6 +86,9 @@
         box-shadow: none !important;
         outline: none !important;
     }
+    .hand-pointer {
+        cursor: pointer !important;
+    }
 </style>
 
 <body>

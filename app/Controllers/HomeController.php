@@ -90,6 +90,7 @@ class HomeController extends BaseController{
 		$response["title"] = $title ?? null;
 		$response["message"] = $message ?? null;
 
+		// Find out: Why is $this->response NULL when not logged in
 		return $this->response->setJSON($response);
 	}
 

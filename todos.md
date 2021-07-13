@@ -15,3 +15,6 @@
 
 ## Website
 * [ ] Add comunication way, like Discord or Slack
+
+## Current:
+* [ ] Dynamic joins

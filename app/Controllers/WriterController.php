@@ -158,10 +158,10 @@ class WriterController extends HomeController {
                                           LEFT JOIN {$foreign_table} ON {$foreign} = {$primary}
                                           GROUP BY {$foreign} ORDER BY {$primary} ASC";
 
-                    if ($post["project_type"] == "Internal") {
-                        // Internal: The data for the table is taken from out database
+                    if ($this->current_project["project_type"] == 1) {
+                        // Internal: The data for the table is taken from our database
                         $resultDropdownJoin = $schema->executeInnerQuery($_ENV["database.default.database"], $dropdownJoinQuery, "array");
-                    } else {
+                    } else if ($this->current_project["project_type"] == 0) {
                         // External: The data for the table is taken from the users database
                         $resultDropdownJoin = $schema->executeOuterQuery($this->current_project["project_hash"], $dropdownJoinQuery, "array");
                     }
@@ -176,7 +176,7 @@ class WriterController extends HomeController {
                                 array("property" => "value",
                                       "attributes" => $value[$primary_column])), "option", $value[$display_column]);
                         }
-                    } elseif ($column["link_type"] == 1) {
+                    } elseif ($column["link_type"] == 0) {
                         // DYNAMIC
 
                     }

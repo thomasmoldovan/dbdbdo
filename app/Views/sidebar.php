@@ -233,7 +233,7 @@
         <ul id="menu-content" class="menu-content collapse out pl-2">
             <? foreach($menuItems as $item) { ?>
                 <li class="active">
-                    <a href="/projects/<?= $_SESSION['project_hash']; ?>/preview/<?= strtolower($item['module_route']); ?>">
+                    <a href="/projects/<?= $_SESSION['project_hash']; ?>/preview/<?= strtolower($item['module_route']); ?>" class="d-block">
                         <i class="fa fa-eye fa-lg"></i> <?= $item["module_title"]; ?></span>
                     </a>
                 </li>

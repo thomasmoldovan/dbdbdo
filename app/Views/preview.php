@@ -105,7 +105,7 @@
         </div>
     </div>
     <div class="">
-        <div class="sidebarDiv"><?= view("sidebar", []); ?></div>
+        <div class="sidebarDiv"><?= view("sidebar", $data); ?></div>
         <div class="rightDiv"><?= view("right", []); ?></div>
     </div>
 </body>

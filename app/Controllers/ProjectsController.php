@@ -34,7 +34,16 @@ class ProjectsController extends HomeController {
 					// EXTERNAL
 					$schema = new SchemaModel();
 					$data["project"] = $this->current_project;
-					$data["tables"] = $schema->getTables($this->current_project["project_hash"]); 
+					$data["tables"] = $schema->getTables($this->current_project["project_hash"]);
+
+					// The number of rows is not reported correctly in information_schema table
+					// So we retrieve it our selfs
+					// $rootConn = \Config\Database::connect("default");
+					// foreach ($data["tables"] as &$table_info) {
+					// 	$temp = $rootConn->query("SELECT COUNT(*) AS row_count FROM {$table_info["TABLE_NAME"]}")->getResultArray()[0];
+					// 	$table_info["TABLE_ROWS"] = $infosch->query("SELECT COUNT(*) AS row_count FROM {$table_info["TABLE_NAME"]}")->getResultArray()[0]["row_count"];
+					// }
+
 					$data["userTables"] = $schema->getTablesInfo($this->user->id, $this->current_project["id"]);
 					$data["tablesProcessed"] = array_unique(array_column($data["userTables"], "table_name"));
 	

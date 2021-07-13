@@ -56,7 +56,6 @@ class SchemaModel extends Model {
 	public function executeOuterQuery($database = null, $query = null, $returnType = "array") {
 		if (is_null($database) || is_null($query)) return false;
 
-		// $dbConn = \Config\Database::connect($database);
 		$this->setDatabase($database);
 
 		$result = $this->query($query);
@@ -70,7 +69,6 @@ class SchemaModel extends Model {
 	// Executes a custom query on a database name
 	public function executeInnerQuery($database = null, $query = null, $returnType = "array") {
 		if (is_null($database) || is_null($query)) return false;
-		// $dbConn = \Config\Database::connect("userWorker");
 		$this->setDatabase($database);
 		$result = $this->query($query);
 

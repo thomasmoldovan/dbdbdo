@@ -18,7 +18,7 @@
                                     echo '<button class="action btn btn-sm btn-success m-1 no-outline" data-id="'.$table["TABLE_NAME"].'" data-json="'.$base64.'"><i class="fas fa-eye"></i></button>';
                                 } ?>
                                 <div class="pl-3 align-self-center">
-                                    <div class="text-white"><b><?= $table["TABLE_NAME"] ?></b>&nbsp;<small class="pl-3 pt-1">(3 Modules)</small></div>
+                                    <div class="text-white"><b><?= $table["TABLE_NAME"] ?></b></div>
                                 </div>
                             </div>
                         </div>
@@ -37,19 +37,19 @@
                         <div class="col-2 align-self-center bold text-white small"><?= $table["TABLE_COMMENT"] ?></div>
                         <div class="col-2 align-self-center bold text-white small pl-0 pr-0">
                             <? if (in_array($table["TABLE_NAME"], $data["tablesProcessed"])) { ?>
-                            <button type="submit"
-                                data-toggle="tooltip" data-title="Something here"
-                                class="resetTableButton btn btn-danger btn-sm float-right mr-1 no-outline"
-                                data-name="<?= $table["TABLE_NAME"] ?>">Reset</button>
-                            <button type="submit"
-                                data-toggle="tooltip" data-title="Something here"
-                                class="deleteTableButton btn btn-secondary btn-sm float-right mr-1 no-outline"
-                                data-name="<?= $table["TABLE_NAME"] ?>">Delete</button>  
+                                <button type="submit"
+                                    data-toggle="tooltip" data-title="Something here"
+                                    class="resetTableButton btn btn-danger btn-sm float-right mr-1 no-outline"
+                                    data-name="<?= $table["TABLE_NAME"] ?>">Reset</button>
+                                <button type="submit"
+                                    data-toggle="tooltip" data-title="Something here"
+                                    class="deleteTableButton btn btn-secondary btn-sm float-right mr-1 no-outline"
+                                    data-name="<?= $table["TABLE_NAME"] ?>">Delete</button>
                             <? } else { ?>
-                            <button type="submit"
-                                data-toggle="tooltip" data-title="Something here"
-                                class="deleteTableButton btn btn-secondary btn-sm float-right mr-1 no-outline"
-                                data-name="<?= $table["TABLE_NAME"] ?>">Process</button>
+                                <button type="submit"
+                                    data-toggle="tooltip" data-title="Something here"
+                                    class="deleteTableButton btn btn-secondary btn-sm float-right mr-1 no-outline"
+                                    data-name="<?= $table["TABLE_NAME"] ?>">Process</button>
                             <? } ?>
                         </div>
 
@@ -112,32 +112,34 @@
                                             <div class="p-0">
                                                 <button name="<?= $table["TABLE_NAME"] ?>" type="button" class="addToModules btn btn-sm btn-primary w-100">Create Module</button>
                                             </div>
-                                            <div class="pl-5 d-flex justify-align-center">
-                                                <div class="pl-4 btn btn-dark btn-sm">
-                                                    <input type="checkbox" class="setIds pl-1 form-check-input"
-                                                        data-table="<?= $table["TABLE_NAME"] ?>"
-                                                        id="setIds<?= $table["TABLE_NAME"] ?>" name="setIds" checked>
-                                                    <label class="form-check-label" for="setIds"> Set ids</label>
+                                            <? if (has_permission("Everything")) { ?>
+                                                <div class="pl-5 d-flex justify-align-center">
+                                                    <div class="pl-4 btn btn-dark btn-sm" data-toggle="tooltip" title='Will set the id attribute to column name'>
+                                                        <input type="checkbox" class="setIds pl-1 form-check-input"
+                                                            data-table="<?= $table["TABLE_NAME"] ?>"
+                                                            id="setIds<?= $table["TABLE_NAME"] ?>" name="setIds" checked>
+                                                        <label class="form-check-label hand-pointer" for="setIds<?= $table["TABLE_NAME"] ?>"> Set ids</label>
+                                                    </div>
+                                                    <div class="pl-4 btn btn-dark btn-sm" data-toggle="tooltip" title='Will set the name attribute to column name'>
+                                                        <input type="checkbox" class="setNames pl-1 form-check-input"
+                                                            data-table="<?= $table["TABLE_NAME"] ?>"
+                                                            id="setNames<?= $table["TABLE_NAME"] ?>" name="setNames" checked>
+                                                        <label class="form-check-label hand-pointer" for="setNames<?= $table["TABLE_NAME"] ?>"> Set names</label>
+                                                    </div>
+                                                    <div class="pl-4 btn btn-dark btn-sm" data-toggle="tooltip" title='Will set the default classes'>
+                                                        <input type="checkbox" class="setClasses pl-1 form-check-input"
+                                                            data-table="<?= $table["TABLE_NAME"] ?>"
+                                                            id="setClasses<?= $table["TABLE_NAME"] ?>" name="setClasses" checked>
+                                                        <label class="form-check-label hand-pointer" for="setClasses<?= $table["TABLE_NAME"] ?>"> Set classes</label>
+                                                    </div>
+                                                    <div class="pl-4 btn btn-dark btn-sm" data-toggle="tooltip" title='Will set the label for the field to Column Name'>
+                                                        <input type="checkbox" class="setLabels pl-1 form-check-input"
+                                                            data-table="<?= $table["TABLE_NAME"] ?>"
+                                                            id="setLabels<?= $table["TABLE_NAME"] ?>" name="setLabels" checked>
+                                                        <label class="form-check-label hand-pointer" for="setLabels<?= $table["TABLE_NAME"] ?>"> Set labels</label>
+                                                    </div>
                                                 </div>
-                                                <div class="pl-4 btn btn-dark btn-sm">
-                                                    <input type="checkbox" class="setNames pl-1 form-check-input"
-                                                        data-table="<?= $table["TABLE_NAME"] ?>"
-                                                        id="setNames<?= $table["TABLE_NAME"] ?>" name="setNames" checked>
-                                                    <label class="form-check-label" for="setNames"> Set names</label>
-                                                </div>
-                                                <div class="pl-4 btn btn-dark btn-sm">
-                                                    <input type="checkbox" class="setClasses pl-1 form-check-input"
-                                                        data-table="<?= $table["TABLE_NAME"] ?>"
-                                                        id="setClasses<?= $table["TABLE_NAME"] ?>" name="setClasses" checked>
-                                                    <label class="form-check-label" for="setClasses"> Set classes</label>
-                                                </div>
-                                                <div class="pl-4 btn btn-dark btn-sm">
-                                                    <input type="checkbox" class="setLabels pl-1 form-check-input"
-                                                        data-table="<?= $table["TABLE_NAME"] ?>"
-                                                        id="setLabels<?= $table["TABLE_NAME"] ?>" name="setLabels" checked>
-                                                    <label class="form-check-label" for="setLabels"> Set labels</label>
-                                                </div>
-                                            </div>
+                                            <? } ?>
                                         </div>
                                     </th>
                                 </tr>

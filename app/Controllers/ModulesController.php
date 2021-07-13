@@ -8,6 +8,23 @@ use App\Models\TableModuleModel;
 class ModulesController extends HomeController {
 
     protected $current_project;
+
+	public function __construct() {
+		// TODO: Have this in a base class that all controllers will be based on
+        helper('auth');
+        helper('general');
+        helper('html');
+		$this->session = service('session');
+		$this->config = config('Auth');
+		$this->auth = service('authentication');
+		$this->pages = config('Pages');
+		$this->user = user();
+		$this->projectHash = $this->session->get("project_hash");
+
+		if (is_null($this->user)) {
+			$this->respond("error", "Your session has expired");
+		}
+	}
     
     public function index($project_hash = null) {
 		$schema = new SchemaModel();
