@@ -229,6 +229,15 @@
 </style>
 <div class="nav-side-menu">
     <div class="menu-list">
+            <!-- App title section -->
+    <div class="row m-1 p-4">
+        <div class="col">
+            <div class="p-1 h3 text-secondary text-center mx-auto display-inline-block">
+                <i class="fa fa-check bg-primary text-white rounded p-2"></i>
+                <u>Tasks</u>
+            </div>
+        </div>
+    </div>
         <div class="brand">Project Name</div>
         <ul id="menu-content" class="menu-content collapse out pl-2">
             <? foreach($menuItems as $item) { ?>

@@ -19,7 +19,9 @@
     <link href="/css/bootstrap4-toggle.min.css" rel="stylesheet"></link>
     <link href="/css/toastr.min.css" rel="stylesheet"></link>
     <link href="/css/all.min.css" rel="stylesheet"></link>
-
+    
+    <!-- <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"></link> -->
+    <!-- <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.standalone.min.css" rel="stylesheet"></link> -->
     <script src="/js/common.js"></script>
 </head>
 
