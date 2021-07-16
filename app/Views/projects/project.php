@@ -22,7 +22,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-2 align-self-center bold text-white">Rows: <?= $table["TABLE_ROWS"] ?></div>
+                        <div class="col-2 align-self-center bold text-white">Rows: <?= $data["nr_rows"][$table["TABLE_NAME"]] ?></div>
                         <div class="col-1 align-self-center">
                             <div class="form-group pt-1 mb-1 text-white">
                                 <?= $table["ENGINE"] ?>
@@ -117,13 +117,13 @@
                                                     <div class="pl-4 btn btn-dark btn-sm" data-toggle="tooltip" title='Will set the id attribute to column name'>
                                                         <input type="checkbox" class="setIds pl-1 form-check-input"
                                                             data-table="<?= $table["TABLE_NAME"] ?>"
-                                                            id="setIds<?= $table["TABLE_NAME"] ?>" name="setIds" checked>
+                                                            id="setIds<?= $table["TABLE_NAME"] ?>" name="setIds" checked disabled>
                                                         <label class="form-check-label hand-pointer" for="setIds<?= $table["TABLE_NAME"] ?>"> Set ids</label>
                                                     </div>
                                                     <div class="pl-4 btn btn-dark btn-sm" data-toggle="tooltip" title='Will set the name attribute to column name'>
                                                         <input type="checkbox" class="setNames pl-1 form-check-input"
                                                             data-table="<?= $table["TABLE_NAME"] ?>"
-                                                            id="setNames<?= $table["TABLE_NAME"] ?>" name="setNames" checked>
+                                                            id="setNames<?= $table["TABLE_NAME"] ?>" name="setNames" checked disabled>
                                                         <label class="form-check-label hand-pointer" for="setNames<?= $table["TABLE_NAME"] ?>"> Set names</label>
                                                     </div>
                                                     <div class="pl-4 btn btn-dark btn-sm" data-toggle="tooltip" title='Will set the default classes'>

@@ -38,11 +38,10 @@ class ProjectsController extends HomeController {
 
 					// The number of rows is not reported correctly in information_schema table
 					// So we retrieve it our selfs
-					// $rootConn = \Config\Database::connect("default");
-					// foreach ($data["tables"] as &$table_info) {
-					// 	$temp = $rootConn->query("SELECT COUNT(*) AS row_count FROM {$table_info["TABLE_NAME"]}")->getResultArray()[0];
-					// 	$table_info["TABLE_ROWS"] = $infosch->query("SELECT COUNT(*) AS row_count FROM {$table_info["TABLE_NAME"]}")->getResultArray()[0]["row_count"];
-					// }
+					$data["nr_rows"] = [];
+					foreach ($data["tables"] as $table_info) {
+						$data["nr_rows"][$table_info["TABLE_NAME"]] = $schema->getRowsNumber($table_info["TABLE_NAME"])[0]["rows"];
+					}
 
 					$data["userTables"] = $schema->getTablesInfo($this->user->id, $this->current_project["id"]);
 					$data["tablesProcessed"] = array_unique(array_column($data["userTables"], "table_name"));
@@ -56,6 +55,13 @@ class ProjectsController extends HomeController {
 
 					// I need the exact tables of this project so it will not show everything
 					$data["tables"] = $projects->getInnerProjectTables($this->current_project["id"]);
+
+					// For each table I get the number of rows, just for information
+					$data["nr_rows"] = [];
+					foreach ($data["tables"] as $table) {
+						$data["nr_rows"][$table] = $schema->getRowsNumber($table)[0]["rows"];
+					}
+					
 					// Now we overwrite the tables with our info from information_schema, only for those ids
 					$data["tables"] = $schema->getTables($this->current_project["database"], $data["tables"]);
 

@@ -22,9 +22,6 @@
         line-height: 2;
         border-radius: 0rem;
     }
-    .fa, .far, .fas {
-        font-family: "Font Awesome 5 Free";
-    }
     .fa-2x {
         font-size: 2.2em;
     }
