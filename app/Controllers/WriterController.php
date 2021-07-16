@@ -5,7 +5,7 @@ use App\Models\ProjectModel;
 use App\Models\UserModuleModel;
 use App\Models\UserTableModel;
 use App\Models\PropertiesModel;
-use App\Models\Tags2Model;
+use App\Models\TagsModel;
 use \Gajus\Dindent\Indenter;
 use CodeIgniter\Controller;
 
@@ -192,8 +192,8 @@ class WriterController extends HomeController {
                     // $("select[value='\" + {$foreign_table}Data.id + \"']").attr("selected", "selected");
                 } else {
                     // THE SWITCH WAS HERE
-                    $tags = new Tags2Model();
-                    $tags = $tags->getTags2List();
+                    $tags = new TagsModel();
+                    $tags = $tags->getTagsList();
                     $this->tags = $tags;
 
                     $formInput .= $this->theSwitch($fieldProperties, $display_as);

@@ -2,9 +2,9 @@
 
 use CodeIgniter\Model;
 
-class Tags2Model extends Model
+class TagsModel extends Model
 {
-    protected $table      = 'tags2';
+    protected $table      = 'tags';
     protected $primaryKey = 'id';
 
     protected $returnType = 'array';
@@ -29,10 +29,10 @@ class Tags2Model extends Model
         return ["id","name","start_tag","end_tag","value_type","properties_id_list"];
     }
 
-    public function getTags2List() {
+    public function getTagsList() {
         $query = "SELECT 
-                    tags2.id, tags2.name, tags2.start_tag, tags2.end_tag, tags2.value_type, tags2.properties_id_list
-                FROM tags2 
+                    tags.id, tags.name, tags.start_tag, tags.end_tag, tags.value_type, tags.properties_id_list
+                FROM tags 
                     ";
 
         $result = $this->query($query)->getResultArray();
