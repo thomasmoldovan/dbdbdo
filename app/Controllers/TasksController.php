@@ -1,7 +1,6 @@
 <?php namespace App\Controllers;
 
 use App\Models\TasksModel;
-use App\Models\ColorsModel;
 use App\Models\ProjectModel;
 use App\Models\UserModuleModel;
 use CodeIgniter\Controller;
@@ -28,7 +27,6 @@ class TasksController extends HomeController {
     public function index() {
         helper(['filesystem', 'form', 'url']);
         $tasks = new TasksModel();
-        $colors = new ColorsModel();
         $projects = new ProjectModel();
         $userModule = new UserModuleModel();
 
@@ -45,15 +43,10 @@ class TasksController extends HomeController {
         $data["session"] = $this->session;
         $data["headers"] = $tasks->getAllowedFields();
         $data["tasksItems"] = $tasksItems;
-        $data["colors"] = $colors->getColorsList();
         $data["menuItems"] = $menuItems;
         $data["page"] = "TasksView";
 
         return $this->display_main("preview", "tasks", $data);
-    }
-
-    public function test() {
-        return $this->response->setJSON("Thomas");
     }
 
     public function create() {
@@ -61,15 +54,15 @@ class TasksController extends HomeController {
         $projects = new ProjectModel();
         $post = $this->request->getPost();
 
-        if ($this->request->isAjax() || $this->request->getMethod() == "post") {
+        if ($this->request->isAjax()) {
             if (isset($post["id"])) {
                 $update_id = $post["id"] == "" ? null : $post["id"];
             } else {
                 $update_id = null;
             }
 
-            // $validation = \Config\Services::validation();
-            // if ($validation->run() == TRUE) { }
+            $validation = \Config\Services::validation();
+            if ($validation->run() == TRUE) { }
 
             if (!is_null($update_id)) {
                 $tasks->update($update_id, $post);
@@ -79,12 +72,12 @@ class TasksController extends HomeController {
         }
 
         $data["errors"] = false;
-        // $data["errors"] = $validation->getErrors();
+        $data["errors"] = $validation->getErrors();
 
         if ($this->request->isAjax()) {
-            var_dump($data);
+            return $this->response->setJSON($data);
         } else {
-            return redirect()->to("/projects/tba284c/preview/tasks");            
+            var_dump($data);
         }
     }
 

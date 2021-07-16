@@ -7,9 +7,22 @@ use CodeIgniter\Controller;
 
 class Tags2Controller extends HomeController {
 
-    protected $auth; // If he wants login
-    protected $user; // If he wants login
+    protected $onoff = true; // true = ONLINE off = OFFLINE
+    protected $auth;
+    protected $user;
     protected $session;
+    protected $pages;
+    protected $projectId;
+    protected $projectHash;
+
+    public function __construct() {
+        helper('auth');
+        
+        $this->auth = service("authentication");
+        $this->user = user();
+        $this->session = service('session');
+        $this->pages = config('Pages');
+    }
 
     public function index() {
         helper(['filesystem', 'form', 'url']);
@@ -17,10 +30,13 @@ class Tags2Controller extends HomeController {
         $projects = new ProjectModel();
         $userModule = new UserModuleModel();
 
+        $projectHash = $this->session->get("project_hash");
         $userModule->setDatabase($_ENV["database.default.database"]);
-        $menuItems = $userModule->getActiveModules($this->user->id);
+        $menuItems = $userModule->getActiveModules($this->user->id, $projectHash);
 
-        $tags2Items = $tags2->findAll();        
+        $tags2Items = $tags2->findAll();
+        
+        
 
         $data["auth"] = $this->auth->check();
         $data["user"] = $this->user;
@@ -28,9 +44,9 @@ class Tags2Controller extends HomeController {
         $data["headers"] = $tags2->getAllowedFields();
         $data["tags2Items"] = $tags2Items;
         $data["menuItems"] = $menuItems;
-        $data["view"] = "Tags2View";
+        $data["page"] = "Tags2View";
 
-        return $this->display_main("header", "tags2", $data);
+        return $this->display_main("preview", "tags2", $data);
     }
 
     public function test() {
@@ -69,7 +85,7 @@ class Tags2Controller extends HomeController {
         }
     }
 
-    public function manageTags2() {
+    public function list() {
         // POST method entry point
         $tags2 = new Tags2Model();
         $projects = new ProjectModel();

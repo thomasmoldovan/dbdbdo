@@ -113,7 +113,7 @@ class ImportController extends HomeController {
 
 				// Ignore line if DATABASE statement present
 				$wtf1 = stripos($tempcommand, "drop");
-				if (stripos($tempcommand, "database") != false) {
+				if (stripos($tempcommand, "database") !== false) {
 					$tempcommand = '';
 					$line = strtok($separator);
 					continue;
@@ -121,7 +121,7 @@ class ImportController extends HomeController {
 
 				// Ignore line if DATABASE statement present
 				$wtf2 = stripos($tempcommand, "database");
-				if (stripos($tempcommand, "database") != false) {
+				if (stripos($tempcommand, "database") !== false) {
 					$tempcommand = '';
 					$line = strtok($separator);
 					continue;
@@ -129,7 +129,7 @@ class ImportController extends HomeController {
 
 				// Ignore line if DATABASE statement present
 				$wtf3 = stripos($tempcommand, "show");
-				if (stripos($tempcommand, "show") != false) {
+				if (stripos($tempcommand, "show") !== false) {
 					$tempcommand = '';
 					$line = strtok($separator);
 					continue;
@@ -137,7 +137,15 @@ class ImportController extends HomeController {
 
 				// Ignore line if DATABASE statement present
 				$wtf4 = stripos($tempcommand, "privilege");
-				if (stripos($tempcommand, "privilege") != false) {
+				if (stripos($tempcommand, "privilege") !== false) {
+					$tempcommand = '';
+					$line = strtok($separator);
+					continue;
+				}
+
+				// Ignore line if DATABASE statement present
+				$wtf5 = stripos($tempcommand, "insert");
+				if (stripos($tempcommand, "insert") !== false) {
 					$tempcommand = '';
 					$line = strtok($separator);
 					continue;

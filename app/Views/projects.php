@@ -11,7 +11,6 @@
                             <?= $project->project_hash; ?>
                         </small>
                         <br>
-                        <small class="bold"><?= $project->project_description; ?></small>
                         <hr class="mt-2 mb-2 bg-success">
                         <div class="row d-flex">
                             <div class="col-6">
@@ -23,8 +22,7 @@
                                 <div class="small pb-2"><i class="fa fa-link mr-2 text-success"></i><?= $project->count_links; ?> Links</div>
                             </div>
                             <div class="col-12 pt-1">
-                                <button class="btn btn-sm btn-success"><span><i class="fa fa-pen text-white"></i></span></button>
-                                <button class="btn btn-sm btn-danger"><span><i class="fa fa-trash text-white"></i></span></button>
+                                <div class="btn btn-sm btn-danger deleteProject"><span><i class="fa fa-trash-o text-white"></i></span></div>
                                 <div class="small float-right pt-2"><b>Last Updated: </b><?= $project->updated_at; ?></div>
                             </div>
                         </div>
@@ -52,6 +50,24 @@ $(document).ready(function () {
     );
     $(".projectCard").click(function () {
         window.location = "http://localhost:8080/projects/" + $(this).data("id");
+    });
+
+    $(".deleteProject").click(function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        // debugger;
+        $.ajax({
+            type: "post",
+            url: "/projects/delete",
+            data: {
+                "project_hash": $(this).parents(".projectCard").data("id")
+            },
+            dataType: "dataType",
+            success: function (response) {
+                response.title = "Ui ca mere";
+            }
+        });
+        // console.log("Deleting " + $(this).parents(".projectCard").data("id"));
     });
 });
 </script>

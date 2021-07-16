@@ -91,7 +91,7 @@
         $(document).trigger("showLoadingScreen");
         $.ajax({
             type: "post",
-            url: "<?= base_url() ?>/tags2/manageTags2",
+            url: "/projects/td963ba/preview/tags2/list",
             data: $("#formAddTags2").serialize(),
             dataType: "json",
             success: function (response) {
@@ -188,7 +188,7 @@
 
                 $.ajax({
                     type: "post",
-                    url: "tags2/delete",
+                    url: "delete",
                     data: {
                         "id": id
                     },

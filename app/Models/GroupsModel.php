@@ -26,12 +26,12 @@ class GroupsModel extends Model
     }
 
     public function getFieldLabels() {
-        return ["id","name","color_id"];
+        return ["id","name","Color Name"];
     }
 
     public function getGroupsList() {
         $query = "SELECT 
-                    groups.id, groups.name, colors.name AS `color_id`
+                    groups.id, groups.name, colors.name AS `Color Name`
                 FROM groups 
                      LEFT JOIN colors ON colors.id = groups.color_id ";
 

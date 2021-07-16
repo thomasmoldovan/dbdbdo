@@ -34,9 +34,10 @@
                             <div id='id' name='id' class='form-control form-control-sm' readonly=''></div>
                             <label for='name' class='w-100 mb-0 bold pr-3'>name</label>
                             <input id='name' name='name' class='form-control form-control-sm'/>
-                            <label for='color_id' class='w-100 mb-0 bold pr-3'>color_id</label>
+                            <label for='color_id' class='w-100 mb-0 bold pr-3'>Color Name</label>
                             <select id='color_id' name='color_id' class='form-control form-control-sm'>
                                 <option value='21'>Orange</option>
+                                <option value='22'>Black</option>
                             </select>
                         </form>
                     </div>

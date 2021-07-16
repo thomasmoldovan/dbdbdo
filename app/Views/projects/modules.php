@@ -307,7 +307,7 @@
                                     <input type="text" class="property form-control form-control-sm mr-2">
                                     <b class="text-black">=</b>
                                     <input type="text" class="attribute form-control form-control-sm ml-2 mr-2">
-                                    <button type="button" name="deleteProp" class="deleteProp btn btn-danger btn-sm"><i class="fa fa-trash text-white"></i></button>
+                                    <button type="button" name="deleteProp" class="deleteProp btn btn-danger btn-sm"><i class="fa fa-trash-o text-white"></i></button>
                                 </div>
                             </div>
                             <div id="newPropContainer" class="">

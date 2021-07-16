@@ -35,7 +35,7 @@
                             <label for='name' class='w-100 mb-0 bold pr-3'>name</label>
                             <input id='name' name='name' class='form-control form-control-sm'/>
                             <label for='value' class='w-100 mb-0 bold pr-3'>value</label>
-                            <input id='value' name='value' class='form-control form-control-sm'/>
+                            <input id='value' name='value' class='form-control form-control-sm' type='color'/>
                         </form>
                     </div>
                 </div>
