@@ -34,11 +34,23 @@ class SchemaModel extends Model {
 		return $result->getResultArray();
 	}
 
-	// Get the number of rows for a table
+	// Get the number of rows for a table from INFORMATION_SCHEMA
+	// NOT GOOD
 	public function getRows($table = null) {
 		if (is_null($table)) return false;
 		$infosch = \Config\Database::connect("informationSchema");
-		$result = $infosch->query("SELECT count(*) AS rows FROM {$table}");
+		$result = $infosch->query("SELECT count(*) AS `rows` FROM {$table}");
+		return $result->getResultArray();
+	}
+
+	// Get the number of rows for a table, by querying the table
+	// GOOD
+	public function getRowsNumber($table = null) {
+		// TODO: This is for INTERNAL and needs to be checked with EXTERNAL
+		if (is_null($table)) return false;
+		$infosch = \Config\Database::connect("default");
+		$query = "SELECT count(*) AS `rows` FROM {$table}";
+		$result = $infosch->query($query);
 		return $result->getResultArray();
 	}
 

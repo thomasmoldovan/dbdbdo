@@ -229,7 +229,10 @@
 </style>
 <div class="nav-side-menu">
     <div class="menu-list">
-        <div class="brand">Project Name</div>
+        <div class="brand">
+            <i class="fa fa-check bg-primary text-white rounded p-2"></i>
+            <u>Tasks</u>
+        </div>
         <ul id="menu-content" class="menu-content collapse out pl-2">
             <? foreach($menuItems as $item) { ?>
                 <li class="active">

@@ -5,12 +5,14 @@ use App\Models\ProjectModel;
 use App\Models\UserModuleModel;
 use App\Models\UserTableModel;
 use App\Models\PropertiesModel;
+use App\Models\Tags2Model;
 use \Gajus\Dindent\Indenter;
 use CodeIgniter\Controller;
 
 class WriterController extends HomeController {
 
     protected $current_project;
+    protected $tags;
 
     public function buildInternalFiles() {
         $this->checkIfLogged();
@@ -190,6 +192,10 @@ class WriterController extends HomeController {
                     // $("select[value='\" + {$foreign_table}Data.id + \"']").attr("selected", "selected");
                 } else {
                     // THE SWITCH WAS HERE
+                    $tags = new Tags2Model();
+                    $tags = $tags->getTags2List();
+                    $this->tags = $tags;
+
                     $formInput .= $this->theSwitch($fieldProperties, $display_as);
 
                     // These are jQuery lines that update the modal
