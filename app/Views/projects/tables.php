@@ -18,11 +18,11 @@
                                     echo '<button class="action btn btn-sm btn-success m-1 no-outline" data-id="'.$table["TABLE_NAME"].'" data-json="'.$base64.'"><i class="fas fa-eye"></i></button>';
                                 } ?>
                                 <div class="pl-3 align-self-center">
-                                    <div class="text-white"><b><?= $table["TABLE_NAME"] ?></b>&nbsp;<small class="pl-3 pt-1">(3 Modules)</small></div>
+                                    <div class="text-white"><b><?= $table["TABLE_NAME"] ?></b></div>
                                 </div>
                             </div>
                         </div>
-                        <div class="col-2 align-self-center bold text-white">Rows: <?= $table["TABLE_ROWS"] ?></div>
+                        <div class="col-2 align-self-center bold text-white">Rows: <?= $data["nr_rows"][$table["TABLE_NAME"]] ?></div>
                         <div class="col-1 align-self-center">
                             <div class="form-group pt-1 mb-1 text-white">
                                 <?= $table["ENGINE"] ?>
@@ -37,19 +37,19 @@
                         <div class="col-2 align-self-center bold text-white small"><?= $table["TABLE_COMMENT"] ?></div>
                         <div class="col-2 align-self-center bold text-white small pl-0 pr-0">
                             <? if (in_array($table["TABLE_NAME"], $data["tablesProcessed"])) { ?>
-                            <button type="submit"
-                                data-toggle="tooltip" data-title="Something here"
-                                class="resetTableButton btn btn-danger btn-sm float-right mr-1 no-outline"
-                                data-name="<?= $table["TABLE_NAME"] ?>">Reset</button>
-                            <button type="submit"
-                                data-toggle="tooltip" data-title="Something here"
-                                class="deleteTableButton btn btn-secondary btn-sm float-right mr-1 no-outline"
-                                data-name="<?= $table["TABLE_NAME"] ?>">Delete</button>  
+                                <button type="submit"
+                                    data-toggle="tooltip" data-title="Something here"
+                                    class="resetTableButton btn btn-danger btn-sm float-right mr-1 no-outline"
+                                    data-name="<?= $table["TABLE_NAME"] ?>">Reset</button>
+                                <button type="submit"
+                                    data-toggle="tooltip" data-title="Something here"
+                                    class="deleteTableButton btn btn-secondary btn-sm float-right mr-1 no-outline"
+                                    data-name="<?= $table["TABLE_NAME"] ?>">Delete</button>
                             <? } else { ?>
-                            <button type="submit"
-                                data-toggle="tooltip" data-title="Something here"
-                                class="deleteTableButton btn btn-secondary btn-sm float-right mr-1 no-outline"
-                                data-name="<?= $table["TABLE_NAME"] ?>">Process</button>
+                                <button type="submit"
+                                    data-toggle="tooltip" data-title="Something here"
+                                    class="deleteTableButton btn btn-secondary btn-sm float-right mr-1 no-outline"
+                                    data-name="<?= $table["TABLE_NAME"] ?>">Process</button>
                             <? } ?>
                         </div>
 
@@ -112,32 +112,39 @@
                                             <div class="p-0">
                                                 <button name="<?= $table["TABLE_NAME"] ?>" type="button" class="addToModules btn btn-sm btn-primary w-100">Create Module</button>
                                             </div>
-                                            <div class="pl-5 d-flex justify-align-center">
-                                                <div class="pl-4 btn btn-dark btn-sm">
-                                                    <input type="checkbox" class="setIds pl-1 form-check-input"
-                                                        data-table="<?= $table["TABLE_NAME"] ?>"
-                                                        id="setIds<?= $table["TABLE_NAME"] ?>" name="setIds" checked>
-                                                    <label class="form-check-label" for="setIds"> Set ids</label>
-                                                </div>
-                                                <div class="pl-4 btn btn-dark btn-sm">
-                                                    <input type="checkbox" class="setNames pl-1 form-check-input"
-                                                        data-table="<?= $table["TABLE_NAME"] ?>"
-                                                        id="setNames<?= $table["TABLE_NAME"] ?>" name="setNames" checked>
-                                                    <label class="form-check-label" for="setNames"> Set names</label>
-                                                </div>
-                                                <div class="pl-4 btn btn-dark btn-sm">
-                                                    <input type="checkbox" class="setClasses pl-1 form-check-input"
-                                                        data-table="<?= $table["TABLE_NAME"] ?>"
-                                                        id="setClasses<?= $table["TABLE_NAME"] ?>" name="setClasses" checked>
-                                                    <label class="form-check-label" for="setClasses"> Set classes</label>
-                                                </div>
-                                                <div class="pl-4 btn btn-dark btn-sm">
-                                                    <input type="checkbox" class="setLabels pl-1 form-check-input"
-                                                        data-table="<?= $table["TABLE_NAME"] ?>"
-                                                        id="setLabels<?= $table["TABLE_NAME"] ?>" name="setLabels" checked>
-                                                    <label class="form-check-label" for="setLabels"> Set labels</label>
-                                                </div>
+                                            <div class="pl-2">
+                                                <!-- TODO: Must be unique for the same project -->
+                                                <input id="newModuleName" name="newModuleName" type="text" class="mr-2 form-control form-control-sm" placeholder="<?= $table["TABLE_NAME"] ?>" value="">
                                             </div>
+                                            <span class="small" data-toggle="tooltip" title="(use lowercase & _ ... it will be converted anyway)"><i class="fa fa-info-circle p-2"></i>&nbsp;</span>
+                                            <? if (has_permission("Everything")) { ?>
+                                                <div class="pl-5 d-flex justify-align-center">
+                                                    <div class="pl-4 btn btn-dark btn-sm" data-toggle="tooltip" title='Will set the id attribute to column name'>
+                                                        <input type="checkbox" class="setIds pl-1 form-check-input"
+                                                            data-table="<?= $table["TABLE_NAME"] ?>"
+                                                            id="setIds<?= $table["TABLE_NAME"] ?>" name="setIds" checked disabled>
+                                                        <label class="form-check-label hand-pointer" for="setIds<?= $table["TABLE_NAME"] ?>"> Set ids</label>
+                                                    </div>
+                                                    <div class="pl-4 btn btn-dark btn-sm" data-toggle="tooltip" title='Will set the name attribute to column name'>
+                                                        <input type="checkbox" class="setNames pl-1 form-check-input"
+                                                            data-table="<?= $table["TABLE_NAME"] ?>"
+                                                            id="setNames<?= $table["TABLE_NAME"] ?>" name="setNames" checked disabled>
+                                                        <label class="form-check-label hand-pointer" for="setNames<?= $table["TABLE_NAME"] ?>"> Set names</label>
+                                                    </div>
+                                                    <div class="pl-4 btn btn-dark btn-sm" data-toggle="tooltip" title='Will set the default classes'>
+                                                        <input type="checkbox" class="setClasses pl-1 form-check-input"
+                                                            data-table="<?= $table["TABLE_NAME"] ?>"
+                                                            id="setClasses<?= $table["TABLE_NAME"] ?>" name="setClasses" checked>
+                                                        <label class="form-check-label hand-pointer" for="setClasses<?= $table["TABLE_NAME"] ?>"> Set classes</label>
+                                                    </div>
+                                                    <div class="pl-4 btn btn-dark btn-sm" data-toggle="tooltip" title='Will set the label for the field to Column Name'>
+                                                        <input type="checkbox" class="setLabels pl-1 form-check-input"
+                                                            data-table="<?= $table["TABLE_NAME"] ?>"
+                                                            id="setLabels<?= $table["TABLE_NAME"] ?>" name="setLabels" checked>
+                                                        <label class="form-check-label hand-pointer" for="setLabels<?= $table["TABLE_NAME"] ?>"> Set labels</label>
+                                                    </div>
+                                                </div>
+                                            <? } ?>
                                         </div>
                                     </th>
                                 </tr>
@@ -179,11 +186,11 @@
                 },
                 dataType: "json",
                 success: function (response) {
-                    toastr.success(response.message);
+                    //toastr.success(response.message);
                     location = window.location;
                 },
                 error: function (response) {
-                    toastr.error(response.responseJSON.message, response.responseJSON.type);
+                    //toastr.error(response.responseJSON.message, response.responseJSON.type);
                     $(document).trigger("hideLoadingScreen");
                 }
             });
@@ -213,11 +220,8 @@
 
         $(".addToModules").click(function (e) {
             e.preventDefault();
+
             tableName = $(this).attr("name");
-            if ($("#selectModule" + tableName).val() == 0) {
-                $("#addModule" + tableName + "Error").html("Please select a module");
-                return false;
-            }
 
             selectedColumns = [];
             columns = $("#" + tableName + "Details tbody").find("." + tableName + "Columns");
@@ -229,20 +233,22 @@
                 }
             });
 
+            // There should already be the id column selected so we need one more
             if (selectedColumns.length <= 1) {
-                $("#addModule" + tableName + "Error").html("Please select atleast one column from the table");
-                toastr.error("You must select atleast 1 more column, except the ID column", "Error");
+                toastr.error("Select atleast one column from the table", "No columns selected");
                 return false;
             }
 
             $(document).trigger("showLoadingScreen");
+
             // module/create
             $.ajax({
                 type: "post",
                 url: "/import/linkTableToModule",
                 data: {
                     "project_hash": "<?= $data["project"]["project_hash"]; ?>",
-                    "module_name": tableName,
+                    "module_name": $("#newModuleName").val(),
+                    "module_route": $("#newModuleName").val(),
                     "selectedColumns": selectedColumns,
                     "setIds": $("#setIds" + tableName).prop("checked"),
                     "setNames": $("#setNames" + tableName).prop("checked"),
@@ -251,7 +257,8 @@
                 },
                 dataType: "json",
                 success: function (response) {
-                    // window.location = "<?= base_url() ?>" + "modules";
+                    // TODO: Should redirect to the exact module, with the module opened
+                    window.location = "<?= base_url() ?>" + "modules";
                 },
                 complete: function (response) {
                     $(document).trigger("hideLoadingScreen");

@@ -1,9 +1,6 @@
 <div class="btn-group mb-3">
     <a id="createGroupsButton" href="#">
-        <button type="button" class="createGroups btn btn-sm btn-danger mt-3" data-toggle="modal">
-            Create 
-            <?= singular("Groups") ?>
-        </button>
+        <button type="button" class="createGroups btn btn-sm btn-danger mt-3" data-toggle="modal"> Create Groups</button>
     </a>
 </div>
 <div class="row-fluid p-0">
@@ -37,9 +34,10 @@
                             <div id='id' name='id' class='form-control form-control-sm' readonly=''></div>
                             <label for='name' class='w-100 mb-0 bold pr-3'>name</label>
                             <input id='name' name='name' class='form-control form-control-sm'/>
-                            <label for='color_id' class='w-100 mb-0 bold pr-3'>color_id</label>
+                            <label for='color_id' class='w-100 mb-0 bold pr-3'>Color Name</label>
                             <select id='color_id' name='color_id' class='form-control form-control-sm'>
-                                <option value='21'>345353</option>
+                                <option value='21'>Orange</option>
+                                <option value='22'>Black</option>
                             </select>
                         </form>
                     </div>
@@ -80,6 +78,7 @@
         </div>
     </div>
 </div>
+<script src="<?=base_url()?>js/common.js"></script>
 <script>
     $(document).ready(function () {
         refresh();
@@ -89,10 +88,8 @@
         $(document).trigger("showLoadingScreen");
         $.ajax({
             type: "post",
-            url: "groups/list",
-            data: {
-                "project_hash": "<?= $_SESSION["project_hash"]; ?>"
-            },
+            url: "/projects/tba284c/preview/groups/list",
+            data: $("#formAddGroups").serialize(),
             dataType: "json",
             success: function (response) {
                 var body = "";
@@ -130,12 +127,8 @@
                 
                 $("#manageGroups > thead > tr").html('<th><input type="checkbox" id="select_all"></th><th>' + response.headers.join('</th><th>') + '</th><th style="text-align: right;">Actions</th>');
                 $("#manageGroups > tbody").html(body);
-                $(document).trigger("hideLoadingScreen");
             },
-            error: function(response) {
-                $(document).trigger("hideLoadingScreen");
-            },
-            complete: function(response) {
+            complete: function() {
                 applyEvents();
                 $(document).trigger("hideLoadingScreen");
             }
@@ -192,10 +185,9 @@
 
                 $.ajax({
                     type: "post",
-                    url: "groups/delete",
+                    url: "delete",
                     data: {
-                        "id": id,
-                        "project_hash": "<?= $_SESSION["project_hash"]; ?>"
+                        "id": id
                     },
                     dataType: "json",
                     success: function (response) {
@@ -216,40 +208,38 @@
             });
 
         // CREATE or UPDATE
-        $('.createGroups, .editGroups')
-            .off()
-            .on('click', function (e) {
-                e.preventDefault();
-                jsonData = $(this).data("json");
+        $('.createGroups, .editGroups').on('click', function (e) {
+            e.preventDefault();
+            jsonData = $(this).data("json");
 
-                if (typeof jsonData == "undefined") {
-                    // Create
-                    groupsData = {};
-                    $("div[name='id']").hide();
-                    $("label[for='id']").hide();
-                    $("input[id='id']").val("").change(); // This is the hidden ID field
-                    $('#createGroups').text('Create');
-                } else {
-                    // Update
-                    $("div[name='id']").show();
-                    $("label[for='id']").show();
-                    groupsData = JSON.parse(atob(jsonData));
+            if (typeof jsonData == "undefined") {
+                // Create
+                groupsData = {};
+                $("div[name='id']").hide();
+                $("label[for='id']").hide();
+                $("input[id='id']").val("").change(); // This is the hidden ID field
+                $('#createGroups').text('Create');
+            } else {
+                // Update
+                $("div[name='id']").show();
+                $("label[for='id']").show();
+                groupsData = JSON.parse(atob(jsonData));
 
-                    $("input[id='id']").val(groupsData.id).change(); // This is the hidden ID field
-                    $("div[name='id']").text(groupsData.id);
-                    $('#createGroups').text('Edit');
-                }            
-                
-                // This here -> FOREIGN KEY
-                // $("input[name='group_id']").val(groupsData.id);
+                $("input[id='id']").val(groupsData.id).change(); // This is the hidden ID field
+                $("div[name='id']").text(groupsData.id);
+                $('#createGroups').text('Edit');
+            }            
+            
+            // This here -> FOREIGN KEY
+            // $("input[name='group_id']").val(groupsData.id);
 
-                // Rest I have
-                $("input[id='id']").val(groupsData.id);
+            // Rest I have
+            $("input[id='id']").val(groupsData.id);
 $("input[id='name']").val(groupsData.name);
 $("select[value='" + groupsData.id + "']").attr("selected", "selected");
-                
-                $('#createGroupsModal').modal('show');
-            });
+            
+            $('#createGroupsModal').modal('show');
+        });
 
         $('#createGroupsModal')
             .off()
@@ -257,6 +247,8 @@ $("select[value='" + groupsData.id + "']").attr("selected", "selected");
                 e.preventDefault();
 
                 preData = $("#createGroupsForm").serializeArray();
+                
+
                 $.ajax({
                     type: "post",
                     url: "groups/create",

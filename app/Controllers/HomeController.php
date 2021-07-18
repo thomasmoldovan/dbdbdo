@@ -63,6 +63,17 @@ class HomeController extends BaseController{
 		]);
 	}
 
+	public function display_internal_preview($header = "preview", $content = "login", $data = []) {
+		return view($header, [
+			"auth" => $this->auth, 
+			"config" => $this->config,
+			"user" => $this->user,
+			"page" => $this->pages->pages[$content]["view"],
+			"menuItems" => $data["menuItems"],
+			"data" => $data
+		]);
+	}
+
 	public function tried(\Exception $ex) {
 		$response["status"] = "error" ?? null;
 		$response["code"] = $ex->getCode() ?? null;
@@ -79,6 +90,7 @@ class HomeController extends BaseController{
 		$response["title"] = $title ?? null;
 		$response["message"] = $message ?? null;
 
+		// Find out: Why is $this->response NULL when not logged in
 		return $this->response->setJSON($response);
 	}
 
@@ -89,7 +101,7 @@ class HomeController extends BaseController{
 	}
 
 	public function generate_hash() {
-		$color = dechex(rand(0x000000, 0xFFFFFF));
+		$color = sprintf("%06x",rand(0,16777215));
 		return $color;
 	}
 

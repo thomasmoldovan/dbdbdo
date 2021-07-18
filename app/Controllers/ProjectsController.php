@@ -5,6 +5,8 @@ namespace App\Controllers;
 use App\Models\SchemaModel;
 use App\Models\ProjectModel;
 use App\Models\UserTableModel;
+use App\Models\PropertiesModel;
+use App\Models\LinksModel;
 
 use App\Models\UserModuleModel;
 use App\Models\TableModuleModel;
@@ -14,10 +16,8 @@ class ProjectsController extends HomeController {
 	protected $current_project;
 
 	public function index($hash = null)	{
-		// Should be moved in Home
-		if ($this->checkIfLogged() !== true) {
-			return redirect()->to("/");;
-		}
+		$this->checkIfLogged();
+
 		$projects = new ProjectModel();
 
 		// Check if we have a hash in the URL
@@ -28,13 +28,22 @@ class ProjectsController extends HomeController {
 			if (!empty($project)) {
 				// Project found
 				$this->current_project = $project[0];
+				$this->session->set("project_hash", $this->current_project["project_hash"]);
 
 				// Tables List View
 				if ((int)$this->current_project["project_type"] == 0) {
 					// EXTERNAL
 					$schema = new SchemaModel();
 					$data["project"] = $this->current_project;
-					$data["tables"] = $schema->getTables($this->current_project["project_hash"]); 
+					$data["tables"] = $schema->getTables($this->current_project["project_hash"]);
+
+					// The number of rows is not reported correctly with some DB engines, in information_schema table
+					// So we retrieve it our selfs
+					$data["nr_rows"] = [];
+					foreach ($data["tables"] as $table_info) {
+						$data["nr_rows"][$table_info["TABLE_NAME"]] = $schema->getRowsNumber($table_info["TABLE_NAME"])[0]["rows"];
+					}
+
 					$data["userTables"] = $schema->getTablesInfo($this->user->id, $this->current_project["id"]);
 					$data["tablesProcessed"] = array_unique(array_column($data["userTables"], "table_name"));
 	
@@ -47,7 +56,15 @@ class ProjectsController extends HomeController {
 
 					// I need the exact tables of this project so it will not show everything
 					$data["tables"] = $projects->getInnerProjectTables($this->current_project["id"]);
-					// Now we overwrite the tables with our info from information_schema, only for those ids
+
+					// For each table I get the number of rows, just for information
+					$data["nr_rows"] = [];
+					foreach ($data["tables"] as $table) {
+						$data["nr_rows"][$table] = $schema->getRowsNumber($table)[0]["rows"];
+					}
+					
+					// Now we overwrite the tables with our info from information_schema, 
+					// only for the tables in this project
 					$data["tables"] = $schema->getTables($this->current_project["database"], $data["tables"]);
 
 					$data["userTables"] = $schema->getTablesInfo($this->user->id, $this->current_project["id"]);
@@ -74,7 +91,10 @@ class ProjectsController extends HomeController {
 		}
 
 		// No hash in the URL
-		// Display the projects page
+		// Reset current project hash in session
+		$this->session->remove("project_hash");
+
+		// Display the projects page		
 		$project_list = $projects->getProjectsForUser($this->user->id);
 
 		$data = ["project_list" => $project_list];
@@ -112,7 +132,7 @@ class ProjectsController extends HomeController {
 	}
 
 	public function clearStuff() {
-		if (is_null($this->user->id)) return false;
+		$this->checkIfLogged();
 		$rootConn = \Config\Database::connect("default");
 
 		// DROP all the user databases
@@ -146,6 +166,63 @@ class ProjectsController extends HomeController {
 		// TODO: Delete files also
 		
 		return redirect()->to('/projects');
+	}
+
+	public function deleteProject() {
+		$this->checkIfLogged();
+
+		$post = $this->request->getPost();
+		$projectHash = $post["project_hash"];
+
+		// Check if project belongs to current user
+		$projects = new ProjectModel();
+		$project = $projects->getWhere(["user_id" => $this->user->id, "project_hash" => $projectHash])->getResultArray();
+
+		if (is_array($project) && count($project) > 0) {
+			$this->current_project = $project[0];
+		} else {
+			return $this->respond("error", "Invalid Project", "This project does not belong to this user");
+		};
+
+		$user_modules = new UserModuleModel();
+		$user_table = new UserTableModel();
+		$properties = new PropertiesModel();
+		$links = new LinksModel();
+		$tables_modules = new TableModuleModel();
+
+		$user_table_ids = $user_table->getWhere(["project_id" => $this->current_project["id"]])->getResultArray();
+		foreach ($user_table_ids as &$row) $row = $row["id"];
+		
+		$user_modules_ids = $user_modules->getWhere(["project_id" => $this->current_project["id"]])->getResultArray();
+		foreach ($user_modules_ids as &$row) $row = $row["id"];
+
+		// Delete from tables_modules where user_table_id OR user_module_id
+		if (count($user_table_ids) > 0) $tables_modules->whereIn("user_table_id", $user_table_ids)->delete();
+		if (count($user_modules_ids) > 0) $tables_modules->whereIn("user_module_id", $user_modules_ids)->delete();
+
+		// Delete from properties where user_tables_id
+		if (count($user_table_ids) > 0) $properties->whereIn("user_table_id", $user_table_ids)->delete();
+
+		// Delete from links where user_table_id_primary, user_table_id_foreign, user_table_id_display = user_table_id
+		if (count($user_table_ids) > 0) $links->whereIn("user_table_id_primary", $user_table_ids)->delete();
+		if (count($user_table_ids) > 0) $links->whereIn("user_table_id_foreign", $user_table_ids)->delete();
+		if (count($user_table_ids) > 0) $links->whereIn("user_table_id_display", $user_table_ids)->delete();
+
+		$user_modules->where(["project_id" => $this->current_project["id"]])->delete();
+
+		// Delete from projects where id
+		$projects->where(["id" => $this->current_project["id"]])->delete();
+
+		$user_table->where(["project_id" => $this->current_project["id"]])->delete();
+		
+		// Delete all files of project
+			// Depends if external internal
+			// INTERNAL -> DO NOT DELETE THE FILES
+			// EXTERNAL -> DELETE EVERYTHING
+			
+		// Drop the database
+
+		return $this->respond("Success", "Project deleted");
 	}
 
 }

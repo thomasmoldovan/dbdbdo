@@ -2,15 +2,15 @@
 
 use CodeIgniter\Model;
 
-class Tags2Model extends Model
+class ImportsModel extends Model
 {
-    protected $table      = 'tags2';
+    protected $table      = 'ddd_imports';
     protected $primaryKey = 'id';
 
     protected $returnType = 'array';
     protected $useSoftDeletes = false;
 
-    protected $allowedFields = ["id","name","start_tag","end_tag","value_type","properties_id_list"];
+    protected $allowedFields = ["id","user_id","query","result","run_at","approved"];
 
     protected $useTimestamps = false;
     protected $createdField  = 'created_at';
@@ -26,13 +26,13 @@ class Tags2Model extends Model
     }
 
     public function getFieldLabels() {
-        return ["id","name","start_tag","end_tag","value_type","properties_id_list"];
+        return ["id","user_id","query","result","run_at","approved"];
     }
 
-    public function getTags2List() {
+    public function getImportsList() {
         $query = "SELECT 
-                    tags2.id, tags2.name, tags2.start_tag, tags2.end_tag, tags2.value_type, tags2.properties_id_list
-                FROM tags2 
+                    ddd_imports.id, ddd_imports.user_id, ddd_imports.query, ddd_imports.result, ddd_imports.run_at, ddd_imports.approved
+                FROM imports 
                     ";
 
         $result = $this->query($query)->getResultArray();

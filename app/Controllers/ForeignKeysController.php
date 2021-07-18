@@ -180,6 +180,7 @@ class ForeignKeysController extends HomeController
 		// Find all links like color -> color_id
 		$primaryNames = array_keys($all_the_tables_and_columns);
 		$userTables = new UserTableModel();
+		$userTables->setDatabase($_ENV["database.default.database"]);
 		foreach ($primaryNames as $primary_table) {
 			for ($i = 1; $i <= 4; $i++) {
 				$handeled = $this->handleTableName($primary_table, $i);

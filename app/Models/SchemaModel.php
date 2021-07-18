@@ -34,11 +34,23 @@ class SchemaModel extends Model {
 		return $result->getResultArray();
 	}
 
-	// Get the number of rows for a table
+	// Get the number of rows for a table from INFORMATION_SCHEMA
+	// NOT GOOD
 	public function getRows($table = null) {
 		if (is_null($table)) return false;
 		$infosch = \Config\Database::connect("informationSchema");
-		$result = $infosch->query("SELECT count(*) AS rows FROM {$table}");
+		$result = $infosch->query("SELECT count(*) AS `rows` FROM {$table}");
+		return $result->getResultArray();
+	}
+
+	// Get the number of rows for a table, by querying the table
+	// GOOD
+	public function getRowsNumber($table = null) {
+		// TODO: This is for INTERNAL and needs to be checked with EXTERNAL
+		if (is_null($table)) return false;
+		$infosch = \Config\Database::connect("default");
+		$query = "SELECT count(*) AS `rows` FROM {$table}";
+		$result = $infosch->query($query);
 		return $result->getResultArray();
 	}
 
@@ -56,7 +68,6 @@ class SchemaModel extends Model {
 	public function executeOuterQuery($database = null, $query = null, $returnType = "array") {
 		if (is_null($database) || is_null($query)) return false;
 
-		// $dbConn = \Config\Database::connect($database);
 		$this->setDatabase($database);
 
 		$result = $this->query($query);
@@ -70,7 +81,6 @@ class SchemaModel extends Model {
 	// Executes a custom query on a database name
 	public function executeInnerQuery($database = null, $query = null, $returnType = "array") {
 		if (is_null($database) || is_null($query)) return false;
-		// $dbConn = \Config\Database::connect("userWorker");
 		$this->setDatabase($database);
 		$result = $this->query($query);
 

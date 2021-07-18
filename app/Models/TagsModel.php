@@ -2,15 +2,15 @@
 
 use CodeIgniter\Model;
 
-class GroupsModel extends Model
+class TagsModel extends Model
 {
-    protected $table      = 'groups';
+    protected $table      = 'tags';
     protected $primaryKey = 'id';
 
     protected $returnType = 'array';
     protected $useSoftDeletes = false;
 
-    protected $allowedFields = ["id","name","color_id"];
+    protected $allowedFields = ["id","name","start_tag","end_tag","value_type","properties_id_list"];
 
     protected $useTimestamps = false;
     protected $createdField  = 'created_at';
@@ -26,14 +26,14 @@ class GroupsModel extends Model
     }
 
     public function getFieldLabels() {
-        return ["id","name","Color Name"];
+        return ["id","name","start_tag","end_tag","value_type","properties_id_list"];
     }
 
-    public function getGroupsList() {
+    public function getTagsList() {
         $query = "SELECT 
-                    groups.id, groups.name, colors.name AS `Color Name`
-                FROM groups 
-                     LEFT JOIN colors ON colors.id = groups.color_id ";
+                    tags.id, tags.name, tags.start_tag, tags.end_tag, tags.value_type, tags.properties_id_list
+                FROM tags 
+                    ";
 
         $result = $this->query($query)->getResultArray();
         // TODO: WHERE and GROUP and ORDER
@@ -41,13 +41,7 @@ class GroupsModel extends Model
         return $result;
     }
 
-    public function getAllColors() {
-                $query = "SELECT `id`, 
-                                 `name` 
-                            FROM `colors`;";
-                $result = $this->query($query)->getResultArray();
-                return $result;
-            }
+    
 
     public function getPrimary() {
         return $this->primaryKey;

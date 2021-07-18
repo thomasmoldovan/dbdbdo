@@ -15,3 +15,9 @@
 
 ## Website
 * [ ] Add comunication way, like Discord or Slack
+
+## Current:
+* [ ] Dynamic joins
+
+## Just saying
+- First project i'm trying to be practical and not get lost in details AGAIN, 'till I get bored of it

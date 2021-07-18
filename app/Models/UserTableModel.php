@@ -12,7 +12,7 @@ class UserTableModel extends Model
 
     protected $allowedFields = ['id', 'user_id', 'project_id', 'table_name', 'column_name', 'display_label', 'display_as', 'type', 'pk', 'default', 'null', 'ai', 'permissions', 'comment', 'checksum'];
 
-    protected $useTimestamps = false;
+    protected $useTimestamps = true;
     protected $createdField  = 'created_at';
     protected $updatedField  = 'updated_at';
     protected $deletedField  = 'deleted_at';

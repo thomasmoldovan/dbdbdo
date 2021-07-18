@@ -2,15 +2,15 @@
 
 use CodeIgniter\Model;
 
-class GroupsModel extends Model
+class TasksModel extends Model
 {
-    protected $table      = 'groups';
+    protected $table      = 'tasks';
     protected $primaryKey = 'id';
 
     protected $returnType = 'array';
     protected $useSoftDeletes = false;
 
-    protected $allowedFields = ["id","name","color_id"];
+    protected $allowedFields = ["id","group_id","taskname","color_id","complete"];
 
     protected $useTimestamps = false;
     protected $createdField  = 'created_at';
@@ -26,14 +26,14 @@ class GroupsModel extends Model
     }
 
     public function getFieldLabels() {
-        return ["id","name","Color Name"];
+        return ["id","group_id","taskname","color_id","complete"];
     }
 
-    public function getGroupsList() {
+    public function getTasksList() {
         $query = "SELECT 
-                    groups.id, groups.name, colors.name AS `Color Name`
-                FROM groups 
-                     LEFT JOIN colors ON colors.id = groups.color_id ";
+                    tasks.id, groups.name AS `group_id`, tasks.taskname, colors.name AS `color_id`, tasks.complete
+                FROM tasks 
+                     LEFT JOIN groups ON groups.id = tasks.group_id  LEFT JOIN colors ON colors.id = tasks.color_id ";
 
         $result = $this->query($query)->getResultArray();
         // TODO: WHERE and GROUP and ORDER
@@ -41,7 +41,13 @@ class GroupsModel extends Model
         return $result;
     }
 
-    public function getAllColors() {
+    public function getAllGroups() {
+                $query = "SELECT `id`, 
+                                 `name` 
+                            FROM `groups`;";
+                $result = $this->query($query)->getResultArray();
+                return $result;
+            }public function getAllColors() {
                 $query = "SELECT `id`, 
                                  `name` 
                             FROM `colors`;";

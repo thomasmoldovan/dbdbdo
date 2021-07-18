@@ -9,5 +9,5 @@
 }
 </style>
 <div id="rightContent" class="rightContent pl-3 pr-3">
-    <?= view($view); ?>
+    <?= view($page); ?>
 </div>

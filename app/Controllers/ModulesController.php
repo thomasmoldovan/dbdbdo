@@ -8,6 +8,23 @@ use App\Models\TableModuleModel;
 class ModulesController extends HomeController {
 
     protected $current_project;
+
+	public function __construct() {
+		// TODO: Have this in a base class that all controllers will be based on
+        helper('auth');
+        helper('general');
+        helper('html');
+		$this->session = service('session');
+		$this->config = config('Auth');
+		$this->auth = service('authentication');
+		$this->pages = config('Pages');
+		$this->user = user();
+		$this->projectHash = $this->session->get("project_hash");
+
+		if (is_null($this->user)) {
+			$this->respond("error", "Your session has expired");
+		}
+	}
     
     public function index($project_hash = null) {
 		$schema = new SchemaModel();
@@ -72,20 +89,54 @@ class ModulesController extends HomeController {
 
 		$this->session->set("notification", $this->notifications);
 		return $this->display_main("header", "modules", $data);
-		
-		$this->notifications[] = ["info", "Hello from modules 2 :)"];
-		$this->session->set("notification", $this->notifications);
-		return redirect()->to("/");
 	}
 
     public function deleteModule() {
-        $post = $this->request->getPost();
+		$this->checkIfLogged();
 
-        $user_modules = new UserModuleModel();
+		$post = $this->request->getPost();
+		
+		if (isset($post["module_id"]) && (int)$post["module_id"] > 0) {
+			$module_id = $post["module_id"];
+		} else {
+			return $this->respond("error", "Invalid module");
+		}
+
+		// Get project_id from where this module is
+		$user_modules = new UserModuleModel();
+		$project_id = $user_modules->getWhere(["id" => $module_id])->getResultArray();
+		
+		if (is_array($project_id)) {
+			$project_id = $project_id[0]["project_id"];
+		} else {
+			return $this->respond("error", "Invalid Module", "There are no projects for this module");
+		}
+
+		// Check if project belongs to current user
+		$projects = new ProjectModel();
+		$project = $projects->getWhere(["user_id" => $this->user->id, "id" => $project_id])->getResultArray();
+		if (is_array($project)) {
+			$this->current_project = $project[0];
+		} else {
+			return $this->respond("error", "Different Project", "That module does not belong to you :|");
+		};
+
+		// Check if project the same as session, if the same project is loaded
+		$project_hash = $this->session->get("project_hash");
+		if ($project_hash !== $this->current_project["project_hash"]) {
+			return $this->respond("error", "Different Project", "The module belongs to another project of yours");
+		}
+
         $tables_modules = new TableModuleModel();
 
-        $user_modules->delete($post["module_id"]);
-        $tables_modules->where(["user_module_id" => $post["module_id"]])->delete();
+		// Delete the data
+        $user_modules->delete($module_id);
+        $tables_modules->where(["user_module_id" => $module_id])->delete();
+
+		// Delete the files if project external
+		if ($this->current_project["project_type"] == 0) {
+
+		}
 
         return $this->response->setJSON($post);
     }    

@@ -1,36 +1,52 @@
 <?php namespace App\Controllers;
 
-use App\Models\Tags2Model;
+use App\Models\ImportsModel;
 use App\Models\ProjectModel;
 use App\Models\UserModuleModel;
 use CodeIgniter\Controller;
 
-class Tags2Controller extends HomeController {
+class ImportsController extends HomeController {
 
-    protected $auth; // If he wants login
-    protected $user; // If he wants login
+    protected $onoff = true; // true = ONLINE off = OFFLINE
+    protected $auth;
+    protected $user;
     protected $session;
+    protected $pages;
+    protected $projectId;
+    protected $projectHash;
+
+    public function __construct() {
+        helper('auth');
+        
+        $this->auth = service("authentication");
+        $this->user = user();
+        $this->session = service('session');
+        $this->pages = config('Pages');
+    }
 
     public function index() {
         helper(['filesystem', 'form', 'url']);
-        $tags2 = new Tags2Model();
+        $imports = new ImportsModel();
         $projects = new ProjectModel();
         $userModule = new UserModuleModel();
 
+        $projectHash = $this->session->get("project_hash");
         $userModule->setDatabase($_ENV["database.default.database"]);
-        $menuItems = $userModule->getActiveModules($this->user->id);
+        $menuItems = $userModule->getActiveModules($this->user->id, $projectHash);
 
-        $tags2Items = $tags2->findAll();        
+        $importsItems = $imports->findAll();
+        
+        
 
         $data["auth"] = $this->auth->check();
         $data["user"] = $this->user;
         $data["session"] = $this->session;
-        $data["headers"] = $tags2->getAllowedFields();
-        $data["tags2Items"] = $tags2Items;
+        $data["headers"] = $imports->getAllowedFields();
+        $data["importsItems"] = $importsItems;
         $data["menuItems"] = $menuItems;
-        $data["view"] = "Tags2View";
+        $data["page"] = "ImportsView";
 
-        return $this->display_main("header", "tags2", $data);
+        return $this->display_main("preview", "imports", $data);
     }
 
     public function test() {
@@ -38,7 +54,7 @@ class Tags2Controller extends HomeController {
     }
 
     public function create() {
-        $tags2 = new Tags2Model();
+        $imports = new ImportsModel();
         $projects = new ProjectModel();
         $post = $this->request->getPost();
 
@@ -53,9 +69,9 @@ class Tags2Controller extends HomeController {
             if ($validation->run() == TRUE) { }
 
             if (!is_null($update_id)) {
-                $tags2->update($update_id, $post);
+                $imports->update($update_id, $post);
             } else {
-                $tags2->insert($post);
+                $imports->insert($post);
             }
         }
 
@@ -69,33 +85,33 @@ class Tags2Controller extends HomeController {
         }
     }
 
-    public function manageTags2() {
+    public function list() {
         // POST method entry point
-        $tags2 = new Tags2Model();
+        $imports = new ImportsModel();
         $projects = new ProjectModel();
 
         $projectId = $this->session->get("project_hash");
         $projectHash = $projects->checkProjectBelongsToUser($projectId, $this->user->id)->project_hash;
 
-        $primary = $tags2->getPrimary();  // The primary key
-        $allLabels = $tags2->getFieldLabels();
-        $allColumns = $tags2->getAllowedFields();
+        $primary = $imports->getPrimary();  // The primary key
+        $allLabels = $imports->getFieldLabels();
+        $allColumns = $imports->getAllowedFields();
 
-        $allTags2 = $tags2->getTags2List();
+        $allImports = $imports->getImportsList();
 
-        foreach ($allTags2 as &$item) {
+        foreach ($allImports as &$item) {
             $item["check"] = json_encode($item);
         }
         $data["primary"] = $primary;
         $data["allColumns"] = $allColumns;
         $data["headers"] = $allLabels;
-        $data["tags2Items"] = $allTags2;
+        $data["importsItems"] = $allImports;
 
         return $this->response->setJSON($data);
     }
 
     public function delete() {
-        $tags2 = new Tags2Model();
+        $imports = new ImportsModel();
         $projects = new ProjectModel();
         $post = $this->request->getPost();
 
@@ -103,8 +119,8 @@ class Tags2Controller extends HomeController {
         $projectHash = $projects->checkProjectBelongsToUser($projectId, $this->user->id)->project_hash;
 
         if ($this->request->isAjax()) {
-            $tags2_id = (int) $post["id"];
-            $tags2->delete($tags2_id);
+            $imports_id = (int) $post["id"];
+            $imports->delete($imports_id);
         }
 
         return $this->response->setJSON(true);

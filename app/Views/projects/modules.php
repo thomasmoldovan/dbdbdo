@@ -20,23 +20,11 @@
         line-height: 2;
         border-radius: 0rem;
     }
-    .fa, .far, .fas {
-        font-family: "Font Awesome 5 Free";
-    }
     .fa-2x {
         font-size: 2.2em;
     }
     option {
         font-weight: bolder !important;
-    }
-    .status-danger {
-        border: 2px solid #990;
-    }
-    .status-success {
-        border: 2px solid #090;
-    }
-    .status-error {
-        border: 2px solid #900;
     }
 </style>
 <div class="mt-2">
@@ -53,7 +41,7 @@
                                     <button class="btn btn-sm btn-primary m-1" data-toggle="collapse"><i class="fa fa-arrow-right"></i></button>
                                 </div>
                                 <div class="col-4 align-self-center">
-                                    <div class="text-white"><b><?= $module[0]['module_name'] ?></b>&nbsp;<small class="col-6 float-right pt-1">(12 columns)</small></div>
+                                    <div class="text-white"><b><?= $module[0]['module_name'] ?></b></div>
                                 </div>
                                 <div class="col-2 d-flex align-self-center text-white">
                                     <input type="text" name="routeName" id="routeName<?= $module[0]['module_route'] ?>" 
@@ -61,18 +49,10 @@
                                            value="<?= $module[0]['module_route'] ?>"
                                            class="form-control form-control-sm" placeholder="Route Alias">
                                 </div>
-
-                                <div class="btn-group ml-auto">
-                                    <div class="d-flex align-self-center pr-2">
-                                        <div class="pr-2">
-                                            <input id="addToRoutes" class="ml-2" type="checkbox" checked 
-                                            data-toggle="toggle" data-size="xs" data-on="Show" data-off="No" data-onstyle="success" data-offstyle="primary">
-                                        </div>
-                                        <div class="">
-                                            <input id="moduleLock" class="float-right" type="checkbox" checked="" 
-                                            data-toggle="toggle" data-size="xs" data-on="Locked" data-off="Unlocked" data-onstyle="primary" data-offstyle="danger">
-                                        </div>
-                                    </div>
+                                <div class="d-flex pr-2 small text-white w-auto ml-auto align-self-center">
+                                        Last build: 22 May 2021 (outdated)
+                                </div>
+                                <div class="btn-group ml-2">
                                     <button data-module_name="<?= $module[0]['module_name'] ?>" class="settingsModal btn btn-primary btn-sm btn-block m-1">
                                         Settings
                                     </button>
@@ -315,7 +295,7 @@
                                     <input type="text" class="property form-control form-control-sm mr-2">
                                     <b class="text-black">=</b>
                                     <input type="text" class="attribute form-control form-control-sm ml-2 mr-2">
-                                    <button type="button" name="deleteProp" class="deleteProp btn btn-danger btn-sm"><i class="fa fa-trash text-white"></i></button>
+                                    <button type="button" name="deleteProp" class="deleteProp btn btn-danger btn-sm"><i class="fa fa-trash-o text-white"></i></button>
                                 </div>
                             </div>
                             <div id="newPropContainer" class="">
@@ -464,9 +444,15 @@
         $(".fileViewer").click(function (e) {
             e.preventDefault();
             var module_name = $(e.currentTarget).data("module_name");
-            // console.log(module_name);
-            // debugger;
-            window.open('/preview/public/<?= strtolower($data["project"]["project_hash"]); ?>/' + module_name, '_blank');
+            console.log(module_name);
+
+            if (<?= $data["project"]["project_type"]; ?> == 1) {
+                // Internal
+                window.open('/projects/<?= strtolower($data["project"]["project_hash"]); ?>/preview/' + module_name, '_blank');
+            } else if (<?= $data["project"]["project_type"]; ?> == 0) {
+                // External
+                window.open('/preview/public/<?= strtolower($data["project"]["project_hash"]); ?>/' + module_name, '_blank');
+            }            
         });
 
         $("#saveProperties").click(function (e) {

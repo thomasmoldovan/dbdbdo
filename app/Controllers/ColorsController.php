@@ -1,11 +1,11 @@
 <?php namespace App\Controllers;
 
-use App\Models\GroupsModel;
+use App\Models\ColorsModel;
 use App\Models\ProjectModel;
 use App\Models\UserModuleModel;
 use CodeIgniter\Controller;
 
-class GroupsController extends HomeController {
+class ColorsController extends HomeController {
 
     protected $onoff = true; // true = ONLINE off = OFFLINE
     protected $auth;
@@ -26,7 +26,7 @@ class GroupsController extends HomeController {
 
     public function index() {
         helper(['filesystem', 'form', 'url']);
-        $groups = new GroupsModel();
+        $colors = new ColorsModel();
         $projects = new ProjectModel();
         $userModule = new UserModuleModel();
 
@@ -34,19 +34,19 @@ class GroupsController extends HomeController {
         $userModule->setDatabase($_ENV["database.default.database"]);
         $menuItems = $userModule->getActiveModules($this->user->id, $projectHash);
 
-        $groupsItems = $groups->findAll();
+        $colorsItems = $colors->findAll();
         
-        $data['joinColors'] = $groups->getAllColors(); 
+        
 
         $data["auth"] = $this->auth->check();
         $data["user"] = $this->user;
         $data["session"] = $this->session;
-        $data["headers"] = $groups->getAllowedFields();
-        $data["groupsItems"] = $groupsItems;
+        $data["headers"] = $colors->getAllowedFields();
+        $data["colorsItems"] = $colorsItems;
         $data["menuItems"] = $menuItems;
-        $data["page"] = "GroupsView";
+        $data["page"] = "ColorsView";
 
-        return $this->display_main("preview", "groups", $data);
+        return $this->display_main("preview", "colors", $data);
     }
 
     public function test() {
@@ -54,7 +54,7 @@ class GroupsController extends HomeController {
     }
 
     public function create() {
-        $groups = new GroupsModel();
+        $colors = new ColorsModel();
         $projects = new ProjectModel();
         $post = $this->request->getPost();
 
@@ -69,9 +69,9 @@ class GroupsController extends HomeController {
             if ($validation->run() == TRUE) { }
 
             if (!is_null($update_id)) {
-                $groups->update($update_id, $post);
+                $colors->update($update_id, $post);
             } else {
-                $groups->insert($post);
+                $colors->insert($post);
             }
         }
 
@@ -87,31 +87,31 @@ class GroupsController extends HomeController {
 
     public function list() {
         // POST method entry point
-        $groups = new GroupsModel();
+        $colors = new ColorsModel();
         $projects = new ProjectModel();
 
         $projectId = $this->session->get("project_hash");
         $projectHash = $projects->checkProjectBelongsToUser($projectId, $this->user->id)->project_hash;
 
-        $primary = $groups->getPrimary();  // The primary key
-        $allLabels = $groups->getFieldLabels();
-        $allColumns = $groups->getAllowedFields();
+        $primary = $colors->getPrimary();  // The primary key
+        $allLabels = $colors->getFieldLabels();
+        $allColumns = $colors->getAllowedFields();
 
-        $allGroups = $groups->getGroupsList();
+        $allColors = $colors->getColorsList();
 
-        foreach ($allGroups as &$item) {
+        foreach ($allColors as &$item) {
             $item["check"] = json_encode($item);
         }
         $data["primary"] = $primary;
         $data["allColumns"] = $allColumns;
         $data["headers"] = $allLabels;
-        $data["groupsItems"] = $allGroups;
+        $data["colorsItems"] = $allColors;
 
         return $this->response->setJSON($data);
     }
 
     public function delete() {
-        $groups = new GroupsModel();
+        $colors = new ColorsModel();
         $projects = new ProjectModel();
         $post = $this->request->getPost();
 
@@ -119,8 +119,8 @@ class GroupsController extends HomeController {
         $projectHash = $projects->checkProjectBelongsToUser($projectId, $this->user->id)->project_hash;
 
         if ($this->request->isAjax()) {
-            $groups_id = (int) $post["id"];
-            $groups->delete($groups_id);
+            $colors_id = (int) $post["id"];
+            $colors->delete($colors_id);
         }
 
         return $this->response->setJSON(true);

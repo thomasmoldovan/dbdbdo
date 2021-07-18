@@ -20,6 +20,7 @@
     <link href="/css/toastr.min.css" rel="stylesheet"></link>
     <link href="/css/all.min.css" rel="stylesheet"></link>
 
+    <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"></link>    
     <script src="/js/common.js"></script>
 </head>
 
@@ -51,6 +52,8 @@
     .card-hover { background: #91d3ff; cursor: pointer; }
 
     .no-outline { outline: none !important; box-shadow: none !important; }
+
+    .fa { width: 15px !important; /* For icons on the buttons */ }
 
     i { color: white; }
     .nav-link { color: white !important; }
@@ -86,11 +89,14 @@
         box-shadow: none !important;
         outline: none !important;
     }
+    .hand-pointer {
+        cursor: pointer !important;
+    }
 </style>
 
 <body>
+    <? echo view('App\debugbar'); ?>
     <? echo view('App\WebsiteNavigation'); ?>
-    <? //echo view('App\debugbar'); ?>
 
     <? // echo in_groups(["Publisher"]) ? "TRUE" : "FALSE"; ?>
     <? // echo has_permission("Everything") ? "TRUE" : "FALSE"; ?>

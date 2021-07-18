@@ -1,11 +1,11 @@
 <?php namespace App\Controllers;
 
-use App\Models\GroupsModel;
+use App\Models\TagsModel;
 use App\Models\ProjectModel;
 use App\Models\UserModuleModel;
 use CodeIgniter\Controller;
 
-class GroupsController extends HomeController {
+class TagsController extends HomeController {
 
     protected $onoff = true; // true = ONLINE off = OFFLINE
     protected $auth;
@@ -26,7 +26,7 @@ class GroupsController extends HomeController {
 
     public function index() {
         helper(['filesystem', 'form', 'url']);
-        $groups = new GroupsModel();
+        $tags = new TagsModel();
         $projects = new ProjectModel();
         $userModule = new UserModuleModel();
 
@@ -34,19 +34,19 @@ class GroupsController extends HomeController {
         $userModule->setDatabase($_ENV["database.default.database"]);
         $menuItems = $userModule->getActiveModules($this->user->id, $projectHash);
 
-        $groupsItems = $groups->findAll();
+        $tagsItems = $tags->findAll();
         
-        $data['joinColors'] = $groups->getAllColors(); 
+        
 
         $data["auth"] = $this->auth->check();
         $data["user"] = $this->user;
         $data["session"] = $this->session;
-        $data["headers"] = $groups->getAllowedFields();
-        $data["groupsItems"] = $groupsItems;
+        $data["headers"] = $tags->getAllowedFields();
+        $data["tagsItems"] = $tagsItems;
         $data["menuItems"] = $menuItems;
-        $data["page"] = "GroupsView";
+        $data["page"] = "TagsView";
 
-        return $this->display_main("preview", "groups", $data);
+        return $this->display_main("preview", "tags", $data);
     }
 
     public function test() {
@@ -54,7 +54,7 @@ class GroupsController extends HomeController {
     }
 
     public function create() {
-        $groups = new GroupsModel();
+        $tags = new TagsModel();
         $projects = new ProjectModel();
         $post = $this->request->getPost();
 
@@ -69,9 +69,9 @@ class GroupsController extends HomeController {
             if ($validation->run() == TRUE) { }
 
             if (!is_null($update_id)) {
-                $groups->update($update_id, $post);
+                $tags->update($update_id, $post);
             } else {
-                $groups->insert($post);
+                $tags->insert($post);
             }
         }
 
@@ -87,31 +87,31 @@ class GroupsController extends HomeController {
 
     public function list() {
         // POST method entry point
-        $groups = new GroupsModel();
+        $tags = new TagsModel();
         $projects = new ProjectModel();
 
         $projectId = $this->session->get("project_hash");
         $projectHash = $projects->checkProjectBelongsToUser($projectId, $this->user->id)->project_hash;
 
-        $primary = $groups->getPrimary();  // The primary key
-        $allLabels = $groups->getFieldLabels();
-        $allColumns = $groups->getAllowedFields();
+        $primary = $tags->getPrimary();  // The primary key
+        $allLabels = $tags->getFieldLabels();
+        $allColumns = $tags->getAllowedFields();
 
-        $allGroups = $groups->getGroupsList();
+        $allTags = $tags->getTagsList();
 
-        foreach ($allGroups as &$item) {
+        foreach ($allTags as &$item) {
             $item["check"] = json_encode($item);
         }
         $data["primary"] = $primary;
         $data["allColumns"] = $allColumns;
         $data["headers"] = $allLabels;
-        $data["groupsItems"] = $allGroups;
+        $data["tagsItems"] = $allTags;
 
         return $this->response->setJSON($data);
     }
 
     public function delete() {
-        $groups = new GroupsModel();
+        $tags = new TagsModel();
         $projects = new ProjectModel();
         $post = $this->request->getPost();
 
@@ -119,8 +119,8 @@ class GroupsController extends HomeController {
         $projectHash = $projects->checkProjectBelongsToUser($projectId, $this->user->id)->project_hash;
 
         if ($this->request->isAjax()) {
-            $groups_id = (int) $post["id"];
-            $groups->delete($groups_id);
+            $tags_id = (int) $post["id"];
+            $tags->delete($tags_id);
         }
 
         return $this->response->setJSON(true);
