@@ -7,6 +7,7 @@ use App\Models\SchemaModel;
 use App\Models\UserTableModel;
 use App\Models\UserModuleModel;
 use App\Models\TableModuleModel;
+use App\Models\ImportsModel;
 
 class ImportController extends HomeController {
 
@@ -24,16 +25,22 @@ class ImportController extends HomeController {
 
     // Creates a DB with the provided schema
 	public function importSchema($data = null, $name = null) {
+		$this->checkIfLogged();
+
 		$name = $this->request->getPost("name");
 		$description = $this->request->getPost("description");
 		$type = $this->request->getPost("type");
 		$data = $this->request->getPost("data");
 
+		$imports = new ImportsModel();
+		$imports->insert([
+			"user_id" => $this->user->id,
+			"query" => base64_encode($data),
+			"approved" => 0
+		]);
+
 		if (empty($name) || empty($data)) {
-			return $this->response->setJSON(array(
-				"status" => "error",
-				"message" => "Something values were empty"
-			));
+			return $this->respond("error", "Some values were empty");
 		}
 
 		$projects = new \App\Models\ProjectModel();
@@ -223,7 +230,7 @@ class ImportController extends HomeController {
 		if (is_array($project) && count($project) > 0) {
 			$this->current_project = $project[0];
 		} else {
-			return $this->respond("error", "Invalid Project", "This project does not belong to this user");
+			return $this->respond("error", "Project not found", "This project does not belong to this user");
 		}
 
         if ($this->request->isAjax()) {

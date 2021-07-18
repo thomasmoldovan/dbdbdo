@@ -181,7 +181,7 @@ class ProjectsController extends HomeController {
 		if (is_array($project) && count($project) > 0) {
 			$this->current_project = $project[0];
 		} else {
-			return $this->respond("error", "Invalid Project", "This project does not belong to this user");
+			return $this->respond("error", "Project not found", "This project does not belong to this user");
 		};
 
 		$user_modules = new UserModuleModel();

@@ -6,11 +6,11 @@
             <a class="bold pr-3 mt-1" href="/status">Status</a>
         <? } else { ?>
             <? if (has_permission("Todo")) { ?>
-                <a class="bold pr-3 mt-1" href="/todo">To Do</a>
+                <a class="bold pr-3 mt-1" href="/tasks">Tasks</a>
             <? } ?>
             <a class="bold pr-3 mt-1" href="/projects">Projects</a>
             <a class="bold pr-3 mt-1" href="/tags">Tags</a>
-            <a class="bold pr-3 mt-1" href="/contact">Contact</a>
+            <a class="bold pr-3 mt-1" href="/imports">Imports</a>
         <? } ?>
 
         <!-- The space in the middle -->

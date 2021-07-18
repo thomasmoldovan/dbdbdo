@@ -4,7 +4,7 @@ use CodeIgniter\Model;
 
 class TagsModel extends Model
 {
-    protected $table      = 'tags';
+    protected $table      = 'ddd_tags';
     protected $primaryKey = 'id';
 
     protected $returnType = 'array';
@@ -31,8 +31,8 @@ class TagsModel extends Model
 
     public function getTagsList() {
         $query = "SELECT 
-                    tags.id, tags.name, tags.start_tag, tags.end_tag, tags.value_type, tags.properties_id_list
-                FROM tags 
+                    ddd_tags.id, ddd_tags.name, ddd_tags.start_tag, ddd_tags.end_tag, ddd_tags.value_type, ddd_tags.properties_id_list
+                FROM ddd_tags 
                     ";
 
         $result = $this->query($query)->getResultArray();
