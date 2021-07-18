@@ -112,6 +112,11 @@
                                             <div class="p-0">
                                                 <button name="<?= $table["TABLE_NAME"] ?>" type="button" class="addToModules btn btn-sm btn-primary w-100">Create Module</button>
                                             </div>
+                                            <div class="pl-2">
+                                                <!-- TODO: Must be unique for the same project -->
+                                                <input id="newModuleName" name="newModuleName" type="text" class="mr-2 form-control form-control-sm" placeholder="<?= $table["TABLE_NAME"] ?>" value="">
+                                            </div>
+                                            <span class="small" data-toggle="tooltip" title="(use lowercase & _ ... it will be converted anyway)"><i class="fa fa-info-circle p-2"></i>&nbsp;</span>
                                             <? if (has_permission("Everything")) { ?>
                                                 <div class="pl-5 d-flex justify-align-center">
                                                     <div class="pl-4 btn btn-dark btn-sm" data-toggle="tooltip" title='Will set the id attribute to column name'>
@@ -181,11 +186,11 @@
                 },
                 dataType: "json",
                 success: function (response) {
-                    toastr.success(response.message);
+                    //toastr.success(response.message);
                     location = window.location;
                 },
                 error: function (response) {
-                    toastr.error(response.responseJSON.message, response.responseJSON.type);
+                    //toastr.error(response.responseJSON.message, response.responseJSON.type);
                     $(document).trigger("hideLoadingScreen");
                 }
             });
@@ -215,11 +220,8 @@
 
         $(".addToModules").click(function (e) {
             e.preventDefault();
+
             tableName = $(this).attr("name");
-            if ($("#selectModule" + tableName).val() == 0) {
-                $("#addModule" + tableName + "Error").html("Please select a module");
-                return false;
-            }
 
             selectedColumns = [];
             columns = $("#" + tableName + "Details tbody").find("." + tableName + "Columns");
@@ -231,20 +233,22 @@
                 }
             });
 
+            // There should already be the id column selected so we need one more
             if (selectedColumns.length <= 1) {
-                $("#addModule" + tableName + "Error").html("Please select atleast one column from the table");
-                toastr.error("You must select atleast 1 more column, except the ID column", "Error");
+                toastr.error("Select atleast one column from the table", "No columns selected");
                 return false;
             }
 
             $(document).trigger("showLoadingScreen");
+
             // module/create
             $.ajax({
                 type: "post",
                 url: "/import/linkTableToModule",
                 data: {
                     "project_hash": "<?= $data["project"]["project_hash"]; ?>",
-                    "module_name": tableName,
+                    "module_name": $("#newModuleName").val(),
+                    "module_route": $("#newModuleName").val(),
                     "selectedColumns": selectedColumns,
                     "setIds": $("#setIds" + tableName).prop("checked"),
                     "setNames": $("#setNames" + tableName).prop("checked"),
@@ -253,7 +257,8 @@
                 },
                 dataType: "json",
                 success: function (response) {
-                    // window.location = "<?= base_url() ?>" + "modules";
+                    // TODO: Should redirect to the exact module, with the module opened
+                    window.location = "<?= base_url() ?>" + "modules";
                 },
                 complete: function (response) {
                     $(document).trigger("hideLoadingScreen");

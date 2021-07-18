@@ -192,9 +192,9 @@ class WriterController extends HomeController {
                     // $("select[value='\" + {$foreign_table}Data.id + \"']").attr("selected", "selected");
                 } else {
                     // THE SWITCH WAS HERE
-                    $tags = new TagsModel();
-                    $tags = $tags->getTagsList();
-                    $this->tags = $tags;
+                    // $tags = new TagsModel();
+                    // $tags = $tags->getTagsList();
+                    // $this->tags = $tags;
 
                     $formInput .= $this->theSwitch($fieldProperties, $display_as);
 

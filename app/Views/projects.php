@@ -49,13 +49,12 @@ $(document).ready(function () {
         }
     );
     $(".projectCard").click(function () {
-        window.location = "http://localhost:8080/projects/" + $(this).data("id");
+        window.location = "/projects/" + $(this).data("id");
     });
 
     $(".deleteProject").click(function(e) {
         e.preventDefault();
         e.stopPropagation();
-        // debugger;
         $.ajax({
             type: "post",
             url: "/projects/delete",
@@ -64,10 +63,9 @@ $(document).ready(function () {
             },
             dataType: "dataType",
             success: function (response) {
-                response.title = "Ui ca mere";
+                location = window.location;
             }
         });
-        // console.log("Deleting " + $(this).parents(".projectCard").data("id"));
     });
 });
 </script>

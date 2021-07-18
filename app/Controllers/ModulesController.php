@@ -106,7 +106,7 @@ class ModulesController extends HomeController {
 		$user_modules = new UserModuleModel();
 		$project_id = $user_modules->getWhere(["id" => $module_id])->getResultArray();
 		
-		if (is_array($project_id) > 0) {
+		if (is_array($project_id)) {
 			$project_id = $project_id[0]["project_id"];
 		} else {
 			return $this->respond("error", "Invalid Module", "There are no projects for this module");

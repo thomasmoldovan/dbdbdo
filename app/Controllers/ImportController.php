@@ -210,45 +210,66 @@ class ImportController extends HomeController {
 	}
 
     // Resets the information gathered about a table
-	public function resetTable() {
-        $rootConn = \Config\Database::connect("default");
+	public function resetTable() {		
+		$this->checkIfLogged();
+
+		$project_hash = $this->session->get("project_hash");
+		if (empty($project_hash)) {
+			return $this->respond("error", "Invalid project");
+		}
+
+		$projects = new ProjectModel();
+		$project = $projects->getWhere(["user_id" => $this->user->id, "project_hash" => $project_hash])->getResultArray();
+		if (is_array($project) && count($project) > 0) {
+			$this->current_project = $project[0];
+		} else {
+			return $this->respond("error", "Invalid Project", "This project does not belong to this user");
+		}
 
         if ($this->request->isAjax()) {
-            $tablesInfo = new UserTableModel();
+			$rootConn = \Config\Database::connect("default");
+            $user_tables = new UserTableModel();
 
-            $moduleName = $this->request->getPost("table_name");
-            $result = $tablesInfo->getWhere(["table_name" => $moduleName])->getResultArray();
+            $post = $this->request->getPost();
+			$table_name = $post["table_name"];
+            $result = $user_tables->getWhere(["table_name" => $table_name, 
+											  "project_id" => $this->current_project["id"],
+											  "user_id"	   => $this->user->id])->getResultArray();
 
-			if (count($result) == 0) 
-				return $this->response->setJSON(array(
-					"status" => "error",
-					"message" => "Nothing to reset"
-				));
+			if (count($result) == 0) {
+				return $this->respond("error", "Nothing here");
+			};
 
             // Get all the columns IDs we need to delete
-            $searchIn = [];
+            $user_table_ids = [];
             foreach ($result as $key => $value) {
-                $searchIn[] = $value["id"];
+                $user_table_ids[] = $value["id"];
             }
-            $searchIn = implode(", ", $searchIn);
+            $user_table_ids = implode(", ", $user_table_ids);
 
             // Delete everything that exists regarding this table
             $result = [];
-			$result[] = $rootConn->query("DELETE FROM user_tables WHERE id IN ({$searchIn})");
-            // $result[] = $rootConn->query("DELETE FROM properties WHERE user_table_id IN ({$searchIn})");
-            // $result[] = $rootConn->query("DELETE FROM tables_modules WHERE user_table_id IN ({$searchIn})");
-            // $result[] = $rootConn->query("DELETE FROM links WHERE user_table_id_primary IN ({$searchIn})");
+            $result[] = $rootConn->query("DELETE FROM user_modules WHERE project_id = {$this->current_project["id"]} AND module_name = '{$table_name}'");
+
+			// We do NOT delete the data we have from when we imported the schema
+			// $result[] = $rootConn->query("DELETE FROM user_tables WHERE id IN ({$user_table_ids})");
+
+            $result[] = $rootConn->query("DELETE FROM properties WHERE user_table_id IN ({$user_table_ids})");
+            $result[] = $rootConn->query("DELETE FROM tables_modules WHERE user_table_id IN ({$user_table_ids})");
+            $result[] = $rootConn->query("DELETE FROM tables_modules WHERE user_module_id IN ({$user_module_ids})");
+            $result[] = $rootConn->query("DELETE FROM links WHERE user_table_id_primary IN ({$user_table_ids})");
+            $result[] = $rootConn->query("DELETE FROM links WHERE user_table_id_foreign IN ({$user_table_ids})");
+            $result[] = $rootConn->query("DELETE FROM links WHERE user_table_id_display IN ({$user_table_ids})");
+
+			return $this->respond("success", "<?= $table_name; ?> "." deleted");
         }
 
-        return $this->response->setJSON(array(
-			"status" => "success",
-			"message" => "Table reset succesfull",
-            
-		));
+        return $this->notify("info", "Wrong Way");
 	}
 
 	// Delete the table from DB
 	public function deleteTable() {
+		// TODO: Now it's only for EXTERNAL
 		if (!$this->auth->check()) {
 			$this->notifications[] = ["info", "Your session has expired"];
 			$this->session->set("notification", $this->notifications);
@@ -368,15 +389,17 @@ class ImportController extends HomeController {
     }
 
 	public function linkTableToModule() {
+		$this->checkIfLogged();
+
         $userModules = new UserModuleModel();
         $tablesModules = new TableModuleModel();
         $project = new ProjectModel();
 
         // TODO: Review this function
         $post = $this->request->getPost();
-
-        if ($this->current_project = $project->checkProjectBelongsToUser($post["project_hash"], $this->user->id)) {
-
+		$this->current_project = $project->checkProjectBelongsToUser($post["project_hash"], $this->user->id);
+        if (!$this->current_project) {
+			return $this->repond("error", "Project not found");
         }
 
         if (empty($post["module_name"])) {
@@ -384,14 +407,11 @@ class ImportController extends HomeController {
 			$this->session->set("notification", $this->notifications);
 		}
 
-
-
         $moduleData = array(
             "project_id" => (int)$this->current_project->id,
             "module_name" => $post["module_name"],
             "module_title" => ucwords($post["module_name"]),
-            "module_type" => $post["module_name"],
-            "module_route" => $post["module_name"],
+            "module_route" => $post["module_route"],
 			"show_on_menu" => 1
         );
 

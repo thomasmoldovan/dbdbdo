@@ -26,15 +26,6 @@
     option {
         font-weight: bolder !important;
     }
-    .status-danger {
-        border: 2px solid #990;
-    }
-    .status-success {
-        border: 2px solid #090;
-    }
-    .status-error {
-        border: 2px solid #900;
-    }
 </style>
 <div class="mt-2">
     <ul class="nav flex-column">

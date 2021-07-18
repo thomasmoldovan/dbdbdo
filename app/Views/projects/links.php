@@ -31,15 +31,6 @@
     .modulesViewColour {
         background: #1c4046;
     }
-    .status-danger {
-        border: 2px solid #990;
-    }
-    .status-success {
-        border: 2px solid #090;
-    }
-    .status-error {
-        border: 2px solid #900;
-    }
     .form-checkbox {
         margin: auto;
         display: block;

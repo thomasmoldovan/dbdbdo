@@ -95,8 +95,8 @@
 </style>
 
 <body>
+    <? echo view('App\debugbar'); ?>
     <? echo view('App\WebsiteNavigation'); ?>
-    <? //echo view('App\debugbar'); ?>
 
     <? // echo in_groups(["Publisher"]) ? "TRUE" : "FALSE"; ?>
     <? // echo has_permission("Everything") ? "TRUE" : "FALSE"; ?>

@@ -43,31 +43,33 @@ class ProjectModel extends Model
     }
 
     public function getProjectsForUser($user_id) {
-        $result = $this->query("SELECT user_tables.project_id,
-                                        projects.id,
-                                        projects.project_hash,
-                                        projects.project_name,
-                                        projects.project_type,
-                                        projects.project_description,
-                                        COUNT(user_tables.table_name) AS count_table_name,
-                                        tables_modules.id AS module_id,
-                                        tables_modules.enabled,
-                                        projects.updated_at,
-                                        tables_modules.user_table_id,
-                                        links_primary.user_table_id_primary AS primary_link,
-                                        links_foreign.user_table_id_foreign AS foreign_link
-                                FROM (((user_tables user_tables
-                                        LEFT OUTER JOIN links links_primary
-                                            ON (user_tables.id = links_primary.user_table_id_primary))
-                                        RIGHT OUTER JOIN projects projects
-                                        ON (projects.id = user_tables.project_id))
-                                    LEFT OUTER JOIN tables_modules tables_modules
-                                        ON (user_tables.id = tables_modules.user_table_id))
-                                    LEFT OUTER JOIN links links_foreign
-                                        ON (tables_modules.user_table_id =
-                                            links_foreign.user_table_id_foreign)
-                                WHERE projects.user_id = {$user_id}
-                                GROUP BY projects.id, user_tables.table_name")->getResult();
+        $query = "SELECT    user_tables.project_id,
+                            projects.id,
+                            projects.project_hash,
+                            projects.project_name,
+                            projects.project_type,
+                            projects.project_description,
+                            COUNT(user_tables.table_name) AS count_table_name,
+                            tables_modules.id AS module_id,
+                            tables_modules.enabled,
+                            projects.updated_at,
+                            tables_modules.user_table_id,
+                            links_primary.user_table_id_primary AS primary_link,
+                            links_foreign.user_table_id_foreign AS foreign_link
+                    FROM (((user_tables user_tables
+                            LEFT OUTER JOIN links links_primary
+                                ON (user_tables.id = links_primary.user_table_id_primary))
+                            RIGHT OUTER JOIN projects projects
+                            ON (projects.id = user_tables.project_id))
+                        LEFT OUTER JOIN tables_modules tables_modules
+                            ON (user_tables.id = tables_modules.user_table_id))
+                        LEFT OUTER JOIN links links_foreign
+                            ON (tables_modules.user_table_id =
+                                links_foreign.user_table_id_foreign)
+                    WHERE projects.user_id = {$user_id}
+                    GROUP BY projects.id, user_tables.table_name";
+        // var_dump($query); die();
+        $result = $this->query($query)->getResult();
 
         $projects_array = [];
         $project_list = [];
@@ -78,7 +80,7 @@ class ProjectModel extends Model
                 $project_list[$project->project_hash] = new \stdClass();
                 $project_list[$project->project_hash]->id = $project->id;
                 $project_list[$project->project_hash]->enabled = $project->enabled;
-                $project_list[$project->project_hash]->count_table_name = 1;
+                $project_list[$project->project_hash]->count_table_name = (int)$project->count_table_name;
                 $project_list[$project->project_hash]->count_column_name = $project->count_table_name;
                 $project_list[$project->project_hash]->count_modules = 0;
                 $project_list[$project->project_hash]->count_links = $project->primary_link || $project->foreign_link ? 1 : 0;
@@ -106,7 +108,8 @@ class ProjectModel extends Model
         return $project_list;
     }
 
-    public function checkProjectBelongsToUser($project_hash, $user_id) {
+    public function checkProjectBelongsToUser($project_hash = null, $user_id = null) {
+        if (is_null($project_hash) || is_null($user_id)) return false;
         // Both must match to get the project_hash, for security reasons
         $result = $this->select("id, project_hash, project_name")->where([
                             "project_hash" => $project_hash,

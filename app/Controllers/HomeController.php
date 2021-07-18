@@ -101,7 +101,7 @@ class HomeController extends BaseController{
 	}
 
 	public function generate_hash() {
-		$color = dechex(rand(0x000000, 0xFFFFFF));
+		$color = sprintf("%06x",rand(0,16777215));
 		return $color;
 	}
 

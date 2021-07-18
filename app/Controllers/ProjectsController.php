@@ -28,6 +28,7 @@ class ProjectsController extends HomeController {
 			if (!empty($project)) {
 				// Project found
 				$this->current_project = $project[0];
+				$this->session->set("project_hash", $this->current_project["project_hash"]);
 
 				// Tables List View
 				if ((int)$this->current_project["project_type"] == 0) {
@@ -36,7 +37,7 @@ class ProjectsController extends HomeController {
 					$data["project"] = $this->current_project;
 					$data["tables"] = $schema->getTables($this->current_project["project_hash"]);
 
-					// The number of rows is not reported correctly in information_schema table
+					// The number of rows is not reported correctly with some DB engines, in information_schema table
 					// So we retrieve it our selfs
 					$data["nr_rows"] = [];
 					foreach ($data["tables"] as $table_info) {
@@ -62,7 +63,8 @@ class ProjectsController extends HomeController {
 						$data["nr_rows"][$table] = $schema->getRowsNumber($table)[0]["rows"];
 					}
 					
-					// Now we overwrite the tables with our info from information_schema, only for those ids
+					// Now we overwrite the tables with our info from information_schema, 
+					// only for the tables in this project
 					$data["tables"] = $schema->getTables($this->current_project["database"], $data["tables"]);
 
 					$data["userTables"] = $schema->getTablesInfo($this->user->id, $this->current_project["id"]);
@@ -89,7 +91,10 @@ class ProjectsController extends HomeController {
 		}
 
 		// No hash in the URL
-		// Display the projects page
+		// Reset current project hash in session
+		$this->session->remove("project_hash");
+
+		// Display the projects page		
 		$project_list = $projects->getProjectsForUser($this->user->id);
 
 		$data = ["project_list" => $project_list];
@@ -169,14 +174,15 @@ class ProjectsController extends HomeController {
 		$post = $this->request->getPost();
 		$projectHash = $post["project_hash"];
 
-
 		// Check if project belongs to current user
 		$projects = new ProjectModel();
 		$project = $projects->getWhere(["user_id" => $this->user->id, "project_hash" => $projectHash])->getResultArray();
 
-		if (is_array($project)) {
+		if (is_array($project) && count($project) > 0) {
 			$this->current_project = $project[0];
-		} else return false;
+		} else {
+			return $this->respond("error", "Invalid Project", "This project does not belong to this user");
+		};
 
 		$user_modules = new UserModuleModel();
 		$user_table = new UserTableModel();
